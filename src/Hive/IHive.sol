@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
+import {TraitsState} from "../traits/TraitsState.sol";
+
+
 interface IHive {
 
     ////////////////////////
@@ -14,20 +17,12 @@ interface IHive {
     // mapping(address user => uin256[] stakedBees) ListOfUsersStakedBees
     // mapping(uint256 tokenId) vault
 
-    enum Environments {
-        volcano,
-        ice,
-        desert,
-        grass,
-        river
-    }
-
 
     struct HiveTraits {
         uint256 hiveId;
         uint256 numberOfQueensStaked;
         uint256 numberOfDronesStaked;
-        Environments environment;
+        TraitsState.Environments environment;
     }
 
     ////////////////////////

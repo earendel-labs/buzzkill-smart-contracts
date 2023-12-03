@@ -28,6 +28,7 @@ contract Hive is TraitsState, Ownable, ReentrancyGuard {
     mapping(address user => uint256[] stakedBees) public usersStakedBees;
     mapping(uint256 hiveId => HiveTraits hiveTraits) public hiveIdToHiveTraits;
     mapping(uint256 tokenId => Stake) private vault;
+    //? Considering another mapping for tracking all addresses that have staked tokens
 
     struct HiveTraits {
         uint256 hiveId;
@@ -84,8 +85,11 @@ contract Hive is TraitsState, Ownable, ReentrancyGuard {
         });
 
         // Update Hive traits
+        HiveTraits memory hiveTraits = hiveIdToHiveTraits[hiveId];
         if (beeTraits.isQueen) {
-
+            hiveTraits.numberOfQueensStaked++;
+        } else {
+            hiveTraits.numberOfWorkersStaked++;
         }
 
         // Update mapping and variables
@@ -94,27 +98,49 @@ contract Hive is TraitsState, Ownable, ReentrancyGuard {
         usersStakedBees[msg.sender].push(tokenId);
 
         // Mark NFT as staked and emit event
-        tokenIdToBeeTraits[tokenId].isBeeStaked = true;
+        beeTraits.isBeeStaked = true;
         emit NFTStaked(msg.sender, tokenId, block.timestamp);
 
         return true;
     }
 
-    function unstakeBee(uint256 tokenId) external nonReentrant returns (bool) {
+    /**
+    * @notice Unstake a bee NFT and claim rewards based on the time it has been staked.
+    * @dev The caller must be the owner of the NFT and the NFT must be currently staked.
+    * @param tokenId The unique identifier of the bee NFT to be unstaked and claimed.
+    * @return A boolean indicating the success of the unstaking and reward claiming process.
+     */
+    function unstakeBeeAndClaimRewards(uint256 tokenId) external nonReentrant returns (bool) {
         BeeTraits memory beeTraits = tokenIdToBeeTraits[tokenId];
 
         require(msg.sender == buzzkillNFT.ownerOf(tokenId), "Error: Only the NFT owner can unstake");
         require(tokenIdToBeeTraits[tokenId].isBeeStaked, "Error: NFT is not staked");
 
-        // Transfer NFT
+        // Calculate amount of claimable rewards and mint to user //! This has to be correctly implemented!!
+        uint256 earnedAmount = 10 * (block.timestamp - vault[tokenId].timeStamp);
+        if (earnedAmount > 0) {
+            honey.mintTo(msg.sender, earnedAmount/10_000);
+        }
 
-        // Update vault mapping
+        // Transfer NFT
+        buzzkillNFT.transferFrom(address(this), msg.sender, tokenId);
 
         // Update Hive traits
+        HiveTraits memory hiveTraits = hiveIdToHiveTraits[vault[tokenId].hiveId];
+        if (beeTraits.isQueen) {
+            hiveTraits.numberOfQueensStaked--;
+        } else {
+            hiveTraits.numberOfWorkersStaked--;
+        }
 
         // Update mapping and variables
         totalStakedNFTs--;
+        delete tokenIdToHiveId[tokenId];
+        // usersStakedBees[msg.sender].push(tokenId); //! Need to pop this appropriately
 
+
+        // Update vault mapping
+        delete vault[tokenId];
 
         // Mark NFT as unstaked and emit event
         beeTraits.isBeeStaked = false;
@@ -123,6 +149,23 @@ contract Hive is TraitsState, Ownable, ReentrancyGuard {
         return true;
     }
 
+    /**
+    * @notice Get the amount of claimable rewards for a given user.
+    * @param user The address of the user for whom the claimable rewards are queried.
+    * @return The amount of claimable rewards in tokens for the specified user. 
+    */
+    function amountOfClaimableTokens(address user) external view returns (uint256) {
+
+
+        
+    }
+
+    /**
+    * @notice Add a new hive with the specified environment.
+    * @dev Only the contract owner can add a new hive.
+    * @param _environment The environment type of the new hive.
+    * @return A boolean indicating the success of the hive addition.
+    */
     function addHive(Environments _environment) external onlyOwner returns (bool) {
         uint256 newHiveId = currentHiveId++;
         hiveIdToHiveTraits[newHiveId] =
@@ -136,15 +179,13 @@ contract Hive is TraitsState, Ownable, ReentrancyGuard {
         return true;
     }
 
+    /**
+    * @notice Delete a hive with the given hiveId.
+    * @dev Only the contract owner can delete a hive.
+    * @param hiveId The unique identifier of the hive to be deleted.
+    */
     function deleteHive(uint256 hiveId) external onlyOwner {
         delete hiveIdToHiveTraits[hiveId];
     }
 
-    function getHiveTraits(uint24 hiveId) external view returns (HiveTraits memory) {
-        return hiveIdToHiveTraits[hiveId];
-    }
-
-    function getUsersStakedNfts(address user) external view returns (uint256[] memory _beesStaked) {
-
-    }
 }
