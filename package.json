@@ -1,0 +1,22 @@
+{
+  "name": "buzzkill-contracts",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "docgen": "hardhat docgen",
+    "deploy:prod": "NODE_ENV=prod npx hardhat ignition deploy --network viction",
+    "deploy:dev": "NODE_ENV=dev npx hardhat ignition deploy --network test_viction"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-foundry": "^1.1.2",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@openzeppelin/hardhat-upgrades": "^3.1.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.4",
+    "hardhat-contract-sizer": "^2.10.0"
+  }
+}
