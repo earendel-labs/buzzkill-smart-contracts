@@ -1,3 +1,4 @@
 @vrc725/contracts/=lib/vrc725/contracts/
 @vrc25/contracts/=lib/vrc25/contracts/
 @openzeppelin/contracts=node_modules/@openzeppelin/contracts
+@openzeppelin/contracts-upgradeable=node_modules/@openzeppelin/contracts-upgradeable

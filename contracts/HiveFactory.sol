@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import {Hive} from "./Hive.sol";
 
 import "../interfaces/IWorldMap.sol";
+import "../interfaces/IBuzzkillAddressProvider.sol";
 
 contract HiveFactory {
     /* -------------------------------------------------------------------------- */
@@ -20,13 +21,15 @@ contract HiveFactory {
     /*  State variables                                                           */
     /* -------------------------------------------------------------------------- */
     uint256 public totalHives;
-    address public worldMap;
+    IBuzzkillAddressProvider public buzzkillAddressProvider;
 
     /* -------------------------------------------------------------------------- */
     /*  Constructor                                                               */
     /* -------------------------------------------------------------------------- */
-    constructor(address _worldMap) {
-        worldMap = _worldMap;
+    constructor(address _buzzkillAddressProvider) {
+        buzzkillAddressProvider = IBuzzkillAddressProvider(
+            _buzzkillAddressProvider
+        );
     }
 
     /* -------------------------------------------------------------------------- */
@@ -39,11 +42,12 @@ contract HiveFactory {
      * @return The hive ID.
      */
     function createHive(uint256 habitatId) external returns (uint256) {
+        address worldMap = buzzkillAddressProvider.worldMapAddress();
         uint256 maxHabitatId = IWorldMap(worldMap).habitatId();
         if (habitatId >= maxHabitatId) {
             revert HabitatNotExists();
         }
-        Hive newHive = new Hive(habitatId);
+        Hive newHive = new Hive(habitatId, address(buzzkillAddressProvider));
         totalHives++;
         emit HiveCreated(totalHives, address(newHive));
         return totalHives;

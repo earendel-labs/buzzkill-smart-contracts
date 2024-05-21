@@ -32,4 +32,17 @@ interface IBuzzkillNFT is IVRC725 {
             uint256 sap,
             uint256 nectar
         );
+
+    function modifyBeeTraits(
+        uint256 tokenId,
+        uint256 energy,
+        uint256 health,
+        uint256 productivity,
+        uint256 attack,
+        uint256 defense,
+        uint256 forage,
+        uint256 pollen,
+        uint256 sap,
+        uint256 nectar
+    ) external;
 }
