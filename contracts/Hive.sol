@@ -184,18 +184,19 @@ contract Hive {
         pollen += sharedPollen;
         sap += sharedSap;
 
-        bee.modifyBeeTraits(
-            _tokenId,
-            _energy - energyDeduction,
-            _health,
-            _productivity + 100, // Add productivity after forage
-            _attack,
-            _defense,
-            _forage,
-            _pollen + pollenGathered - sharedPollen,
-            _sap + sapGathered - sharedSap,
-            _nectar + nectarGathered - sharedNectar
-        );
+        IBuzzkillNFT.BeeTraits memory _beeTraits = IBuzzkillNFT.BeeTraits({
+            energy: _energy - energyDeduction,
+            health: _health,
+            productivity: _productivity + 100, // Add productivity after forage
+            attack: _attack,
+            defense: _defense,
+            forage: _forage,
+            pollen: _pollen + pollenGathered - sharedPollen,
+            sap: _sap + sapGathered - sharedSap,
+            nectar: _nectar + nectarGathered - sharedNectar
+        });
+
+        bee.modifyBeeTraits(_tokenId, _beeTraits);
 
         emit ForageFinished(
             _tokenId,
