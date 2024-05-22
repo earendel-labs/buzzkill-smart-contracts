@@ -12,6 +12,10 @@ interface IWorldMap {
         uint256 habitatId
     ) external view returns (uint256);
 
+    function getAmountProductivityBoostAfterForage(
+        uint256 habitatId
+    ) external view returns (uint256);
+
     function forage(
         uint256 tokenId,
         uint256 habitatId

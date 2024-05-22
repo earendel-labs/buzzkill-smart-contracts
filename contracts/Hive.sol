@@ -25,7 +25,8 @@ contract Hive {
         uint256 tokenId,
         uint256 nectar,
         uint256 pollen,
-        uint256 sap
+        uint256 sap,
+        uint256 productivityEarned
     );
 
     /* -------------------------------------------------------------------------- */
@@ -47,8 +48,11 @@ contract Hive {
     uint256 public nectar;
     uint256 public pollen;
     uint256 public sap;
+    uint256 public hiveProductivity;
     mapping(uint256 => bool) public isBeeInAction;
-    mapping(uint256 => address) public BeeStakers;
+    mapping(uint256 => address) public beeStakers;
+    mapping(uint256 => uint256) public beeProductivity;
+
     IBuzzkillAddressProvider public buzzkillAddressProvider;
 
     /* -------------------------------------------------------------------------- */
@@ -72,7 +76,67 @@ contract Hive {
         isBeeInAction[tokenId] = false;
     }
 
-    function stakeNFT(uint256 tokenId) external {
+    /* -------------------------------------------------------------------------- */
+    /*  View Functions                                                            */
+    /* -------------------------------------------------------------------------- */
+
+    /**
+     * @dev Get the hive information.
+     * @return The number of queens, workers, and the honey pot in the hive.
+     */
+    function getHiveInfo() external view returns (uint256, uint256, uint256) {
+        return (numQueens, numWorkers, honeyPot);
+    }
+
+    /**
+     * @dev Get the hive resources.
+     * @return The nectar, pollen, and sap resources in the hive.
+     */
+    function getHiveResources()
+        external
+        view
+        returns (uint256, uint256, uint256)
+    {
+        return (nectar, pollen, sap);
+    }
+
+    /**
+     * @dev Get the hive pool multiplier. The hive pool multiplier is calculated based on the hive abundance and productivity.
+     * @return The hive pool multiplier.
+     */
+    function getHivePoolMultiplier() external view returns (uint256) {
+        uint256 hiveAbdunace = getHiveAbdunace();
+        return
+            hiveProductivity /
+            BASE_DENOMINATOR +
+            (hiveAbdunace * 10_000) /
+            BASE_DENOMINATOR; // Currently fix constant at 1
+    }
+
+    /**
+        * @dev Get the hive abundance. The hive abundance is calculated based on the resources in the hive.
+        Necatar contributes 20%, pollen contributes 30%, and sap contributes 50%.
+        * @return The hive abundance.
+     */
+    function getHiveAbdunace() internal view returns (uint256) {
+        return
+            (nectar * 2000) /
+            (BASE_DENOMINATOR * BASE_DENOMINATOR) +
+            (pollen * 3000) /
+            (BASE_DENOMINATOR * BASE_DENOMINATOR) +
+            (sap * 5000) /
+            (BASE_DENOMINATOR * BASE_DENOMINATOR);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*  Logic Functions                                                           */
+    /* -------------------------------------------------------------------------- */
+
+    /**
+     * @dev Stake a Bee NFT to the hive. The hive can only have a maximum of 3 queens and 55 workers.
+     * @param _tokenId The Bee NFT token ID.
+     */
+    function stakeNFT(uint256 _tokenId) external {
         if (numQueens >= MAX_QUEEN) {
             revert MaxQueenReached();
         }
@@ -85,7 +149,7 @@ contract Hive {
             buzzkillAddressProvider.buzzkillNFTAddress()
         ); // Interface to interact with the Buzzkill NFT contract
         (, string memory beeType) = buzzkillNFT.tokenIdToCharacteristics(
-            tokenId
+            _tokenId
         );
 
         if (_isQueen(beeType)) {
@@ -96,21 +160,27 @@ contract Hive {
             revert InvalidNFTType();
         }
 
-        BeeStakers[tokenId] = msg.sender;
-        buzzkillNFT.safeTransferFrom(msg.sender, address(this), tokenId);
+        beeStakers[_tokenId] = msg.sender;
+        beeProductivity[_tokenId] = 0;
 
-        emit NFTStaked(tokenId);
+        buzzkillNFT.safeTransferFrom(msg.sender, address(this), _tokenId);
+
+        emit NFTStaked(_tokenId);
     }
 
-    function unstake(uint256 tokenId) external {
-        if (msg.sender != BeeStakers[tokenId]) {
+    /**
+     * @dev Unstake a Bee NFT from the hive.
+     * @param _tokenId The Bee NFT token ID.
+     */
+    function unstake(uint256 _tokenId) external {
+        if (msg.sender != beeStakers[_tokenId]) {
             revert NotBeeOwner();
         }
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
         (, string memory beeType) = buzzkillNFT.tokenIdToCharacteristics(
-            tokenId
+            _tokenId
         );
 
         if (_isQueen(beeType)) {
@@ -119,10 +189,13 @@ contract Hive {
             numWorkers--;
         }
 
-        BeeStakers[tokenId] = address(0);
-        buzzkillNFT.safeTransferFrom(address(this), msg.sender, tokenId);
+        hiveProductivity -= beeProductivity[_tokenId];
+        beeStakers[_tokenId] = address(0);
+        beeProductivity[_tokenId] = 0;
 
-        emit NFTUnstaked(tokenId);
+        buzzkillNFT.safeTransferFrom(address(this), msg.sender, _tokenId);
+
+        emit NFTUnstaked(_tokenId);
     }
 
     /**
@@ -135,24 +208,17 @@ contract Hive {
         uint256 _tokenId,
         uint256 _habitatId
     ) external onlyOneAction(_tokenId) {
-        if (msg.sender != BeeStakers[_tokenId]) {
+        if (msg.sender != beeStakers[_tokenId]) {
             revert NotBeeOwner();
         }
 
-        IBuzzkillNFT bee = IBuzzkillNFT(
+        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
-        (
-            uint256 _energy,
-            uint256 _health,
-            uint256 _productivity,
-            uint256 _attack,
-            uint256 _defense,
-            uint256 _forage,
-            uint256 _pollen,
-            uint256 _sap,
-            uint256 _nectar
-        ) = bee.tokenIdToTraits(_tokenId);
+
+        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
+            _tokenId
+        );
 
         IWorldMap worldMap = IWorldMap(
             buzzkillAddressProvider.worldMapAddress()
@@ -162,7 +228,7 @@ contract Hive {
             _habitatId
         );
 
-        if (_energy < energyDeduction) {
+        if (beeTraits.energy < energyDeduction) {
             revert InsufficientEnergy();
         }
 
@@ -172,37 +238,39 @@ contract Hive {
             uint256 sapGathered
         ) = worldMap.forage(_tokenId, _habitatId);
 
+        uint256 productivityEarned = worldMap
+            .getAmountProductivityBoostAfterForage(_habitatId);
+
         // 5% of the gathered resources are added to the hive
-        uint256 sharedNectar = (nectarGathered * FORAGE_PERCENTAGE) /
+        nectar += (nectarGathered * FORAGE_PERCENTAGE) / BASE_DENOMINATOR;
+        pollen += (pollenGathered * FORAGE_PERCENTAGE) / BASE_DENOMINATOR;
+        sap += (sapGathered * FORAGE_PERCENTAGE) / BASE_DENOMINATOR;
+        hiveProductivity += productivityEarned;
+
+        beeTraits.energy -= energyDeduction;
+        beeTraits.pollen +=
+            pollenGathered -
+            (pollenGathered * FORAGE_PERCENTAGE) /
             BASE_DENOMINATOR;
-        uint256 sharedPollen = (pollenGathered * FORAGE_PERCENTAGE) /
+        beeTraits.sap +=
+            sapGathered -
+            (sapGathered * FORAGE_PERCENTAGE) /
             BASE_DENOMINATOR;
-        uint256 sharedSap = (sapGathered * FORAGE_PERCENTAGE) /
+        beeTraits.nectar +=
+            nectarGathered -
+            (nectarGathered * FORAGE_PERCENTAGE) /
             BASE_DENOMINATOR;
 
-        nectar += sharedNectar;
-        pollen += sharedPollen;
-        sap += sharedSap;
+        beeProductivity[_tokenId] += productivityEarned;
 
-        IBuzzkillNFT.BeeTraits memory _beeTraits = IBuzzkillNFT.BeeTraits({
-            energy: _energy - energyDeduction,
-            health: _health,
-            productivity: _productivity + 100, // Add productivity after forage
-            attack: _attack,
-            defense: _defense,
-            forage: _forage,
-            pollen: _pollen + pollenGathered - sharedPollen,
-            sap: _sap + sapGathered - sharedSap,
-            nectar: _nectar + nectarGathered - sharedNectar
-        });
-
-        bee.modifyBeeTraits(_tokenId, _beeTraits);
+        buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
 
         emit ForageFinished(
             _tokenId,
             nectarGathered,
             pollenGathered,
-            sapGathered
+            sapGathered,
+            productivityEarned
         );
     }
 
@@ -210,15 +278,15 @@ contract Hive {
 
     function collectHoney() public {}
 
-    function depositHoney(uint256 amount) external {
-        honeyPot += amount;
-    }
+    /* -------------------------------------------------------------------------- */
+    /*  Private Functions                                                            */
+    /* -------------------------------------------------------------------------- */
 
-    function withdrawHoney(uint256 amount) external {
-        require(amount <= honeyPot, "Insufficient honey balance");
-        honeyPot -= amount;
-    }
-
+    /**
+     * @dev Check if the bee is a queen.
+     * @param beeType The bee type.
+     * @return bool True if the bee is a queen, false otherwise.
+     */
     function _isQueen(string memory beeType) private pure returns (bool) {
         if (keccak256(bytes(beeType)) == keccak256(bytes("Queen"))) {
             return true;
@@ -226,6 +294,11 @@ contract Hive {
         return false;
     }
 
+    /**
+     * @dev Check if the bee is a worker.
+     * @param beeType The bee type.
+     * @return bool True if the bee is a worker, false otherwise.
+     */
     function _isWorker(string memory beeType) private pure returns (bool) {
         if (keccak256(bytes(beeType)) == keccak256(bytes("Worker"))) {
             return true;

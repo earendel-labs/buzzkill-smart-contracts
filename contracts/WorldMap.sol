@@ -17,6 +17,7 @@ contract WorldMap is Ownable {
     error InvalidHealthDeductionValue();
     error HiveOnly();
     error HabitatNotExists();
+    error NotEnoughResources();
 
     /* -------------------------------------------------------------------------- */
     /*  Events                                                                    */
@@ -25,16 +26,24 @@ contract WorldMap is Ownable {
         uint256 habitatId,
         uint256 nectar,
         uint256 pollen,
-        uint256 sap
+        uint256 sap,
+        uint256 energyDeductionAfterForage,
+        uint256 productivityBoostAfterForage
     );
 
     /* -------------------------------------------------------------------------- */
     /*  Struct                                                                    */
     /* -------------------------------------------------------------------------- */
-    struct Habitat {
+    struct HabitatResources {
         uint256 nectar;
         uint256 pollen;
         uint256 sap;
+    }
+
+    struct HabitatInfo {
+        uint256 lastRefreshTime;
+        uint256 energyDeductionAfterForage;
+        uint256 productivityBoostAfterForage;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -60,10 +69,9 @@ contract WorldMap is Ownable {
     /* -------------------------------------------------------------------------- */
     uint256 public currentHabitatId;
     uint256 public resourcesDecreasePercentage = 500; // The percentage of resources that decrease after foraging, default is 5%
-    mapping(uint256 => uint256) public lastRefreshTime; // Time tracking for automatic refresh each habitat
-    mapping(uint256 => uint256) public energyDeductionAfterForage;
-    mapping(uint256 => Habitat) public habitats;
-    mapping(uint256 => Habitat) public initialHabitatResources;
+    mapping(uint256 => HabitatInfo) public habitatsInfo;
+    mapping(uint256 => HabitatResources) public habitatsResources;
+    mapping(uint256 => HabitatResources) public initialHabitatResources;
 
     IBuzzkillAddressProvider public buzzkillAddressProvider;
 
@@ -99,7 +107,7 @@ contract WorldMap is Ownable {
     function getHabitatResources(
         uint256 _habitatId
     ) external view returns (uint256, uint256, uint256) {
-        Habitat storage habitat = habitats[_habitatId];
+        HabitatResources storage habitat = habitatsResources[_habitatId];
         return (habitat.nectar, habitat.pollen, habitat.sap);
     }
 
@@ -111,7 +119,32 @@ contract WorldMap is Ownable {
     function getAmountEnergyDeductionAfterForage(
         uint256 _habitatId
     ) external view returns (uint256) {
-        return energyDeductionAfterForage[_habitatId];
+        HabitatInfo storage habitat = habitatsInfo[_habitatId];
+        return habitat.energyDeductionAfterForage;
+    }
+
+    /**
+     * @dev Get the initial resources in a habitat.
+     * @param _habitatId The habitat ID.
+     * @return The amount of nectar, pollen, and sap in the habitat.
+     */
+    function getInitialHabitatResources(
+        uint256 _habitatId
+    ) external view returns (uint256, uint256, uint256) {
+        HabitatResources storage habitat = initialHabitatResources[_habitatId];
+        return (habitat.nectar, habitat.pollen, habitat.sap);
+    }
+
+    /**
+     * @dev Get the amount of productivity boost after foraging in a habitat.
+     * @param _habitatId The habitat ID.
+     * @return The amount of productivity boost after foraging.
+     */
+    function getAmountProductivityBoostAfterForage(
+        uint256 _habitatId
+    ) external view returns (uint256) {
+        HabitatInfo storage habitat = habitatsInfo[_habitatId];
+        return habitat.productivityBoostAfterForage;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -140,14 +173,18 @@ contract WorldMap is Ownable {
      * @param _habitatId The habitat ID.
      */
     function _refreshResourceCoefficientsIfNeed(uint256 _habitatId) private {
-        uint256 timeElapsed = block.timestamp - lastRefreshTime[_habitatId];
+        uint256 lastRefreshTime = habitatsInfo[_habitatId].lastRefreshTime;
+        uint256 timeElapsed = block.timestamp - lastRefreshTime;
+
         if (timeElapsed >= refreshInterval) {
             // Calculate the number of intervals that have passed
             uint256 intervalsPassed = timeElapsed / refreshInterval;
-            lastRefreshTime[_habitatId] += intervalsPassed * refreshInterval;
+            habitatsInfo[_habitatId].lastRefreshTime +=
+                intervalsPassed *
+                refreshInterval;
 
             // Reset to initial values or new values as needed
-            habitats[_habitatId] = initialHabitatResources[_habitatId];
+            habitatsResources[_habitatId] = initialHabitatResources[_habitatId];
         }
     }
 
@@ -165,36 +202,90 @@ contract WorldMap is Ownable {
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
-        (, , , , , uint256 forageSkill, , , ) = buzzkillNFT.tokenIdToTraits(
+        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
             _beeId
         );
+
+        uint256 forageSkill = beeTraits.forage;
 
         require(forageSkill > 0, "Bee must have a foraging skill set");
 
         // Refresh resource coefficients if needed
         _refreshResourceCoefficientsIfNeed(_habitatId);
-        Habitat storage habitat = habitats[_habitatId];
-        uint256 nectar = habitat.nectar;
-        uint256 pollen = habitat.pollen;
-        uint256 sap = habitat.sap;
+
+        HabitatResources storage habitatResources = habitatsResources[
+            _habitatId
+        ];
+
+        uint256 nectar = habitatResources.nectar;
+        uint256 pollen = habitatResources.pollen;
+        uint256 sap = habitatResources.sap;
+
+        // Check if the resources are smaller than the minimum amount
+        if (
+            nectar < MIN_RESOURCES_VALUE &&
+            pollen < MIN_RESOURCES_VALUE &&
+            sap < MIN_RESOURCES_VALUE
+        ) {
+            revert NotEnoughResources();
+        }
 
         uint256 R = random();
+        uint256 nectarGathered;
+        uint256 pollenGathered;
+        uint256 sapGathered;
 
-        // Calculate the amount of resources gathered
-        uint256 nectarGathered = (forageSkill * nectar * R * Cn) /
-            BASE_DENOMINATOR;
-        uint256 pollenGathered = (forageSkill * pollen * R * Cp) /
-            BASE_DENOMINATOR;
-        uint256 sapGathered = (forageSkill * sap * R * Cs) / BASE_DENOMINATOR;
+        // Calculate the amount of resources gathered and decrease the resources in the habitat
+        if (nectar >= MIN_RESOURCES_VALUE) {
+            nectarGathered =
+                (forageSkill * nectar * R * Cn) /
+                (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
 
-        // Decrease the resources in the habitat after foraging, currently 5%
-        habitat.nectar -=
-            (nectar * resourcesDecreasePercentage) /
-            BASE_DENOMINATOR;
-        habitat.pollen -=
-            (pollen * resourcesDecreasePercentage) /
-            BASE_DENOMINATOR;
-        habitat.sap -= (sap * resourcesDecreasePercentage) / BASE_DENOMINATOR;
+            uint256 decreaseNectar = (nectar * resourcesDecreasePercentage) /
+                BASE_DENOMINATOR;
+            if (habitatResources.nectar > decreaseNectar) {
+                habitatResources.nectar -=
+                    (nectar * resourcesDecreasePercentage) /
+                    BASE_DENOMINATOR;
+            } else {
+                habitatResources.nectar = 0;
+            }
+        }
+
+        if (pollen >= MIN_RESOURCES_VALUE) {
+            pollenGathered =
+                (forageSkill * pollen * R * Cn) /
+                (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
+
+            uint256 decreasePollen = (pollen * resourcesDecreasePercentage) /
+                BASE_DENOMINATOR;
+
+            if (habitatResources.pollen > decreasePollen) {
+                habitatResources.pollen -=
+                    (pollen * resourcesDecreasePercentage) /
+                    BASE_DENOMINATOR;
+            } else {
+                habitatResources.pollen = 0;
+            }
+        }
+
+        if (sap >= MIN_RESOURCES_VALUE) {
+            sapGathered =
+                (forageSkill * sap * R * Cn) /
+                (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
+
+            uint256 decreaseSap = (sap * resourcesDecreasePercentage) /
+                BASE_DENOMINATOR;
+
+            if (habitatResources.sap > decreaseSap) {
+                habitatResources.sap -=
+                    (sap * resourcesDecreasePercentage) /
+                    BASE_DENOMINATOR;
+            } else {
+                habitatResources.sap = 0;
+            }
+        }
+
         return (nectarGathered, pollenGathered, sapGathered);
     }
 
@@ -208,12 +299,14 @@ contract WorldMap is Ownable {
      * @param pollen The amount of pollen in the habitat.
      * @param sap The amount of sap in the habitat.
      * @param _energyDeductionAfterForage The energy deduction after foraging.
+     * @param _productivityBoostAfterForage The productivity boost after foraging.
      */
     function addHabitat(
         uint256 nectar,
         uint256 pollen,
         uint256 sap,
-        uint256 _energyDeductionAfterForage
+        uint256 _energyDeductionAfterForage,
+        uint256 _productivityBoostAfterForage
     ) external onlyOwner {
         if (nectar < MIN_RESOURCES_VALUE || nectar > MAX_RESOURCES_VALUE) {
             revert InvalidNectarValue();
@@ -224,13 +317,33 @@ contract WorldMap is Ownable {
         if (sap < MIN_RESOURCES_VALUE || sap > MAX_RESOURCES_VALUE) {
             revert InvalidSapValue();
         }
+
         uint256 newHabitatId = currentHabitatId;
-        habitats[newHabitatId] = Habitat(nectar, pollen, sap);
-        initialHabitatResources[newHabitatId] = Habitat(nectar, pollen, sap);
-        energyDeductionAfterForage[newHabitatId] = _energyDeductionAfterForage;
+
+        // Habitat resources are initialized with the nectar, pollen, and sap values
+        habitatsResources[newHabitatId] = HabitatResources(nectar, pollen, sap);
+        initialHabitatResources[newHabitatId] = HabitatResources(
+            nectar,
+            pollen,
+            sap
+        );
+        // Habitat info is initialized with the energy deduction and productivity boost values
+        habitatsInfo[newHabitatId] = HabitatInfo(
+            block.timestamp,
+            _energyDeductionAfterForage,
+            _productivityBoostAfterForage
+        );
+
         currentHabitatId++;
 
-        emit HabitatAdded(newHabitatId, nectar, pollen, sap);
+        emit HabitatAdded(
+            newHabitatId,
+            nectar,
+            pollen,
+            sap,
+            _energyDeductionAfterForage,
+            _productivityBoostAfterForage
+        );
     }
 
     /**

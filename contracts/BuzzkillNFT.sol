@@ -47,7 +47,6 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     struct BeeTraits {
         uint256 energy;
         uint256 health;
-        uint256 productivity;
         uint256 attack;
         uint256 defense;
         uint256 forage;
@@ -102,36 +101,6 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     /* -------------------------------------------------------------------------- */
 
     /**
-     * @dev Generates a bee image in SVG format for a given token ID.
-     * @param tokenId The ID of the token.
-     * @return The SVG image encoded as a base64 string.
-     */
-    // function generateBeeImage(
-    //     uint256 tokenId
-    // ) public view returns (string memory) {
-    //     bytes memory svg = abi.encodePacked(
-    //         '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350">',
-    //         "<style>.base { fill: white; font-family: serif; font-size: 14px; }</style>",
-    //         '<rect width="100%" height="100%" fill="black" />',
-    //         '<text x="50%" y="40%" class="base" dominant-baseline="middle" text-anchor="middle">',
-    //         "Warrior",
-    //         "</text>",
-    //         '<text x="50%" y="50%" class="base" dominant-baseline="middle" text-anchor="middle">',
-    //         "Traits: ",
-    //         getTraits(tokenId),
-    //         "</text>",
-    //         "</svg>"
-    //     );
-    //     return
-    //         string(
-    //             abi.encodePacked(
-    //                 "data:image/svg+xml;base64,",
-    //                 Base64.encode(svg)
-    //             )
-    //         );
-    // }
-
-    /**
      * @dev Retrieves the token URI for a given token ID.
      * @param tokenId The ID of the token.
      * @return The token URI as a string.
@@ -143,37 +112,38 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
             tokenId
         ];
         BeeTraits memory beeTraits = tokenIdToTraits[tokenId];
-        bytes memory dataURI = abi.encodePacked(
-            "{",
-            '"name": "Bee #',
-            tokenId.toString(),
-            '",',
-            '"description": "Buzzkill NFT",',
-            '"image": "',
-            beeCharacteristics.avatar,
-            '"',
-            '"type": "',
-            beeCharacteristics.beeType,
-            '"',
-            '"energy": "',
-            beeTraits.energy.toString(),
-            '"',
-            '"health": "',
-            beeTraits.health.toString(),
-            '"',
-            '"productivity": "',
-            beeTraits.productivity.toString(),
-            '"',
-            '"attack": "',
-            beeTraits.attack.toString(),
-            '"',
-            '"defense": "',
-            beeTraits.defense.toString(),
-            '"',
-            '"forage": "',
-            beeTraits.forage.toString(),
-            '"',
-            "}"
+        bytes memory dataURI = bytes.concat(
+            abi.encodePacked(
+                "{",
+                '"name": "Bee #',
+                tokenId.toString(),
+                '",',
+                '"description": "Buzzkill NFT",',
+                '"image": "',
+                beeCharacteristics.avatar,
+                '"',
+                '"type": "',
+                beeCharacteristics.beeType,
+                '"',
+                '"energy": "'
+            ),
+            abi.encodePacked(
+                beeTraits.energy.toString(),
+                '"',
+                '"health": "',
+                beeTraits.health.toString(),
+                '"',
+                '"attack": "',
+                beeTraits.attack.toString(),
+                '"',
+                '"defense": "',
+                beeTraits.defense.toString(),
+                '"',
+                '"forage": "',
+                beeTraits.forage.toString(),
+                '"',
+                "}"
+            )
         );
         return
             string(
@@ -184,6 +154,10 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
             );
     }
 
+    /**
+     * @dev Retrieves the token URI for a given token ID.
+     * @param tokenId The ID of the token.
+     */
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
@@ -227,7 +201,6 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 100,
                 100,
                 100,
-                100,
                 0,
                 0,
                 0
@@ -238,7 +211,6 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Queen"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                200,
                 200,
                 200,
                 200,
@@ -258,6 +230,12 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         return newTokenId;
     }
 
+    /**
+     * @dev Modifies the traits of a bee token.
+     * Only the Hive contract can call this function.
+     * @param tokenId The ID of the token to modify.
+     * @param _beeTraits The new traits to set.
+     */
     function modifyBeeTraits(
         uint256 tokenId,
         BeeTraits calldata _beeTraits

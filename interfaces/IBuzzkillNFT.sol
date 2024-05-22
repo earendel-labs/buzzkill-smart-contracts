@@ -7,7 +7,6 @@ interface IBuzzkillNFT is IVRC725 {
     struct BeeTraits {
         uint256 energy;
         uint256 health;
-        uint256 productivity;
         uint256 attack;
         uint256 defense;
         uint256 forage;
@@ -30,20 +29,7 @@ interface IBuzzkillNFT is IVRC725 {
 
     function tokenIdToTraits(
         uint256 tokenId
-    )
-        external
-        view
-        returns (
-            uint256 energy,
-            uint256 health,
-            uint256 productivity,
-            uint256 attack,
-            uint256 defense,
-            uint256 forage,
-            uint256 pollen,
-            uint256 sap,
-            uint256 nectar
-        );
+    ) external view returns (BeeTraits memory _beeTraits);
 
     function modifyBeeTraits(
         uint256 tokenId,

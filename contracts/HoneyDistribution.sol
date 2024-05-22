@@ -6,16 +6,28 @@ import "../interfaces/IHive.sol";
 import "../interfaces/IBuzzkillAddressProvider.sol";
 
 contract HoneyDistribution {
+    /* -------------------------------------------------------------------------- */
+    /*  Errors                                                                    */
+    /* -------------------------------------------------------------------------- */
     error HiveOnly();
 
+    /* -------------------------------------------------------------------------- */
+    /*  State variables                                                           */
+    /* -------------------------------------------------------------------------- */
     IBuzzkillAddressProvider private buzzkillAddressProvider;
 
+    /* -------------------------------------------------------------------------- */
+    /*  Constructor                                                               */
+    /* -------------------------------------------------------------------------- */
     constructor(address _buzzkillAddressProvider) {
         buzzkillAddressProvider = IBuzzkillAddressProvider(
             _buzzkillAddressProvider
         );
     }
 
+    /* -------------------------------------------------------------------------- */
+    /*  Modifiers                                                                 */
+    /* -------------------------------------------------------------------------- */
     modifier onlyHive() {
         IHive hive = IHive(msg.sender);
         if (hive.creator() != buzzkillAddressProvider.hiveFactoryAddress()) {
@@ -24,6 +36,9 @@ contract HoneyDistribution {
         _;
     }
 
+    /* -------------------------------------------------------------------------- */
+    /*  Functions                                                                 */
+    /* -------------------------------------------------------------------------- */
     function distributeHoney(
         address recipient,
         uint256 amount
