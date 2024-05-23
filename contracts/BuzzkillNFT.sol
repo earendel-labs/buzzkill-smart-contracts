@@ -56,17 +56,23 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     }
 
     /* -------------------------------------------------------------------------- */
-    /* State Variables                                                            */
+    /*  Constants                                                                 */
     /* -------------------------------------------------------------------------- */
     uint256 public constant MAX_SUPPLY = 10_000;
     uint256 public constant MIN_FEE = 0.00044 ether;
     uint256 public constant MAX_FEE = 5 ether;
+    uint256 public constant BEE_ENERGY_REFRESH_INTERVAL = 1 days;
+
+    /* -------------------------------------------------------------------------- */
+    /* State Variables                                                            */
+    /* -------------------------------------------------------------------------- */
     uint256 public currentTokenId;
     uint256 public mintFee;
     address public hiveFactory;
     mapping(uint256 => string) public tokenURIs;
     mapping(uint256 => BeeCharacteristics) public tokenIdToCharacteristics;
     mapping(uint256 => BeeTraits) public tokenIdToTraits;
+    mapping(uint256 => uint256) public tokenIdToLastEnergyRefresh;
 
     string public constant workerBeeImage =
         "https://photos.app.goo.gl/6QWvzWw5L3DnijFs6";
@@ -155,6 +161,42 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     }
 
     /**
+     * @dev Retrieves the amount of energy refreshed for a given token ID.
+     * @param tokenId The ID of the token.
+     * @return The amount of energy refreshed.
+     */
+    function _amountEnergyRefreshed(
+        uint256 tokenId
+    ) private view returns (uint256) {
+        uint256 lastRefresh = tokenIdToLastEnergyRefresh[tokenId];
+        uint256 timeSinceLastRefresh = block.timestamp - lastRefresh;
+
+        if (timeSinceLastRefresh < BEE_ENERGY_REFRESH_INTERVAL) {
+            return 0;
+        }
+
+        uint256 energyRefreshed;
+
+        BeeCharacteristics memory beeCharacteristics = tokenIdToCharacteristics[
+            tokenId
+        ];
+
+        if (
+            keccak256(abi.encodePacked(beeCharacteristics.beeType)) ==
+            keccak256(abi.encodePacked("Worker"))
+        ) {
+            energyRefreshed = 1000;
+        } else if (
+            keccak256(abi.encodePacked(beeCharacteristics.beeType)) ==
+            keccak256(abi.encodePacked("Queen"))
+        ) {
+            energyRefreshed = 2000;
+        }
+
+        return energyRefreshed;
+    }
+
+    /**
      * @dev Retrieves the token URI for a given token ID.
      * @param tokenId The ID of the token.
      */
@@ -196,11 +238,11 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Worker"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                100,
-                100,
-                100,
-                100,
-                100,
+                10000,
+                10000,
+                1000,
+                1000,
+                1000,
                 0,
                 0,
                 0
@@ -211,11 +253,11 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Queen"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                200,
-                200,
-                200,
-                200,
-                200,
+                20000,
+                20000,
+                2000,
+                2000,
+                2000,
                 0,
                 0,
                 0
@@ -241,12 +283,24 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         BeeTraits calldata _beeTraits
     ) public onlyHive {
         require(_exists(tokenId), "Token does not exist");
-        require(
-            ownerOf(tokenId) == msg.sender,
-            "You must own this token to train it"
-        );
+        // Hive is holding the NFT
+        require(ownerOf(tokenId) == msg.sender, "Not owner");
         tokenIdToTraits[tokenId] = _beeTraits;
         tokenURIs[tokenId] = _getTokenURI(tokenId);
+    }
+
+    /**
+     * @dev Refreshes the energy of a bee token. 
+     Energy is refreshed each interval. Different bee types have different energy refresh rates.
+     * @param tokenId The ID of the token to refresh.
+     */
+    function refreshBeeEnergy(uint256 tokenId) public {
+        require(_exists(tokenId), "Token does not exist");
+        BeeTraits storage beeTraits = tokenIdToTraits[tokenId];
+        uint256 energyRefreshed = _amountEnergyRefreshed(tokenId);
+        if (energyRefreshed > 0) {
+            beeTraits.energy = energyRefreshed;
+        }
     }
 
     /* -------------------------------------------------------------------------- */

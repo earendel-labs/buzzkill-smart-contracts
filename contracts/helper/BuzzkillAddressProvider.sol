@@ -16,6 +16,7 @@ contract BuzzkillAddressProvider is
     address public honeyAddress;
     address public hiveFactoryAddress;
     address public worldMapAddress;
+    address public honeyDistributionAddress;
 
     /* -------------------------------------------------------------------------- */
     /*  Constructor                                                               */
@@ -62,5 +63,15 @@ contract BuzzkillAddressProvider is
      */
     function setWorldMapAddress(address _worldMapAddress) external onlyOwner {
         worldMapAddress = _worldMapAddress;
+    }
+
+    /**
+     * @dev Set the HoneyDistribution contract address.
+     * @param _honeyDistributionAddress The HoneyDistribution contract address.
+     */
+    function setHoneyDistributionAddress(
+        address _honeyDistributionAddress
+    ) external onlyOwner {
+        honeyDistributionAddress = _honeyDistributionAddress;
     }
 }

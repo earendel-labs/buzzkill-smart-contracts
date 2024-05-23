@@ -5,7 +5,9 @@ import "../interfaces/IHoney.sol";
 import "../interfaces/IHive.sol";
 import "../interfaces/IBuzzkillAddressProvider.sol";
 
-contract HoneyDistribution {
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract HoneyDistribution is Ownable {
     /* -------------------------------------------------------------------------- */
     /*  Errors                                                                    */
     /* -------------------------------------------------------------------------- */
@@ -14,15 +16,18 @@ contract HoneyDistribution {
     /* -------------------------------------------------------------------------- */
     /*  State variables                                                           */
     /* -------------------------------------------------------------------------- */
+    uint256 public totalHoneyDistributed;
+    uint256 public baseHoneyYield;
     IBuzzkillAddressProvider private buzzkillAddressProvider;
 
     /* -------------------------------------------------------------------------- */
     /*  Constructor                                                               */
     /* -------------------------------------------------------------------------- */
-    constructor(address _buzzkillAddressProvider) {
+    constructor(address _buzzkillAddressProvider, uint256 _baseHoneyYield) Ownable(msg.sender) {
         buzzkillAddressProvider = IBuzzkillAddressProvider(
             _buzzkillAddressProvider
         );
+        baseHoneyYield = _baseHoneyYield;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -45,5 +50,12 @@ contract HoneyDistribution {
     ) external onlyHive {
         IHoney honey = IHoney(buzzkillAddressProvider.honeyAddress());
         honey.mintTo(recipient, amount);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*  Owner function                                                            */
+    /* -------------------------------------------------------------------------- */
+    function setBaseHoneyYield(uint256 _baseHoneyYield) external onlyOwner {
+        baseHoneyYield = _baseHoneyYield;
     }
 }

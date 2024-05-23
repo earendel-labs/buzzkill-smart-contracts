@@ -9,4 +9,6 @@ interface IBuzzkillAddressProvider {
     function buzzkillNFTAddress() external view returns (address);
 
     function worldMapAddress() external view returns (address);
+
+    function honeyDistributionAddress() external view returns (address);
 }

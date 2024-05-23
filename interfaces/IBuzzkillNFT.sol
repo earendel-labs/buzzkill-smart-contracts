@@ -35,4 +35,6 @@ interface IBuzzkillNFT is IVRC725 {
         uint256 tokenId,
         BeeTraits calldata _beeTraits
     ) external;
+
+    function refreshBeeEnergy(uint256 tokenId) external;
 }
