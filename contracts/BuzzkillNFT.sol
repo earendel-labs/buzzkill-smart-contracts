@@ -50,18 +50,29 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         uint256 attack;
         uint256 defense;
         uint256 forage;
+        uint256 experience;
         uint256 pollen;
         uint256 sap;
         uint256 nectar;
     }
 
+    struct BeeStatus {
+        uint256 baseEnergy;
+        uint256 baseHealth;
+        uint256 lastEnergyRefreshTimestamp;
+        uint256 lastHealthRefreshTimestamp;
+    }
+
     /* -------------------------------------------------------------------------- */
     /*  Constants                                                                 */
     /* -------------------------------------------------------------------------- */
+    uint256 public constant BASE_DENOMINATOR = 10_000;
     uint256 public constant MAX_SUPPLY = 10_000;
     uint256 public constant MIN_FEE = 0.00044 ether;
     uint256 public constant MAX_FEE = 5 ether;
     uint256 public constant BEE_ENERGY_REFRESH_INTERVAL = 1 days;
+    uint256 public constant BEE_HEALTH_REFRESH_INTERVAL = 1 days;
+    uint256 public constant AMOUNT_TO_LEVEL_UP = 100; // 100 points per level
 
     /* -------------------------------------------------------------------------- */
     /* State Variables                                                            */
@@ -72,7 +83,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     mapping(uint256 => string) public tokenURIs;
     mapping(uint256 => BeeCharacteristics) public tokenIdToCharacteristics;
     mapping(uint256 => BeeTraits) public tokenIdToTraits;
-    mapping(uint256 => uint256) public tokenIdToLastEnergyRefresh;
+    mapping(uint256 => BeeStatus) public tokenIdToStatus;
 
     string public constant workerBeeImage =
         "https://photos.app.goo.gl/6QWvzWw5L3DnijFs6";
@@ -148,6 +159,9 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 '"forage": "',
                 beeTraits.forage.toString(),
                 '"',
+                '"experience": "',
+                beeTraits.experience.toString(),
+                '"',
                 "}"
             )
         );
@@ -168,32 +182,34 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     function _amountEnergyRefreshed(
         uint256 tokenId
     ) private view returns (uint256) {
-        uint256 lastRefresh = tokenIdToLastEnergyRefresh[tokenId];
+        uint256 lastRefresh = tokenIdToStatus[tokenId]
+            .lastEnergyRefreshTimestamp;
         uint256 timeSinceLastRefresh = block.timestamp - lastRefresh;
 
         if (timeSinceLastRefresh < BEE_ENERGY_REFRESH_INTERVAL) {
             return 0;
         }
 
-        uint256 energyRefreshed;
+        return tokenIdToStatus[tokenId].baseEnergy;
+    }
 
-        BeeCharacteristics memory beeCharacteristics = tokenIdToCharacteristics[
-            tokenId
-        ];
+    /**
+     * @dev Retrieves the amount of health refreshed for a given token ID.
+     * @param tokenId The ID of the token.
+     * @return The amount of health refreshed.
+     */
+    function _amountHealthRefreshed(
+        uint256 tokenId
+    ) private view returns (uint256) {
+        uint256 lastRefresh = tokenIdToStatus[tokenId]
+            .lastHealthRefreshTimestamp;
+        uint256 timeSinceLastRefresh = block.timestamp - lastRefresh;
 
-        if (
-            keccak256(abi.encodePacked(beeCharacteristics.beeType)) ==
-            keccak256(abi.encodePacked("Worker"))
-        ) {
-            energyRefreshed = 1000;
-        } else if (
-            keccak256(abi.encodePacked(beeCharacteristics.beeType)) ==
-            keccak256(abi.encodePacked("Queen"))
-        ) {
-            energyRefreshed = 2000;
+        if (timeSinceLastRefresh < BEE_HEALTH_REFRESH_INTERVAL) {
+            return 0;
         }
 
-        return energyRefreshed;
+        return tokenIdToStatus[tokenId].baseHealth;
     }
 
     /**
@@ -206,6 +222,16 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         _requireMinted(tokenId);
 
         return tokenURIs[tokenId];
+    }
+
+    /**
+     * @dev Retrieves the bee characteristics for a given token ID.
+     * @param tokenId The ID of the token.
+     * @return The bee characteristics.
+     */
+    function getBeeLevel(uint256 tokenId) public view returns (uint256) {
+        BeeTraits memory beeTraits = tokenIdToTraits[tokenId];
+        return beeTraits.experience / AMOUNT_TO_LEVEL_UP; // 100 points per level
     }
 
     /* -------------------------------------------------------------------------- */
@@ -238,11 +264,12 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Worker"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                10000,
-                10000,
-                1000,
-                1000,
-                1000,
+                10,
+                10,
+                1,
+                1,
+                1,
+                0,
                 0,
                 0,
                 0
@@ -253,11 +280,12 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Queen"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                20000,
-                20000,
-                2000,
-                2000,
-                2000,
+                20,
+                20,
+                2,
+                2,
+                2,
+                0,
                 0,
                 0,
                 0
@@ -280,11 +308,26 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
      */
     function modifyBeeTraits(
         uint256 tokenId,
-        BeeTraits calldata _beeTraits
+        BeeTraits memory _beeTraits
     ) public onlyHive {
         require(_exists(tokenId), "Token does not exist");
         // Hive is holding the NFT
         require(ownerOf(tokenId) == msg.sender, "Not owner");
+        // Check if bee can level up
+        if (_beeTraits.experience > tokenIdToTraits[tokenId].experience) {
+            uint256 level = getBeeLevel(tokenId);
+            uint256 newLevel = _beeTraits.experience / AMOUNT_TO_LEVEL_UP;
+            if (newLevel > level) {
+                // Level up
+                _beeTraits.energy += 5;
+                _beeTraits.health += 5;
+                _beeTraits.attack += 1;
+                _beeTraits.defense += 1;
+                _beeTraits.forage += 1;
+                IHive hive = IHive(msg.sender);
+                hive.updateHiveDefense(tokenId);
+            }
+        }
         tokenIdToTraits[tokenId] = _beeTraits;
         tokenURIs[tokenId] = _getTokenURI(tokenId);
     }
@@ -300,6 +343,20 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         uint256 energyRefreshed = _amountEnergyRefreshed(tokenId);
         if (energyRefreshed > 0) {
             beeTraits.energy = energyRefreshed;
+        }
+    }
+
+    /**
+     * @dev Refreshes the health of a bee token. 
+     Health is refreshed each interval. Different bee types have different health refresh rates.
+     * @param tokenId The ID of the token to refresh.
+     */
+    function refreshBeeHealth(uint256 tokenId) public {
+        require(_exists(tokenId), "Token does not exist");
+        BeeTraits storage beeTraits = tokenIdToTraits[tokenId];
+        uint256 healthRefreshed = _amountHealthRefreshed(tokenId);
+        if (healthRefreshed > 0) {
+            beeTraits.health = healthRefreshed;
         }
     }
 

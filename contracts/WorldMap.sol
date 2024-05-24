@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "../interfaces/IHive.sol";
 import "../interfaces/IBuzzkillNFT.sol";
@@ -50,10 +50,10 @@ contract WorldMap is Ownable {
     /*  Constants                                                                 */
     /* -------------------------------------------------------------------------- */
     uint256 public constant BASE_DENOMINATOR = 10_000; // The base denominator for the resources value
-    uint256 public constant MAX_RESOURCES_VALUE = 10_000; // The maximum density or availability of nectar, pollen, and sap in the environment is 1
-    uint256 public constant MIN_RESOURCES_VALUE = 1000; // The minimum density or availability of nectar, pollen, and sap in the environment is 0.1
-    uint256 public constant MAX_ENERGY_DEDUCTION_VALUE = 5000; // The maximum energy deduction value is 0.5
-    uint256 public constant MIN_ENERGY_DEDUCTION_VALUE = 1000; // The minimum energy deduction value is 0.1
+    uint256 public constant MAX_RESOURCES_VALUE = 1_000_000; // The maximum density or availability of nectar, pollen, and sap in the environment is 100
+    uint256 public constant MIN_RESOURCES_VALUE = 10_000; // The minimum density or availability of nectar, pollen, and sap in the environment is 1
+    uint256 public constant MAX_ENERGY_DEDUCTION_VALUE = 5; // The maximum energy deduction value is 5
+    uint256 public constant MIN_ENERGY_DEDUCTION_VALUE = 1; // The minimum energy deduction value is 1
     uint256 public constant refreshInterval = 1 days; // Resources refresh every 24 hours
 
     /**
