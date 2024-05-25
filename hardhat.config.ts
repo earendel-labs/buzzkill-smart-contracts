@@ -9,7 +9,18 @@ import "dotenv/config";
 const privateKey = process.env.PRIVATE_KEY || "";
 const ethApiKey = process.env.ETHEREUM_API_KEY || "";
 
-const config: HardhatUserConfig = {
+interface ExtendedHardhatUserConfig extends HardhatUserConfig {
+  etherscan?: {
+    apiKey: string;
+  };
+  gasReporter: {
+    enabled: boolean;
+    currency: string;
+    gasPrice: number;
+  };
+}
+
+const config: ExtendedHardhatUserConfig = {
   solidity: {
     version: "0.8.24",
     settings: {
@@ -53,7 +64,7 @@ const config: HardhatUserConfig = {
     enabled: true,
     currency: "USD",
     gasPrice: 21,
-  }
+  },
 };
 
 export default config;

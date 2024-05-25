@@ -2,12 +2,11 @@
 pragma solidity ^0.8.19;
 
 import {VRC25} from "@vrc25/contracts/VRC25.sol";
-import {VRC25Permit} from "@vrc25/contracts/VRC25Permit.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {Controllable} from "./helper/Controllable.sol";
 
-contract Honey is VRC25, VRC25Permit, Controllable, ReentrancyGuard {
+contract Honey is VRC25, Controllable, ReentrancyGuard {
     /* -------------------------------------------------------------------------- */
     /*  Errors                                                                    */
     /* -------------------------------------------------------------------------- */
