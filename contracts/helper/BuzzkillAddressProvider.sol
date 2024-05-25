@@ -2,10 +2,12 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../../interfaces/IBuzzkillAddressProvider.sol";
 
 contract BuzzkillAddressProvider is
+    Initializable,
     OwnableUpgradeable,
     IBuzzkillAddressProvider
 {
@@ -17,11 +19,12 @@ contract BuzzkillAddressProvider is
     address public hiveFactoryAddress;
     address public worldMapAddress;
     address public honeyDistributionAddress;
+    address public gameConfigAddress;
 
     /* -------------------------------------------------------------------------- */
-    /*  Constructor                                                               */
+    /*  Initilize                                                               */
     /* -------------------------------------------------------------------------- */
-    constructor() {
+    function initialize() public initializer {
         __Ownable_init(msg.sender);
     }
 
@@ -73,5 +76,15 @@ contract BuzzkillAddressProvider is
         address _honeyDistributionAddress
     ) external onlyOwner {
         honeyDistributionAddress = _honeyDistributionAddress;
+    }
+
+    /**
+     * @dev Set the GameConfig contract address.
+     * @param _gameConfigAddress The GameConfig contract address.
+     */
+    function setGameConfigAddress(
+        address _gameConfigAddress
+    ) external onlyOwner {
+        gameConfigAddress = _gameConfigAddress;
     }
 }

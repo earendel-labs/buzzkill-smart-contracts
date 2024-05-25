@@ -9,6 +9,8 @@ import {Strings as StringsLib} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 
 import "../interfaces/IHive.sol";
+import "../interfaces/IBuzzkillAddressProvider.sol";
+import "../interfaces/IGameConfig.sol";
 
 // 888888b.   888     888 8888888888P 8888888888P 888    d8P  8888888 888      888
 // 888  "88b  888     888       d88P        d88P  888   d8P     888   888      888
@@ -67,12 +69,9 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     /*  Constants                                                                 */
     /* -------------------------------------------------------------------------- */
     uint256 public constant BASE_DENOMINATOR = 10_000;
-    uint256 public constant MAX_SUPPLY = 10_000;
-    uint256 public constant MIN_FEE = 0.00044 ether;
-    uint256 public constant MAX_FEE = 5 ether;
-    uint256 public constant BEE_ENERGY_REFRESH_INTERVAL = 1 days;
-    uint256 public constant BEE_HEALTH_REFRESH_INTERVAL = 1 days;
-    uint256 public constant AMOUNT_TO_LEVEL_UP = 100; // 100 points per level
+    uint256 public constant MAX_SUPPLY = 1_000_000;
+    uint256 public constant MIN_FEE = 0.00044 ether; // Min fee on bee created
+    uint256 public constant MAX_FEE = 5 ether; // Max fee on bee created
 
     /* -------------------------------------------------------------------------- */
     /* State Variables                                                            */
@@ -80,6 +79,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     uint256 public currentTokenId;
     uint256 public mintFee;
     address public hiveFactory;
+    IBuzzkillAddressProvider public buzzkillAddressProvider;
     mapping(uint256 => string) public tokenURIs;
     mapping(uint256 => BeeCharacteristics) public tokenIdToCharacteristics;
     mapping(uint256 => BeeTraits) public tokenIdToTraits;
@@ -94,12 +94,19 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     /*  Constructor                                                               */
     /* -------------------------------------------------------------------------- */
 
-    constructor(uint256 _mintFee, address _hiveFactory) {
+    constructor(
+        uint256 _mintFee,
+        address _hiveFactory,
+        address _buzzkillAddressProvider
+    ) {
         if (_mintFee < MIN_FEE) revert MintFeeTooLow();
         if (_mintFee > MAX_FEE) revert MintFeeTooHigh();
         __VRC725_init("Buzzkill", "BZK", msg.sender);
         mintFee = _mintFee;
         hiveFactory = _hiveFactory;
+        buzzkillAddressProvider = IBuzzkillAddressProvider(
+            _buzzkillAddressProvider
+        );
     }
 
     /* -------------------------------------------------------------------------- */
@@ -182,11 +189,14 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     function _amountEnergyRefreshed(
         uint256 tokenId
     ) private view returns (uint256) {
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
         uint256 lastRefresh = tokenIdToStatus[tokenId]
             .lastEnergyRefreshTimestamp;
         uint256 timeSinceLastRefresh = block.timestamp - lastRefresh;
 
-        if (timeSinceLastRefresh < BEE_ENERGY_REFRESH_INTERVAL) {
+        if (timeSinceLastRefresh < gameConfig.beeEnergyRefreshInterval()) {
             return 0;
         }
 
@@ -201,11 +211,14 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     function _amountHealthRefreshed(
         uint256 tokenId
     ) private view returns (uint256) {
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
         uint256 lastRefresh = tokenIdToStatus[tokenId]
             .lastHealthRefreshTimestamp;
         uint256 timeSinceLastRefresh = block.timestamp - lastRefresh;
 
-        if (timeSinceLastRefresh < BEE_HEALTH_REFRESH_INTERVAL) {
+        if (timeSinceLastRefresh < gameConfig.beeHealthRefreshInterval()) {
             return 0;
         }
 
@@ -231,7 +244,10 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
      */
     function getBeeLevel(uint256 tokenId) public view returns (uint256) {
         BeeTraits memory beeTraits = tokenIdToTraits[tokenId];
-        return beeTraits.experience / AMOUNT_TO_LEVEL_UP; // 100 points per level
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        return beeTraits.experience / gameConfig.amountToLevelUp();
     }
 
     /* -------------------------------------------------------------------------- */
@@ -315,8 +331,12 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         require(ownerOf(tokenId) == msg.sender, "Not owner");
         // Check if bee can level up
         if (_beeTraits.experience > tokenIdToTraits[tokenId].experience) {
+            IGameConfig gameConfig = IGameConfig(
+                buzzkillAddressProvider.gameConfigAddress()
+            );
             uint256 level = getBeeLevel(tokenId);
-            uint256 newLevel = _beeTraits.experience / AMOUNT_TO_LEVEL_UP;
+            uint256 newLevel = _beeTraits.experience /
+                gameConfig.amountToLevelUp();
             if (newLevel > level) {
                 // Level up
                 _beeTraits.energy += 5;

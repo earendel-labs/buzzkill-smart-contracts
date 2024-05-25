@@ -11,4 +11,6 @@ interface IBuzzkillAddressProvider {
     function worldMapAddress() external view returns (address);
 
     function honeyDistributionAddress() external view returns (address);
+
+    function gameConfigAddress() external view returns (address);
 }

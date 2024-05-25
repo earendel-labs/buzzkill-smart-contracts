@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IHive.sol";
 import "../interfaces/IBuzzkillNFT.sol";
 import "../interfaces/IBuzzkillAddressProvider.sol";
+import "../interfaces/IGameConfig.sol";
 
 contract WorldMap is Ownable {
     /* -------------------------------------------------------------------------- */
@@ -50,19 +51,15 @@ contract WorldMap is Ownable {
     /*  Constants                                                                 */
     /* -------------------------------------------------------------------------- */
     uint256 public constant BASE_DENOMINATOR = 10_000; // The base denominator for the resources value
-    uint256 public constant MAX_RESOURCES_VALUE = 1_000_000; // The maximum density or availability of nectar, pollen, and sap in the environment is 100
-    uint256 public constant MIN_RESOURCES_VALUE = 10_000; // The minimum density or availability of nectar, pollen, and sap in the environment is 1
-    uint256 public constant MAX_ENERGY_DEDUCTION_VALUE = 5; // The maximum energy deduction value is 5
-    uint256 public constant MIN_ENERGY_DEDUCTION_VALUE = 1; // The minimum energy deduction value is 1
-    uint256 public constant refreshInterval = 1 days; // Resources refresh every 24 hours
 
     /**
-        Cn ,Cp ,Cs are constants that adjust the scale of resources gathered to fit the game's economy and balance.
-        These constants can be used to fine-tune how rewarding foraging feels in the game
+     * Cn ,Cp ,Cs are constants that adjust the scale of resources gathered to fit the game's economy and balance.
+     * These constants can be used to fine-tune how rewarding foraging feels in the game
+     * Make sure to adjust these constants carefully to ensure the game is not too easy or too hard
      */
-    uint256 public Cs = 10_000;
-    uint256 public Cn = 10_000;
-    uint256 public Cp = 10_000;
+    uint256 public Cs = 250_000;
+    uint256 public Cn = 250_000;
+    uint256 public Cp = 250_000;
 
     /* -------------------------------------------------------------------------- */
     /*  State variables                                                           */
@@ -173,9 +170,12 @@ contract WorldMap is Ownable {
      * @param _habitatId The habitat ID.
      */
     function _refreshResourceCoefficientsIfNeed(uint256 _habitatId) private {
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
         uint256 lastRefreshTime = habitatsInfo[_habitatId].lastRefreshTime;
         uint256 timeElapsed = block.timestamp - lastRefreshTime;
-
+        uint256 refreshInterval = gameConfig.resourcesRefreshInterval();
         if (timeElapsed >= refreshInterval) {
             // Calculate the number of intervals that have passed
             uint256 intervalsPassed = timeElapsed / refreshInterval;
@@ -193,7 +193,8 @@ contract WorldMap is Ownable {
      After each forage, the resources in the habitat decrease by 5% and bee energy is decreased.
      * @param _beeId The ID of the bee.
      * @param _habitatId The ID of the habitat.
-     * @return The amount of nectar, pollen, and sap gathered.
+     * @return The amount of nectar, pollen, and sap gathered. 
+     * The constant value ensure that the resources gathered are minimum at 20 quantity.
      */
     function forage(
         uint256 _beeId,
@@ -221,11 +222,17 @@ contract WorldMap is Ownable {
         uint256 pollen = habitatResources.pollen;
         uint256 sap = habitatResources.sap;
 
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+
+        uint256 minResourcesValue = gameConfig.minResourcesValue();
+
         // Check if the resources are smaller than the minimum amount
         if (
-            nectar < MIN_RESOURCES_VALUE &&
-            pollen < MIN_RESOURCES_VALUE &&
-            sap < MIN_RESOURCES_VALUE
+            nectar < minResourcesValue &&
+            pollen < minResourcesValue &&
+            sap < minResourcesValue
         ) {
             revert NotEnoughResources();
         }
@@ -236,14 +243,15 @@ contract WorldMap is Ownable {
         uint256 sapGathered;
 
         // Calculate the amount of resources gathered and decrease the resources in the habitat
-        if (nectar >= MIN_RESOURCES_VALUE) {
+        if (nectar >= minResourcesValue) {
             nectarGathered =
                 (forageSkill * nectar * R * Cn) /
                 (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
 
-            uint256 decreaseNectar = (nectar * resourcesDecreasePercentage) /
-                BASE_DENOMINATOR;
-            if (habitatResources.nectar > decreaseNectar) {
+            if (
+                habitatResources.nectar >
+                (nectar * resourcesDecreasePercentage) / BASE_DENOMINATOR
+            ) {
                 habitatResources.nectar -=
                     (nectar * resourcesDecreasePercentage) /
                     BASE_DENOMINATOR;
@@ -252,15 +260,15 @@ contract WorldMap is Ownable {
             }
         }
 
-        if (pollen >= MIN_RESOURCES_VALUE) {
+        if (pollen >= minResourcesValue) {
             pollenGathered =
                 (forageSkill * pollen * R * Cn) /
                 (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
 
-            uint256 decreasePollen = (pollen * resourcesDecreasePercentage) /
-                BASE_DENOMINATOR;
-
-            if (habitatResources.pollen > decreasePollen) {
+            if (
+                habitatResources.pollen >
+                (pollen * resourcesDecreasePercentage) / BASE_DENOMINATOR
+            ) {
                 habitatResources.pollen -=
                     (pollen * resourcesDecreasePercentage) /
                     BASE_DENOMINATOR;
@@ -269,15 +277,15 @@ contract WorldMap is Ownable {
             }
         }
 
-        if (sap >= MIN_RESOURCES_VALUE) {
+        if (sap >= minResourcesValue) {
             sapGathered =
                 (forageSkill * sap * R * Cn) /
                 (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
 
-            uint256 decreaseSap = (sap * resourcesDecreasePercentage) /
-                BASE_DENOMINATOR;
-
-            if (habitatResources.sap > decreaseSap) {
+            if (
+                habitatResources.sap >
+                (sap * resourcesDecreasePercentage) / BASE_DENOMINATOR
+            ) {
                 habitatResources.sap -=
                     (sap * resourcesDecreasePercentage) /
                     BASE_DENOMINATOR;
@@ -308,13 +316,19 @@ contract WorldMap is Ownable {
         uint256 _energyDeductionAfterForage,
         uint256 _productivityBoostAfterForage
     ) external onlyOwner {
-        if (nectar < MIN_RESOURCES_VALUE || nectar > MAX_RESOURCES_VALUE) {
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        uint256 minResourcesValue = gameConfig.minResourcesValue();
+        uint256 maxResourcesValue = gameConfig.maxResourcesValue();
+
+        if (nectar < minResourcesValue || nectar > maxResourcesValue) {
             revert InvalidNectarValue();
         }
-        if (pollen < MIN_RESOURCES_VALUE || pollen > MAX_RESOURCES_VALUE) {
+        if (pollen < minResourcesValue || pollen > maxResourcesValue) {
             revert InvalidPollenValue();
         }
-        if (sap < MIN_RESOURCES_VALUE || sap > MAX_RESOURCES_VALUE) {
+        if (sap < minResourcesValue || sap > maxResourcesValue) {
             revert InvalidSapValue();
         }
 
@@ -344,29 +358,5 @@ contract WorldMap is Ownable {
             _energyDeductionAfterForage,
             _productivityBoostAfterForage
         );
-    }
-
-    /**
-     * @dev Set the Cs constant.
-     * @param _Cs The Cs constant.
-     */
-    function setCs(uint256 _Cs) external onlyOwner {
-        Cs = _Cs;
-    }
-
-    /**
-     * @dev Set the Cn constant.
-     * @param _Cn The Cn constant.
-     */
-    function setCn(uint256 _Cn) external onlyOwner {
-        Cn = _Cn;
-    }
-
-    /**
-     * @dev Set the Cp constant.
-     * @param _Cp The Cp constant.
-     */
-    function setCp(uint256 _Cp) external onlyOwner {
-        Cp = _Cp;
     }
 }
