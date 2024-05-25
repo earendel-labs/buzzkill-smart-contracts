@@ -193,13 +193,23 @@ contract WorldMap is Ownable {
      After each forage, the resources in the habitat decrease by 5% and bee energy is decreased.
      * @param _beeId The ID of the bee.
      * @param _habitatId The ID of the habitat.
-     * @return The amount of nectar, pollen, and sap gathered. 
+     * @return nectarGathered The amount of nectar gathered.
+     * pollenGathered The amount of pollen gathered.
+     * sapGathered The amount of sap gathered.
      * The constant value ensure that the resources gathered are minimum at 20 quantity.
      */
     function forage(
         uint256 _beeId,
         uint256 _habitatId
-    ) external onlyHive returns (uint256, uint256, uint256) {
+    )
+        external
+        onlyHive
+        returns (
+            uint256 nectarGathered,
+            uint256 pollenGathered,
+            uint256 sapGathered
+        )
+    {
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
@@ -238,9 +248,6 @@ contract WorldMap is Ownable {
         }
 
         uint256 R = random();
-        uint256 nectarGathered;
-        uint256 pollenGathered;
-        uint256 sapGathered;
 
         // Calculate the amount of resources gathered and decrease the resources in the habitat
         if (nectar >= minResourcesValue) {
