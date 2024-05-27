@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-function getContracts(network: string): ContractAddresses {
+export function getContracts(network: string): ContractAddresses {
     let json: string;
     try {
         const env: string = process.env.NODE_ENV || '';
@@ -24,7 +24,7 @@ interface ContractAddresses {
     };
 }
 
-function saveContract(network: string, contract: string, address: string): void {
+export function saveContract(network: string, contract: string, address: string): void {
     const env: string = process.env.NODE_ENV || '';
 
     const addresses: ContractAddresses = getContracts(network);
@@ -38,8 +38,3 @@ function saveContract(network: string, contract: string, address: string): void 
         JSON.stringify(addresses, null, "    ")
     );
 }
-
-module.exports = {
-  getContracts,
-  saveContract,
-};

@@ -137,7 +137,7 @@ contract Hive {
      * @return The hive pool multiplier.
      */
     function getHivePoolMultiplier() public view returns (uint256) {
-        uint256 hiveAbdunace = getHiveAbdunace();
+        uint256 hiveAbdunace = getHiveAbundance();
         return hiveProductivity + (hiveAbdunace * 10_000) / BASE_DENOMINATOR; // Currently fix constant at 1
     }
 
@@ -146,7 +146,7 @@ contract Hive {
      Necatar contributes 20%, pollen contributes 30%, and sap contributes 50%.
      * @return The hive abundance.
      */
-    function getHiveAbdunace() internal view returns (uint256) {
+    function getHiveAbundance() internal view returns (uint256) {
         return
             ((nectar * 2000) / BASE_DENOMINATOR) +
             ((pollen * 3000) / BASE_DENOMINATOR) +

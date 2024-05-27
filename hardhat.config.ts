@@ -1,4 +1,4 @@
-import { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/types";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-foundry";
 import "@nomicfoundation/hardhat-ignition-ethers";
@@ -10,13 +10,15 @@ const privateKey = process.env.PRIVATE_KEY || "";
 
 interface ExtendedHardhatUserConfig extends HardhatUserConfig {
   etherscan?: {
-    apiKey: string;
+    apiKey: any;
+    customChains?: any;
   };
   gasReporter: {
     enabled: boolean;
     currency: string;
     gasPrice: number;
   };
+  namedAccounts: any;
 }
 
 const config: ExtendedHardhatUserConfig = {
@@ -55,7 +57,30 @@ const config: ExtendedHardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: "tomoscan2023",
+    apiKey: {
+      sepolia: "",
+      Viction: "tomoscan2023",
+      victiontestnet: "tomoscan2023",
+    },
+    customChains: [
+      {
+        network: "Viction",
+        chainId: 88, // for mainnet
+        urls: {
+          apiURL: "https://www.vicscan.xyz/api/contract/hardhat/verify", // for mainnet
+          browserURL: "https://vicscan.xyz", // for mainnet
+        },
+      },
+      {
+        network: "victiontestnet",
+        chainId: 89, // for testnet
+        urls: {
+          apiURL:
+            "https://scan-api-testnet.viction.xyz/api/contract/hardhat/verify", // for testnet
+          browserURL: "https://www.testnet.vicscan.xyz", // for testnet
+        },
+      },
+    ],
   },
   contractSizer: {
     alphaSort: true,
@@ -66,6 +91,21 @@ const config: ExtendedHardhatUserConfig = {
     enabled: true,
     currency: "USD",
     gasPrice: 21,
+  },
+  typechain: {
+    outDir: "./types",
+    target: "ethers-v6",
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0,
+    },
+  },
+  paths: {
+    artifacts: "artifacts",
+    cache: "cache",
+    sources: "contracts",
+    tests: "test",
   },
 };
 

@@ -1,0 +1,153 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0x0e86bBb3971ab643b4d56825905Ca013177764d4",
+      "txHash": "0x483532a76759b4fddc5ec703c94bd5572972026ece070ce21800cacdeb137561",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xa19526cD0611c53375721E5F4DA955fFF8e84C70",
+      "txHash": "0xe8426c76108b80b479609bd011b7313621809e1ef82ca6c54d182120957a3e6d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x7E4D505648F64549671f99C3335d7745122B7787",
+      "txHash": "0xb993140d0b1695cc76e4c411309b513b45b941aad70ed0b81a73fbe044b0fae9",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "10bd3b492f96f8e108ec67fba134586b59f4fd618d5ce3ab958cdaf051e66c30": {
+      "address": "0x33dB92a0e1BBB133B0D173bd802F26dFe38F79F9",
+      "txHash": "0xefd8d97100c5c7fb9b08ffd58d83a50bf65102f62ea727100e561a966bd246a2",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "buzzkillNFTAddress",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:17"
+          },
+          {
+            "label": "honeyAddress",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:18"
+          },
+          {
+            "label": "hiveFactoryAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:19"
+          },
+          {
+            "label": "worldMapAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:20"
+          },
+          {
+            "label": "honeyDistributionAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:21"
+          },
+          {
+            "label": "gameConfigAddress",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:22"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)65_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
