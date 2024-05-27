@@ -253,7 +253,7 @@ contract WorldMap is Ownable {
         if (nectar >= minResourcesValue) {
             nectarGathered =
                 (forageSkill * nectar * R * Cn) /
-                (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
+                (BASE_DENOMINATOR * BASE_DENOMINATOR);
 
             if (
                 habitatResources.nectar >
@@ -270,7 +270,7 @@ contract WorldMap is Ownable {
         if (pollen >= minResourcesValue) {
             pollenGathered =
                 (forageSkill * pollen * R * Cn) /
-                (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
+                (BASE_DENOMINATOR * BASE_DENOMINATOR);
 
             if (
                 habitatResources.pollen >
@@ -287,7 +287,7 @@ contract WorldMap is Ownable {
         if (sap >= minResourcesValue) {
             sapGathered =
                 (forageSkill * sap * R * Cn) /
-                (BASE_DENOMINATOR * BASE_DENOMINATOR * BASE_DENOMINATOR);
+                (BASE_DENOMINATOR * BASE_DENOMINATOR);
 
             if (
                 habitatResources.sap >
@@ -310,9 +310,9 @@ contract WorldMap is Ownable {
 
     /**
      * @dev Add a habitat to the world map.
-     * @param nectar The amount of nectar in the habitat.
-     * @param pollen The amount of pollen in the habitat.
-     * @param sap The amount of sap in the habitat.
+     * @param nectar The amount of nectar in the habitat. Range from 1 to 100
+     * @param pollen The amount of pollen in the habitat. Range from 1 to 100
+     * @param sap The amount of sap in the habitat. Range from 1 to 100
      * @param _energyDeductionAfterForage The energy deduction after foraging.
      * @param _productivityBoostAfterForage The productivity boost after foraging.
      */

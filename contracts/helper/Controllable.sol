@@ -8,7 +8,10 @@ abstract contract Controllable {
 
     /// @notice Require the caller to be the controller
     modifier onlyController() {
-        require(_isController[msg.sender], "Controller: Caller is not the controller");
+        require(
+            _isController[msg.sender],
+            "Controller: Caller is not the controller"
+        );
         _;
     }
 

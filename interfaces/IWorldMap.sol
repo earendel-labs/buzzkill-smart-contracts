@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 interface IWorldMap {
-    function habitatId() external view returns (uint256);
+    function currentHabitatId() external view returns (uint256);
 
     function getHabitat(
         uint256 habitatId

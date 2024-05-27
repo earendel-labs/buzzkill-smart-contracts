@@ -1,13 +1,12 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-foundry";
+import "@nomicfoundation/hardhat-ignition-ethers";
 import "@openzeppelin/hardhat-upgrades";
 import "hardhat-contract-sizer";
-
-import "dotenv/config";
+require("dotenv").config();
 
 const privateKey = process.env.PRIVATE_KEY || "";
-const ethApiKey = process.env.ETHEREUM_API_KEY || "";
 
 interface ExtendedHardhatUserConfig extends HardhatUserConfig {
   etherscan?: {
@@ -43,17 +42,20 @@ const config: ExtendedHardhatUserConfig = {
       url: `https://rpc-testnet.viction.xyz`,
       accounts: [privateKey],
       chainId: 89,
-      gasPrice: 1000000000,
-      timeout: 20000,
     },
     viction: {
       url: `https://rpc.viction.xyz`,
       accounts: [privateKey],
       chainId: 88,
     },
+    sepolia: {
+      accounts: [privateKey as string],
+      url: "https://rpc-sepolia.rockx.com/",
+      chainId: 11155111,
+    },
   },
   etherscan: {
-    apiKey: ethApiKey,
+    apiKey: "tomoscan2023",
   },
   contractSizer: {
     alphaSort: true,

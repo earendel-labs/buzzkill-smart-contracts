@@ -25,6 +25,7 @@ interface IGameConfig {
     function maxEnergyDeductionValue() external view returns (uint256);
     function minEnergyDeductionValue() external view returns (uint256);
     function resourcesRefreshInterval() external view returns (uint256);
+    function baseHoneyYield() external view returns (uint256);
     function Cs() external view returns (uint256);
     function Cn() external view returns (uint256);
     function Cp() external view returns (uint256);

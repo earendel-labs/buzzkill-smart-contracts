@@ -11,9 +11,9 @@ interface IBuzzkillNFT is IVRC725 {
         uint256 defense;
         uint256 forage;
         uint256 experience;
+        uint256 nectar;
         uint256 pollen;
         uint256 sap;
-        uint256 nectar;
     }
 
     function currentTokenId() external view returns (uint256);

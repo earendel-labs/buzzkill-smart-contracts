@@ -53,9 +53,9 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         uint256 defense;
         uint256 forage;
         uint256 experience;
+        uint256 nectar;
         uint256 pollen;
         uint256 sap;
-        uint256 nectar;
     }
 
     struct BeeStatus {
@@ -119,6 +119,16 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         }
         _;
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*  Fallback function                                                         */
+    /* -------------------------------------------------------------------------- */
+
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
+
+    // Fallback function is called when msg.data is not empty
+    fallback() external payable {}
 
     /* -------------------------------------------------------------------------- */
     /*  View Functions                                                            */
@@ -243,11 +253,23 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
      * @return The bee characteristics.
      */
     function getBeeLevel(uint256 tokenId) public view returns (uint256) {
-        BeeTraits memory beeTraits = tokenIdToTraits[tokenId];
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
-        return beeTraits.experience / gameConfig.amountToLevelUp();
+        uint256 beeExperience = tokenIdToTraits[tokenId].experience;
+
+        return beeExperience / gameConfig.amountToLevelUp();
+    }
+
+    /**
+     * @dev Retrieves the bee characteristics for a given token ID.
+     * @param tokenId The ID of the token.
+     * @return The bee characteristics.
+     */
+    function getBeeTraits(
+        uint256 tokenId
+    ) public view returns (BeeTraits memory) {
+        return tokenIdToTraits[tokenId];
     }
 
     /* -------------------------------------------------------------------------- */

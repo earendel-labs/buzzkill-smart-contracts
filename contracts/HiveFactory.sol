@@ -41,15 +41,15 @@ contract HiveFactory {
      * @param habitatId The habitat ID.
      * @return The hive ID.
      */
-    function createHive(uint256 habitatId) external returns (uint256) {
+    function createHive(uint256 habitatId) external returns (address) {
         address worldMap = buzzkillAddressProvider.worldMapAddress();
-        uint256 maxHabitatId = IWorldMap(worldMap).habitatId();
+        uint256 maxHabitatId = IWorldMap(worldMap).currentHabitatId();
         if (habitatId >= maxHabitatId) {
             revert HabitatNotExists();
         }
         Hive newHive = new Hive(habitatId, address(buzzkillAddressProvider));
         totalHives++;
         emit HiveCreated(totalHives, address(newHive));
-        return totalHives;
+        return address(newHive);
     }
 }

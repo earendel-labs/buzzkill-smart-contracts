@@ -616,7 +616,7 @@
   dependencies:
     chalk "^2.4.2"
 
-"@nomicfoundation/hardhat-ignition-ethers@^0.15.0":
+"@nomicfoundation/hardhat-ignition-ethers@^0.15.4":
   version "0.15.4"
   resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-ignition-ethers/-/hardhat-ignition-ethers-0.15.4.tgz#6c11ce93329478a987658c1cfe74f477d8c881c4"
   integrity sha512-vY30V4b788GSziW/nOd0L/4IPw6mwpluahLs4+gPUUKWaHHGMA8OIeHaYpRRljM1i0M/Kg1yIozrDM/aeRebkg==
