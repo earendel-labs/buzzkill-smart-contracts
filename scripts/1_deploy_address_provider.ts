@@ -8,7 +8,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   let nonce = await deployer.getNonce();
 
-  console.log("Deploying contracts with the account:", deployer.getAddress());
+  console.log("Deploying contract with the account:", deployer.getAddress());
 
   const network = hre.network.name;
 
@@ -16,22 +16,27 @@ async function main() {
     "BuzzkillAddressProvider"
   );
 
-  // Deploy contract
+  // Deploy contract, for the first time deployment
+  // Upgradeable contract will deploy: ProxyAdmin, TransparentUpgradeableProxy, and BuzzkillAddressProvider implementation contract
+  // So it is important to set nonce to +3 in order to avoid nonce too low error
   const buzzkillAddressProvider = await upgrades.deployProxy(
     BuzzkillAddressProvider,
     [],
     {
-      txOverrides: { gasLimit: "0x5000000", nonce: nonce + 2 },
+      txOverrides: { gasLimit: "0x5000000", nonce: nonce + 3 },
     }
   );
   await buzzkillAddressProvider.waitForDeployment();
+
   const buzzkillAddressProviderContract =
     await buzzkillAddressProvider.getAddress();
+
   saveContract(
     network,
     "buzzkillAddressProvider",
     buzzkillAddressProviderContract
   );
+
   console.log(
     "Buzzkill Address Provider contract deployed to:",
     buzzkillAddressProviderContract

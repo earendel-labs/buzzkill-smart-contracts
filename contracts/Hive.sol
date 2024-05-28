@@ -628,7 +628,7 @@ contract Hive {
      * This function handles the raid mechanics, comparing raid power and hive defense, and deducts honey if the raid is successful.
      * Can only be called by the hive contract.
      * @param _tokenId The Bee NFT token ID initiating the raid.
-     * @return The amount of honey successfully raided.
+     * @return The amount of honey raided.
      * @notice Reverts if the bee is not outside the hive.
      */
     function endureRaid(uint256 _tokenId) external onlyHive returns (uint256) {

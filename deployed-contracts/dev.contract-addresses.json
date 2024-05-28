@@ -1,0 +1,11 @@
+{
+    "test_viction": {
+        "buzzkillAddressProvider": "0x0e86bBb3971ab643b4d56825905Ca013177764d4",
+        "gameConfig": "0xAc9a615c8a1c852541832CD1cC7f6811A64AB7AE",
+        "honey": "0xAf6094DA0FFE90c113fEC59C1c444f9102f50108",
+        "honeyDistribution": "0x7aCd20234DFC1c970e9A48Cba5331F4801E33B72",
+        "worldMap": "0x1E55F59eD556bA8106a4A079F58115A48D4281ed",
+        "hiveFactory": "0x3E3a949B5b1768f0bA907757578545fad61B388e",
+        "buzzkillNFT": "0xCE5BCee06A3759b7DE08664bB60dAc56D010C3C0"
+    }
+}

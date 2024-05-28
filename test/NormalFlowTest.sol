@@ -36,7 +36,7 @@ contract NormalFlowTest is Test {
         buzzkillAddressProvider = new BuzzkillAddressProvider();
         buzzkillAddressProvider.initialize();
 
-        // Deploy game config contract
+        // Deploy and initilize game config contract
         gameConfig = new GameConfig();
         gameConfig.initialize();
 

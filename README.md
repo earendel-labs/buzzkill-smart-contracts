@@ -14,8 +14,8 @@ Players can stake their bee NFTs in different hives. Each hive has unique charac
 
 The project is structured into various directories:
 
-- `lib/`: Libraries including `forge-std`, `openzeppelin-contracts`, `vrc25`, and `vrc725`.
-- `script/`: Deployment scripts for game components.
+- `lib/`: Libraries including `forge-std`, `vrc25`, and `vrc725`.
+- `scripts/`: Deployment scripts for game components.
 - `src/`: Main Solidity contracts for NFTs, reward tokens, utilities, and the vault.
 - `test/`: Test files for the smart contracts.
 
@@ -28,6 +28,8 @@ The project is structured into various directories:
   - `mintTo`: Mint new NFTs.
   - `burn`: Burn existing NFTs.
   - `withdrawPayments`: Withdraw payments.
+  - `upgradeAttack`, `upgradeDefense`, `upgradeForaging`: Enhance bee traits.
+  - `initializeBeeTraits`: Set initial traits for a bee.
   - Other administrative functions like `pause`, `unpause`, and price updates.
 
 #### Reward Token Contract (`Honey`)
@@ -39,20 +41,12 @@ The project is structured into various directories:
   - `setControllers`: Manage controllers of the token.
   - VRC25 functions such as `balanceOf` and `transferFrom` for token balance and transfer.
 
-#### Vault Contract (`HiveVaultV1`)
+#### Hive Contract (`Hive`)
 
 - **Purpose**: Handles staking logic and reward distribution.
 - **Key Functions**:
   - `stakeBee` and `unstakeBee`: Stake and unstake bees in hives.
-  - `claim`: Claim accumulated honey tokens.
+  - `collect`: Claim accumulated honey tokens.
   - `getHiveTraits`: Get traits of a specific hive.
-  - Other functions for hive management and reward calculation.
-
-#### Bee Skills Contract (`BeeSkills`)
-
-- **Purpose**: Manages character traits for each NFT.
-- **Status**: Work in progress.
-- **Key Functions**:
-  - `upgradeAttack`, `upgradeDefense`, `upgradeForaging`: Enhance bee traits.
   - `raidAHive`: Raid a hive for rewards.
-  - `initializeBeeTraits`: Set initial traits for a bee.
+  - Other functions for hive management and reward calculation.
