@@ -32,6 +32,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     uint256 public minEnergyDeductionValue; // The minimum energy deduction value is 1
     uint256 public resourcesRefreshInterval; // Resources refresh every 24 hours
     uint256 public baseHoneyYield; // Base amount of honey yield each epoch
+    uint256 public baseIncentivePerEpoch; // Base amount of incentive per epoch
     /**
      * Cn ,Cp ,Cs are constants that adjust the scale of resources gathered to fit the game's economy and balance.
      * These constants can be used to fine-tune how rewarding foraging feels in the game
@@ -109,6 +110,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         minEnergyDeductionValue = 1;
         resourcesRefreshInterval = 1 days;
         baseHoneyYield = 1 ether;
+        baseIncentivePerEpoch = 20;
         Cs = 25_000;
         Cn = 25_000;
         Cp = 25_000;
@@ -359,6 +361,17 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
      */
     function setBaseHoneyYield(uint256 _baseHoneyYield) external onlyOwner {
         baseHoneyYield = _baseHoneyYield;
+    }
+
+    /**
+     * @dev Set the base incentive per epoch.
+     * This function updates the base incentive that the hive produces.
+     * @param _baseIncentivePerEpoch The base incentive per epoch.
+     */
+    function setBaseIncentivePerEpoch(
+        uint256 _baseIncentivePerEpoch
+    ) external onlyOwner {
+        baseIncentivePerEpoch = _baseIncentivePerEpoch;
     }
 
     /**

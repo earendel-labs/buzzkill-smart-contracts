@@ -58,6 +58,7 @@ contract Hive {
         address owner;
         uint256 beeId;
         uint256 beeProductivity;
+        uint256 beeWorkIncentive;
         uint256 beeDefense;
         uint256 lastClaimedBlock;
     }
@@ -82,6 +83,8 @@ contract Hive {
     uint256 public hiveDefense;
     uint256 public availableHoneyInHive;
     uint256 public lastAvailableHoneyUpdateBlock;
+    uint256 public hiveTotalIncentive;
+    uint256 public lastBaseIncentiveUpdateBlock;
     mapping(uint256 => bool) public isBeeInAction;
     mapping(uint256 => BeeStatus) public beeStatus;
 
@@ -208,10 +211,18 @@ contract Hive {
         ) {
             return 0;
         }
-        uint256 currentBeeProductivity = beeStatus[_tokenId].beeProductivity;
+
+        uint256 hiveEpochPassed = (block.number -
+            lastBaseIncentiveUpdateBlock) / ONE_EPOCH;
+        uint256 hiveBaseIncentive = (gameConfig.baseIncentivePerEpoch() *
+            hiveEpochPassed *
+            (numWorkers + numQueens * 2));
+        uint256 _hiveTotalIncentive = hiveBaseIncentive + hiveTotalIncentive;
 
         uint256 claimableHoney = (currentAvailableHoney *
-            currentBeeProductivity) / hiveProductivity;
+            (getBeeBaseIncentive(_tokenId, lastClaimedBlock) +
+                beeStatus[_tokenId].currentBeeWorkIncentive)) /
+            hiveTotalIncentive;
 
         return claimableHoney;
     }
@@ -332,6 +343,7 @@ contract Hive {
             owner: msg.sender,
             beeId: _tokenId,
             beeProductivity: 0,
+            beeWorkIncentive: 0,
             beeDefense: beeTraits.defense,
             lastClaimedBlock: block.number
         });
@@ -394,15 +406,22 @@ contract Hive {
         }
 
         hiveProductivity -= beeStatus[_tokenId].beeProductivity;
+        hiveTotalIncentive =
+            hiveTotalIncentive -
+            getBeeBaseIncentive(_tokenId, beeStatus[_tokenId].lastClaimedBlock) -
+            beeStatus[_tokenId].beeWorkIncentive;
         hiveDefense -= beeStatus[_tokenId].beeDefense;
+        
         if (hiveProductivity == 0 && availableHoneyInHive > 0) {
             lastAvailableHoneyUpdateBlock = block.number;
             availableHoneyInHive = 0;
         }
+
         beeStatus[_tokenId] = BeeStatus({
             owner: address(0),
             beeId: 0,
             beeProductivity: 0,
+            beeWorkIncentive: 0,
             beeDefense: 0,
             lastClaimedBlock: 0
         });
@@ -739,7 +758,32 @@ contract Hive {
     }
 
     /* -------------------------------------------------------------------------- */
-    /*  Private Functions                                                            */
+    /*  Internal Functions                                                        */
+    /* -------------------------------------------------------------------------- */
+    function getBeeBaseIncentive(
+        uint256 _tokenId,
+        uint256 _lastUpdateTimestamp
+    ) internal view returns (uint256) {
+        uint256 epochPassed = (block.number - _lastUpdateTimestamp) / ONE_EPOCH;
+        (, string memory beeType) = buzzkillNFT.tokenIdToCharacteristics(
+            _tokenId
+        );
+        uint256 currentBeeBaseIncentive;
+        if (_isQueen(beeType)) {
+            currentBeeBaseIncentive =
+                gameConfig.baseIncentivePerEpoch() *
+                epochPassed *
+                2;
+        } else {
+            currentBeeBaseIncentive =
+                gameConfig.baseIncentivePerEpoch() *
+                epochPassed;
+        }
+        return currentBeeBaseIncentive;
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*  Private Functions                                                         */
     /* -------------------------------------------------------------------------- */
 
     /**
@@ -800,9 +844,16 @@ contract Hive {
 
         uint256 hiveMultiplier = getHivePoolMultiplier();
         uint256 baseHoneyYield = gameConfig.baseHoneyYield();
-        uint256 epochPassed = (block.number - lastAvailableHoneyUpdateBlock) /
-            ONE_EPOCH;
-        if (epochPassed == 0) {
+        uint256 epochPassedSinceLastUpdateHoney = (block.number -
+            lastAvailableHoneyUpdateBlock) / ONE_EPOCH;
+
+        uint256 epochPassedSinceLastUpdateBaseIncentive = (block.number -
+            lastBaseIncentiveUpdateBlock) / ONE_EPOCH;
+
+        if (
+            epochPassedSinceLastUpdateHoney == 0 &&
+            epochPassedSinceLastUpdateBaseIncentive == 0
+        ) {
             return;
         }
 
@@ -810,9 +861,16 @@ contract Hive {
             hiveMultiplier *
             gameConfig.honeyYieldConstant()) / BASE_DENOMINATOR;
 
-        availableHoneyInHive += honeyProduced * epochPassed;
+        availableHoneyInHive += honeyProduced * epochPassedSinceLastUpdateHoney;
+
+        uint256 baseIncentiveDistribute = gameConfig.baseIncentivePerEpoch() *
+            epochPassedSinceLastUpdateBaseIncentive *
+            (numWorkers + numQueens * 2);
+
+        hiveTotalIncentive += baseIncentiveDistribute;
 
         lastAvailableHoneyUpdateBlock = block.number;
+        lastBaseIncentiveUpdateBlock = block.number;
     }
 
     /* -------------------------------------------------------------------------- */

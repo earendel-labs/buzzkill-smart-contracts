@@ -26,6 +26,7 @@ interface IGameConfig {
     function minEnergyDeductionValue() external view returns (uint256);
     function resourcesRefreshInterval() external view returns (uint256);
     function baseHoneyYield() external view returns (uint256);
+    function baseIncentivePerEpoch() external view returns (uint256);
     function Cs() external view returns (uint256);
     function Cn() external view returns (uint256);
     function Cp() external view returns (uint256);
@@ -73,6 +74,8 @@ interface IGameConfig {
     function setResourcesRefreshInterval(
         uint256 _resourcesRefreshInterval
     ) external;
+    function setBaseHoneyYield(uint256 _baseHoneyYield) external;
+    function setBaseIncentivePerEpoch(uint256 _baseIncentivePerEpoch) external;
     function setCs(uint256 _Cs) external;
     function setCn(uint256 _Cn) external;
     function setCp(uint256 _Cp) external;
