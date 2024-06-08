@@ -221,8 +221,8 @@ contract Hive {
 
         uint256 claimableHoney = (currentAvailableHoney *
             (getBeeBaseIncentive(_tokenId, lastClaimedBlock) +
-                beeStatus[_tokenId].currentBeeWorkIncentive)) /
-            hiveTotalIncentive;
+                beeStatus[_tokenId].beeWorkIncentive)) /
+            _hiveTotalIncentive;
 
         return claimableHoney;
     }
@@ -408,10 +408,13 @@ contract Hive {
         hiveProductivity -= beeStatus[_tokenId].beeProductivity;
         hiveTotalIncentive =
             hiveTotalIncentive -
-            getBeeBaseIncentive(_tokenId, beeStatus[_tokenId].lastClaimedBlock) -
+            getBeeBaseIncentive(
+                _tokenId,
+                beeStatus[_tokenId].lastClaimedBlock
+            ) -
             beeStatus[_tokenId].beeWorkIncentive;
         hiveDefense -= beeStatus[_tokenId].beeDefense;
-        
+
         if (hiveProductivity == 0 && availableHoneyInHive > 0) {
             lastAvailableHoneyUpdateBlock = block.number;
             availableHoneyInHive = 0;
@@ -740,11 +743,17 @@ contract Hive {
             revert NotEnoughNectarToCollect();
         }
 
-        uint256 currentBeeProductivity = beeStatus[_tokenId].beeProductivity;
+        uint256 currentBeeBaseIncentive = getBeeBaseIncentive(
+            _tokenId,
+            beeStatus[_tokenId].lastClaimedBlock
+        );
+        uint256 currentBeeWorkIncentive = beeStatus[_tokenId].beeWorkIncentive;
+        uint256 beeTotalIncentive = currentBeeBaseIncentive +
+            currentBeeWorkIncentive;
 
         beeStatus[_tokenId].lastClaimedBlock = block.number;
-        beeStatus[_tokenId].beeProductivity = 0;
-        hiveProductivity -= currentBeeProductivity;
+        beeStatus[_tokenId].beeWorkIncentive = 0;
+        hiveTotalIncentive -= beeTotalIncentive;
 
         availableHoneyInHive -= claimableHoney;
 
@@ -765,10 +774,16 @@ contract Hive {
         uint256 _lastUpdateTimestamp
     ) internal view returns (uint256) {
         uint256 epochPassed = (block.number - _lastUpdateTimestamp) / ONE_EPOCH;
+        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
+            buzzkillAddressProvider.buzzkillNFTAddress()
+        );
         (, string memory beeType) = buzzkillNFT.tokenIdToCharacteristics(
             _tokenId
         );
         uint256 currentBeeBaseIncentive;
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
         if (_isQueen(beeType)) {
             currentBeeBaseIncentive =
                 gameConfig.baseIncentivePerEpoch() *
