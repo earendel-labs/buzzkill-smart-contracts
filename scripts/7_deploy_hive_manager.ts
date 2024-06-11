@@ -12,8 +12,8 @@ async function main() {
   const network = hre.network.name;
   const contracts = getContracts(network)[network];
 
-  const HiveFactory = await ethers.getContractFactory("HiveFactory");
-  const hiveFactory = await HiveFactory.deploy(
+  const HiveManager = await ethers.getContractFactory("HiveManager");
+  const hiveManager = await HiveManager.deploy(
     contracts.buzzkillAddressProvider,
     {
       gasLimit: "0x5000000",
@@ -21,19 +21,19 @@ async function main() {
     }
   );
 
-  await hiveFactory.waitForDeployment();
+  await hiveManager.waitForDeployment();
 
-  const hiveFactoryContract = await hiveFactory.getAddress();
+  const hiveManagerContract = await hiveManager.getAddress();
 
   console.log(
-    "Hive Factory contract deployed to address:",
-    hiveFactoryContract
+    "Hive Manager contract deployed to address:",
+    hiveManagerContract
   );
 
-  saveContract(network, "hiveFactory", hiveFactoryContract);
+  saveContract(network, "hiveManager", hiveManagerContract);
 
   await hre.run("verify:verify", {
-    address: hiveFactoryContract,
+    address: hiveManagerContract,
     constructorArguments: [contracts.buzzkillAddressProvider],
   });
 

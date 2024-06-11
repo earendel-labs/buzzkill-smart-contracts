@@ -8,7 +8,7 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings as StringsLib} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 
-import "../interfaces/IHive.sol";
+import "../interfaces/IHiveManager.sol";
 import "../interfaces/IBuzzkillAddressProvider.sol";
 import "../interfaces/IGameConfig.sol";
 
@@ -78,7 +78,6 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     /* -------------------------------------------------------------------------- */
     uint256 public currentTokenId;
     uint256 public mintFee;
-    address public hiveFactory;
     IBuzzkillAddressProvider public buzzkillAddressProvider;
     mapping(uint256 => string) public tokenURIs;
     mapping(uint256 => BeeCharacteristics) public tokenIdToCharacteristics;
@@ -96,14 +95,12 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
 
     constructor(
         uint256 _mintFee,
-        address _hiveFactory,
         address _buzzkillAddressProvider
     ) {
         if (_mintFee < MIN_FEE) revert MintFeeTooLow();
         if (_mintFee > MAX_FEE) revert MintFeeTooHigh();
         __VRC725_init("Buzzkill", "BZK", msg.sender);
         mintFee = _mintFee;
-        hiveFactory = _hiveFactory;
         buzzkillAddressProvider = IBuzzkillAddressProvider(
             _buzzkillAddressProvider
         );
@@ -113,8 +110,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     /*  Modifier                                                                  */
     /* -------------------------------------------------------------------------- */
     modifier onlyHive() {
-        IHive hive = IHive(msg.sender);
-        if (hive.creator() != hiveFactory) {
+        if (msg.sender != buzzkillAddressProvider.hiveManagerAddress()) {
             revert HiveOnly();
         }
         _;
@@ -345,6 +341,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
      * @param _beeTraits The new traits to set.
      */
     function modifyBeeTraits(
+        uint256 hiveId,
         uint256 tokenId,
         BeeTraits memory _beeTraits
     ) public onlyHive {
@@ -366,8 +363,8 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 _beeTraits.attack += 1;
                 _beeTraits.defense += 1;
                 _beeTraits.forage += 1;
-                IHive hive = IHive(msg.sender);
-                hive.updateHiveDefense(tokenId);
+                IHiveManager hiveManager = IHiveManager(buzzkillAddressProvider.hiveManagerAddress());
+                hiveManager.updateHiveDefense(hiveId, tokenId);
             }
         }
         tokenIdToTraits[tokenId] = _beeTraits;
@@ -425,15 +422,6 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         if (_mintFee < MIN_FEE) revert MintFeeTooLow();
         if (_mintFee > MAX_FEE) revert MintFeeTooHigh();
         mintFee = _mintFee;
-    }
-
-    /**
-     * @dev Sets the Hive Factory address for the contract.
-     * Only the contract owner can call this function.
-     * @param _hiveFactory The new Hive Factory address to set.
-     */
-    function setHiveFactoryAddress(address _hiveFactory) external onlyOwner {
-        hiveFactory = _hiveFactory;
     }
 
     /**

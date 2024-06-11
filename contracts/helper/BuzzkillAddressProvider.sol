@@ -16,7 +16,7 @@ contract BuzzkillAddressProvider is
     /* -------------------------------------------------------------------------- */
     address public buzzkillNFTAddress;
     address public honeyAddress;
-    address public hiveFactoryAddress;
+    address public hiveManagerAddress;
     address public worldMapAddress;
     address public honeyDistributionAddress;
     address public gameConfigAddress;
@@ -51,13 +51,13 @@ contract BuzzkillAddressProvider is
     }
 
     /**
-     * @dev Set the HiveFactory contract address.
-     * @param _hiveFactoryAddress The HiveFactory contract address.
+     * @dev Set the HiveManager contract address.
+     * @param _hiveManagerAddress The HiveManager contract address.
      */
-    function setHiveFactoryAddress(
-        address _hiveFactoryAddress
+    function setHiveManagerAddress(
+        address _hiveManagerAddress
     ) external onlyOwner {
-        hiveFactoryAddress = _hiveFactoryAddress;
+        hiveManagerAddress = _hiveManagerAddress;
     }
 
     /**

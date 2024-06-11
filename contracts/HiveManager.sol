@@ -1,18 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
 import "../interfaces/IHoneyDistribution.sol";
 import "../interfaces/IBuzzkillNFT.sol";
 import "../interfaces/IWorldMap.sol";
 import "../interfaces/IBuzzkillAddressProvider.sol";
-import "../interfaces/IHive.sol";
+import "../interfaces/IHiveManager.sol";
 import "../interfaces/IHoney.sol";
 import "../interfaces/IGameConfig.sol";
 
-contract Hive {
+contract HiveManager is Initializable {
     /* -------------------------------------------------------------------------- */
     /*  Errors                                                                    */
     /* -------------------------------------------------------------------------- */
+    error HabitatNotExists();
     error InvalidNFTType();
     error MaxQueenReached();
     error MaxWorkerReached();
@@ -29,17 +32,17 @@ contract Hive {
     error InsufficientHealth();
     error InsufficientHoney();
     error InsufficientSap();
+    error HiveNotExists();
 
     /* -------------------------------------------------------------------------- */
     /*  Events                                                                    */
     /* -------------------------------------------------------------------------- */
+    event HiveCreated(uint256 hiveId, uint256 habitatId);
     event NFTStaked(uint256 tokenId);
     event NFTUnstaked(uint256 tokenId);
+    event ResourcesCollected(uint256 nectar, uint256 pollen, uint256 sap);
     event ForageFinished(
         uint256 tokenId,
-        uint256 nectar,
-        uint256 pollen,
-        uint256 sap,
         uint256 productivityEarned,
         uint256 experienceEarned
     );
@@ -63,6 +66,21 @@ contract Hive {
         uint256 lastClaimedBlock;
     }
 
+    struct Hive {
+        uint256 habitatId;
+        uint256 numQueens;
+        uint256 numWorkers;
+        uint256 nectar;
+        uint256 pollen;
+        uint256 sap;
+        uint256 hiveProductivity;
+        uint256 hiveDefense;
+        uint256 availableHoneyInHive;
+        uint256 lastAvailableHoneyUpdateBlock;
+        uint256 hiveTotalIncentive;
+        uint256 lastBaseIncentiveUpdateBlock;
+    }
+
     /* -------------------------------------------------------------------------- */
     /*  Constants                                                                 */
     /* -------------------------------------------------------------------------- */
@@ -72,30 +90,17 @@ contract Hive {
     /* -------------------------------------------------------------------------- */
     /*  State Variables                                                           */
     /* -------------------------------------------------------------------------- */
-    address public creator;
-    uint256 public habitatId;
-    uint256 public numQueens;
-    uint256 public numWorkers;
-    uint256 public nectar;
-    uint256 public pollen;
-    uint256 public sap;
-    uint256 public hiveProductivity;
-    uint256 public hiveDefense;
-    uint256 public availableHoneyInHive;
-    uint256 public lastAvailableHoneyUpdateBlock;
-    uint256 public hiveTotalIncentive;
-    uint256 public lastBaseIncentiveUpdateBlock;
-    mapping(uint256 => bool) public isBeeInAction;
-    mapping(uint256 => BeeStatus) public beeStatus;
+    uint256 public totalHives;
+    mapping(uint256 => Hive) public hives;
+    mapping(uint256 => mapping(uint256 => bool)) public isBeeInAction;
+    mapping(uint256 => mapping(uint256 => BeeStatus)) public beeStatus;
 
     IBuzzkillAddressProvider public buzzkillAddressProvider;
 
     /* -------------------------------------------------------------------------- */
     /*  Constructor                                                               */
     /* -------------------------------------------------------------------------- */
-    constructor(uint256 _habitatId, address _buzzkillAddressProvider) {
-        creator = msg.sender;
-        habitatId = _habitatId;
+    function initialize(address _buzzkillAddressProvider) public initializer {
         buzzkillAddressProvider = IBuzzkillAddressProvider(
             _buzzkillAddressProvider
         );
@@ -104,16 +109,15 @@ contract Hive {
     /* -------------------------------------------------------------------------- */
     /*  Modifiers                                                                 */
     /* -------------------------------------------------------------------------- */
-    modifier onlyOneAction(uint256 tokenId) {
-        if (isBeeInAction[tokenId]) revert BeeAlreadyInAction();
-        isBeeInAction[tokenId] = true;
+    modifier onlyOneAction(uint256 hiveId, uint256 tokenId) {
+        if (isBeeInAction[hiveId][tokenId]) revert BeeAlreadyInAction();
+        isBeeInAction[hiveId][tokenId] = true;
         _;
-        isBeeInAction[tokenId] = false;
+        isBeeInAction[hiveId][tokenId] = false;
     }
 
     modifier onlyHive() {
-        IHive hive = IHive(msg.sender);
-        if (hive.creator() != creator) {
+        if (msg.sender != address(this)) {
             revert HiveOnly();
         }
         _;
@@ -125,63 +129,75 @@ contract Hive {
 
     /**
      * @dev Get the hive resources.
+     * @param _hiveId The hive ID.
      * @return The nectar, pollen, and sap resources in the hive.
      */
-    function getHiveResources()
-        public
-        view
-        returns (uint256, uint256, uint256)
-    {
-        return (nectar, pollen, sap);
+    function getHiveResources(
+        uint256 _hiveId
+    ) public view returns (uint256, uint256, uint256) {
+        Hive memory hive = hives[_hiveId];
+        return (hive.nectar, hive.pollen, hive.sap);
     }
 
     /**
      * @dev Get the hive pool multiplier. The hive pool multiplier is calculated based on the hive abundance and productivity.
+     * @param _hiveId The hive ID.
      * @return The hive pool multiplier.
      */
-    function getHivePoolMultiplier() public view returns (uint256) {
-        uint256 hiveAbdunace = getHiveAbundance();
-        return hiveProductivity + (hiveAbdunace * 10_000) / BASE_DENOMINATOR; // Currently fix constant at 1
+    function getHivePoolMultiplier(
+        uint256 _hiveId
+    ) public view returns (uint256) {
+        uint256 hiveAbdunace = getHiveAbundance(_hiveId);
+        return
+            hives[_hiveId].hiveProductivity +
+            (hiveAbdunace * 10_000) /
+            BASE_DENOMINATOR; // Currently fix constant at 1
     }
 
     /**
      * @dev Get the hive abundance. The hive abundance is calculated based on the resources in the hive.
      Necatar contributes 20%, pollen contributes 30%, and sap contributes 50%.
+     * @param _hiveId The hive ID.
      * @return The hive abundance.
      */
-    function getHiveAbundance() internal view returns (uint256) {
+    function getHiveAbundance(uint256 _hiveId) internal view returns (uint256) {
+        Hive memory hive = hives[_hiveId];
         return
-            ((nectar * 2000) / BASE_DENOMINATOR) +
-            ((pollen * 3000) / BASE_DENOMINATOR) +
-            ((sap * 5000) / BASE_DENOMINATOR);
+            ((hive.nectar * 2000) / BASE_DENOMINATOR) +
+            ((hive.pollen * 3000) / BASE_DENOMINATOR) +
+            ((hive.sap * 5000) / BASE_DENOMINATOR);
     }
 
     /**
      * @dev Get the available honey in the hive.
      The available honey is calculated based on the hive productivity and the base honey yield. The available honey is updated every epoch.
+     * @param _hiveId The hive ID.
      * @return The available honey in the hive.
      */
-    function getAvailableHoneyInHive() public view returns (uint256) {
-        if (block.number <= lastAvailableHoneyUpdateBlock) {
-            return availableHoneyInHive;
+    function getAvailableHoneyInHive(
+        uint256 _hiveId
+    ) public view returns (uint256) {
+        Hive memory hive = hives[_hiveId];
+        if (block.number <= hive.lastAvailableHoneyUpdateBlock) {
+            return hive.availableHoneyInHive;
         }
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
 
-        uint256 hiveMultiplier = getHivePoolMultiplier();
+        uint256 hiveMultiplier = getHivePoolMultiplier(_hiveId);
         uint256 baseHoneyYield = gameConfig.baseHoneyYield();
-        uint256 epochPassed = (block.number - lastAvailableHoneyUpdateBlock) /
-            ONE_EPOCH;
+        uint256 epochPassed = (block.number -
+            hive.lastAvailableHoneyUpdateBlock) / ONE_EPOCH;
         if (epochPassed == 0) {
-            return availableHoneyInHive;
+            return hive.availableHoneyInHive;
         }
 
         uint256 honeyProduced = (baseHoneyYield *
             hiveMultiplier *
             gameConfig.honeyYieldConstant()) / BASE_DENOMINATOR;
 
-        uint256 currentAvailableHoney = availableHoneyInHive +
+        uint256 currentAvailableHoney = hive.availableHoneyInHive +
             honeyProduced *
             epochPassed;
 
@@ -190,16 +206,20 @@ contract Hive {
 
     /**
      * @dev Get the user's claimable honey. The claimable honey is calculated based on the user's bee productivity and the hive productivity.
+     * @param _hiveId The hive ID.
      * @param _tokenId The Bee NFT token ID.
      * @return The user's claimable honey.
      */
     function getUserClaimableHoney(
+        uint256 _hiveId,
         uint256 _tokenId
     ) public view returns (uint256) {
-        uint256 currentAvailableHoney = getAvailableHoneyInHive();
-        uint256 lastClaimedBlock = beeStatus[_tokenId].lastClaimedBlock;
+        Hive memory hive = hives[_hiveId];
+        uint256 currentAvailableHoney = getAvailableHoneyInHive(_hiveId);
+        uint256 lastClaimedBlock = beeStatus[_hiveId][_tokenId]
+            .lastClaimedBlock;
 
-        if (lastClaimedBlock == 0 || hiveProductivity == 0) {
+        if (lastClaimedBlock == 0 || hive.hiveProductivity == 0) {
             return 0;
         }
         IGameConfig gameConfig = IGameConfig(
@@ -213,15 +233,16 @@ contract Hive {
         }
 
         uint256 hiveEpochPassed = (block.number -
-            lastBaseIncentiveUpdateBlock) / ONE_EPOCH;
+            hive.lastBaseIncentiveUpdateBlock) / ONE_EPOCH;
         uint256 hiveBaseIncentive = (gameConfig.baseIncentivePerEpoch() *
             hiveEpochPassed *
-            (numWorkers + numQueens * 2));
-        uint256 _hiveTotalIncentive = hiveBaseIncentive + hiveTotalIncentive;
+            (hive.numWorkers + hive.numQueens * 2));
+        uint256 _hiveTotalIncentive = hiveBaseIncentive +
+            hive.hiveTotalIncentive;
 
         uint256 claimableHoney = (currentAvailableHoney *
             (getBeeBaseIncentive(_tokenId, lastClaimedBlock) +
-                beeStatus[_tokenId].beeWorkIncentive)) /
+                beeStatus[_hiveId][_tokenId].beeWorkIncentive)) /
             _hiveTotalIncentive;
 
         return claimableHoney;
@@ -246,11 +267,15 @@ contract Hive {
 
     /**
      * @dev Pseudo-random number generator, consider using Chainlink VRF later on production
+     * @param _hiveId The hive ID.
      * @return A pseudo-random number between 10_000 to 12_500 if hive is half-full or lower
         A pseudo-random number between 10_000 to 15_000 if hive is more than half-full
      */
-    function randomHiveDefenseBoost() internal view returns (uint256) {
-        uint256 totalBees = numQueens + numWorkers;
+    function randomHiveDefenseBoost(
+        uint256 _hiveId
+    ) internal view returns (uint256) {
+        uint256 totalBees = hives[_hiveId].numQueens +
+            hives[_hiveId].numWorkers;
 
         if (totalBees <= 29) {
             return
@@ -281,11 +306,52 @@ contract Hive {
     /*  Logic Functions                                                           */
     /* -------------------------------------------------------------------------- */
 
-    function updateHiveDefense(uint256 _tokenId) external {
+    /**
+     * @dev Create a new hive.
+     * @param habitatId The habitat ID.
+     */
+    function createHive(uint256 habitatId) external {
+        address worldMap = buzzkillAddressProvider.worldMapAddress();
+        uint256 maxHabitatId = IWorldMap(worldMap).currentHabitatId();
+        if (habitatId >= maxHabitatId) {
+            revert HabitatNotExists();
+        }
+        Hive memory newHive = Hive({
+            habitatId: habitatId,
+            numQueens: 0,
+            numWorkers: 0,
+            nectar: 0,
+            pollen: 0,
+            sap: 0,
+            hiveProductivity: 0,
+            hiveDefense: 0,
+            availableHoneyInHive: 0,
+            lastAvailableHoneyUpdateBlock: block.number,
+            hiveTotalIncentive: 0,
+            lastBaseIncentiveUpdateBlock: block.number
+        });
+        uint256 newHiveId = totalHives;
+        hives[newHiveId] = newHive;
+        totalHives++;
+        emit HiveCreated(newHiveId, habitatId);
+    }
+
+    /**
+     * @dev Update the hive defense.
+     * @param _hiveId The hive ID.
+     * @param _tokenId The Bee NFT token ID.
+     */
+    function updateHiveDefense(uint256 _hiveId, uint256 _tokenId) external {
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
-        if (buzzkillNFT.ownerOf(_tokenId) != address(this)) {
+        if (_hiveId >= totalHives) {
+            revert HiveNotExists();
+        }
+        if (
+            buzzkillNFT.ownerOf(_tokenId) != address(this) &&
+            beeStatus[_hiveId][_tokenId].owner == address(0)
+        ) {
             revert BeeNotInHive();
         }
 
@@ -293,24 +359,26 @@ contract Hive {
             _tokenId
         );
 
-        hiveDefense -= beeStatus[_tokenId].beeDefense;
-        beeStatus[_tokenId].beeDefense = beeTraits.defense;
-        hiveDefense += beeTraits.defense;
+        hives[_hiveId].hiveDefense -= beeStatus[_hiveId][_tokenId].beeDefense;
+        beeStatus[_hiveId][_tokenId].beeDefense = beeTraits.defense;
+        hives[_hiveId].hiveDefense += beeTraits.defense;
     }
 
     /**
      * @dev Stake a Bee NFT to the hive. The hive can only have a maximum of 3 queens and 55 workers.
+     * @param _hiveId The hive ID.
      * @param _tokenId The Bee NFT token ID.
      */
-    function stakeBee(uint256 _tokenId) external {
+    function stakeBee(uint256 _hiveId, uint256 _tokenId) external {
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
-        if (numQueens >= gameConfig.maxQueen()) {
+        Hive storage hive = hives[_hiveId];
+        if (hive.numQueens >= gameConfig.maxQueen()) {
             revert MaxQueenReached();
         }
 
-        if (numWorkers >= gameConfig.maxWorker()) {
+        if (hive.numWorkers >= gameConfig.maxWorker()) {
             revert MaxWorkerReached();
         }
 
@@ -325,21 +393,21 @@ contract Hive {
             _tokenId
         );
 
-        _updateHive();
+        _updateHive(_hiveId);
 
         if (_isQueen(beeType)) {
-            numQueens++;
+            hive.numQueens++;
         } else if (_isWorker(beeType)) {
-            numWorkers++;
+            hive.numWorkers++;
         } else {
             revert InvalidNFTType();
         }
 
-        if (beeStatus[_tokenId].owner != address(0)) {
+        if (beeStatus[_hiveId][_tokenId].owner != address(0)) {
             revert BeeAlreadyStaked();
         }
 
-        beeStatus[_tokenId] = BeeStatus({
+        beeStatus[_hiveId][_tokenId] = BeeStatus({
             owner: msg.sender,
             beeId: _tokenId,
             beeProductivity: 0,
@@ -348,7 +416,7 @@ contract Hive {
             lastClaimedBlock: block.number
         });
 
-        hiveDefense += beeTraits.defense;
+        hive.hiveDefense += beeTraits.defense;
 
         buzzkillNFT.safeTransferFrom(msg.sender, address(this), _tokenId);
 
@@ -357,23 +425,27 @@ contract Hive {
 
     /**
      * @dev Unstake a Bee NFT from the hive.
+     * @param _hiveId The hive ID.
      * @param _tokenId The Bee NFT token ID.
      */
-    function unstakeBee(uint256 _tokenId) external {
-        if (msg.sender != beeStatus[_tokenId].owner) {
+    function unstakeBee(uint256 _hiveId, uint256 _tokenId) external {
+        if (msg.sender != beeStatus[_hiveId][_tokenId].owner) {
             revert NotBeeOwner();
         }
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
+
         (, string memory beeType) = buzzkillNFT.tokenIdToCharacteristics(
             _tokenId
         );
 
-        _updateHive();
+        _updateHive(_hiveId);
+
+        Hive storage hive = hives[_hiveId];
 
         // Check if the bee has claimable honey
-        uint256 claimableHoney = getUserClaimableHoney(_tokenId);
+        uint256 claimableHoney = getUserClaimableHoney(_hiveId, _tokenId);
         // If the bee has claimable honey, check if it has enough nectar to claim
         if (claimableHoney > 0) {
             IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT
@@ -389,7 +461,7 @@ contract Hive {
                     buzzkillAddressProvider.honeyDistributionAddress()
                 );
 
-                availableHoneyInHive -= claimableHoney;
+                hive.availableHoneyInHive -= claimableHoney;
 
                 beeTraits.nectar -= gameConfig.nectarRequiredToClaim();
 
@@ -400,27 +472,27 @@ contract Hive {
         }
 
         if (_isQueen(beeType)) {
-            numQueens--;
+            hive.numQueens--;
         } else if (_isWorker(beeType)) {
-            numWorkers--;
+            hive.numWorkers--;
         }
 
-        hiveProductivity -= beeStatus[_tokenId].beeProductivity;
-        hiveTotalIncentive =
-            hiveTotalIncentive -
+        hive.hiveProductivity -= beeStatus[_hiveId][_tokenId].beeProductivity;
+        hive.hiveTotalIncentive =
+            hive.hiveTotalIncentive -
             getBeeBaseIncentive(
                 _tokenId,
-                beeStatus[_tokenId].lastClaimedBlock
+                beeStatus[_hiveId][_tokenId].lastClaimedBlock
             ) -
-            beeStatus[_tokenId].beeWorkIncentive;
-        hiveDefense -= beeStatus[_tokenId].beeDefense;
+            beeStatus[_hiveId][_tokenId].beeWorkIncentive;
+        hive.hiveDefense -= beeStatus[_hiveId][_tokenId].beeDefense;
 
-        if (hiveProductivity == 0 && availableHoneyInHive > 0) {
-            lastAvailableHoneyUpdateBlock = block.number;
-            availableHoneyInHive = 0;
+        if (hive.hiveProductivity == 0 && hive.availableHoneyInHive > 0) {
+            hive.lastAvailableHoneyUpdateBlock = block.number;
+            hive.availableHoneyInHive = 0;
         }
 
-        beeStatus[_tokenId] = BeeStatus({
+        beeStatus[_hiveId][_tokenId] = BeeStatus({
             owner: address(0),
             beeId: 0,
             beeProductivity: 0,
@@ -440,6 +512,7 @@ contract Hive {
      * Part of the gathered resources and productivity boost are added to the hive.
      * Can only be called once per action per token.
      * Energy is required to perform this action.
+     * @param _hiveId The hive ID.
      * @param _tokenId The Bee NFT token ID.
      * @param _habitatId The habitat ID from which resources are foraged.
      * @notice Reverts if the caller is not the owner of the Bee NFT, if the bee does not have sufficient energy, or if the bee has already performed an action.
@@ -447,28 +520,19 @@ contract Hive {
      * E.g: Forage 20 nectar, hive will get 1 nectar and bee will get 19 nectar.
      */
     function forage(
+        uint256 _hiveId,
         uint256 _tokenId,
         uint256 _habitatId
-    ) external onlyOneAction(_tokenId) {
-        if (msg.sender != beeStatus[_tokenId].owner) {
+    ) external onlyOneAction(_hiveId, _tokenId) {
+        BeeStatus storage bee = beeStatus[_hiveId][_tokenId];
+        if (msg.sender != bee.owner) {
             revert NotBeeOwner();
         }
 
-        _updateHive();
-
+        _updateHive(_hiveId);
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
-
-        IWorldMap worldMap = IWorldMap(
-            buzzkillAddressProvider.worldMapAddress()
-        );
-
-        uint256 energyDeduction = worldMap.getAmountEnergyDeductionAfterForage(
-            _habitatId
-        );
-
-        buzzkillNFT.refreshBeeEnergy(_tokenId);
 
         IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
             _tokenId
@@ -478,69 +542,34 @@ contract Hive {
             buzzkillAddressProvider.gameConfigAddress()
         );
 
+        uint256 energyDeduction = IWorldMap(
+            buzzkillAddressProvider.worldMapAddress()
+        ).getAmountEnergyDeductionAfterForage(_habitatId);
+
         if (beeTraits.energy < energyDeduction) {
             revert InsufficientEnergy();
         }
 
-        // Minimum amount for each resource is 20
-        (
-            uint256 nectarGathered,
-            uint256 pollenGathered,
-            uint256 sapGathered
-        ) = worldMap.forage(_tokenId, _habitatId);
-
-        uint256 productivityEarned = worldMap
-            .getAmountProductivityBoostAfterForage(_habitatId);
-
-        uint256 foragePercentage = gameConfig.foragePercentage();
+        // Call to refresh before forage
+        buzzkillNFT.refreshBeeEnergy(_tokenId);
 
         // 5% of the gathered resources are added to the hive
-        if (((nectarGathered * foragePercentage) / BASE_DENOMINATOR) < 1) {
-            nectar += 1;
-            beeTraits.nectar += nectarGathered - 1;
-        } else {
-            nectar += (nectarGathered * foragePercentage) / BASE_DENOMINATOR;
-            beeTraits.nectar +=
-                nectarGathered -
-                (nectarGathered * foragePercentage) /
-                BASE_DENOMINATOR;
-        }
+        startForageAndCaculateResources(_hiveId, _tokenId, _habitatId);
 
-        if (((pollenGathered * foragePercentage) / BASE_DENOMINATOR) < 1) {
-            pollen += 1;
-            beeTraits.pollen += pollenGathered - 1;
-        } else {
-            pollen += (pollenGathered * foragePercentage) / BASE_DENOMINATOR;
-            beeTraits.pollen +=
-                pollenGathered -
-                (pollenGathered * foragePercentage) /
-                BASE_DENOMINATOR;
-        }
+        uint256 productivityEarned = IWorldMap(
+            buzzkillAddressProvider.worldMapAddress()
+        ).getAmountProductivityBoostAfterForage(_habitatId);
 
-        if (((sapGathered * foragePercentage) / BASE_DENOMINATOR) < 1) {
-            sap += 1;
-            beeTraits.sap += sapGathered - 1;
-        } else {
-            sap += (sapGathered * foragePercentage) / BASE_DENOMINATOR;
-            beeTraits.sap +=
-                sapGathered -
-                (sapGathered * foragePercentage) /
-                BASE_DENOMINATOR;
-        }
-
-        hiveProductivity += productivityEarned;
+        // hives[_hiveId].hiveProductivity += productivityEarned;
         beeTraits.energy -= energyDeduction;
         beeTraits.experience += gameConfig.experienceEarnedAfterForage();
 
-        beeStatus[_tokenId].beeProductivity += productivityEarned;
+        bee.beeProductivity += productivityEarned;
 
         buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
 
         emit ForageFinished(
             _tokenId,
-            nectarGathered,
-            pollenGathered,
-            sapGathered,
             productivityEarned,
             gameConfig.experienceEarnedAfterForage()
         );
@@ -550,19 +579,22 @@ contract Hive {
      * @dev Initiate a raid on another hive using a Bee NFT.
      * This function allows the owner of a Bee NFT to raid another hive, consuming sap, honey, and health while gaining experience.
      * Can only be called once per action per token.
+     * @param _hiveId The hive ID.
      * @param _tokenId The Bee NFT token ID.
-     * @param _raidedHive The address of the hive being raided.
+     * @param _raidedHiveId The id of the hive being raided.
      * @notice Reverts if the caller is not the owner of the Bee NFT, if the bee does not have sufficient sap, honey, or health, or if the bee has already performed an action.
      */
     function startRaid(
+        uint256 _hiveId,
         uint256 _tokenId,
-        address _raidedHive
-    ) external onlyOneAction(_tokenId) {
-        if (msg.sender != beeStatus[_tokenId].owner) {
+        uint256 _raidedHiveId
+    ) external onlyOneAction(_hiveId, _tokenId) {
+        BeeStatus storage bee = beeStatus[_hiveId][_tokenId];
+        if (msg.sender != bee.owner) {
             revert NotBeeOwner();
         }
 
-        _updateHive();
+        _updateHive(_hiveId);
 
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
@@ -583,6 +615,7 @@ contract Hive {
         beeTraits.sap -= gameConfig.raidSapFee();
 
         IHoney honey = IHoney(buzzkillAddressProvider.honeyAddress());
+        Hive storage hive = hives[_hiveId];
 
         if (beeTraits.health == 0) {
             revert InsufficientHealth();
@@ -598,9 +631,7 @@ contract Hive {
 
         honeyDistribution.burnHoney(msg.sender, honeyFee);
 
-        IHive raidedHive = IHive(_raidedHive);
-
-        uint256 amountHoneyRaided = raidedHive.endureRaid(_tokenId);
+        uint256 amountHoneyRaided = endureRaid(_raidedHiveId, _tokenId);
         uint256 baseHealthDeductionAfterRaid = gameConfig
             .baseHealthDeductionAfterRaid();
 
@@ -613,7 +644,7 @@ contract Hive {
 
             uint256 amountHoneyShared = (amountHoneyRaided * 500) /
                 BASE_DENOMINATOR; // Hive take 5% of the raided honey
-            availableHoneyInHive += amountHoneyShared;
+            hive.availableHoneyInHive += amountHoneyShared;
             beeTraits.experience += gameConfig
                 .experienceEarnedAfterRaidSuccess();
 
@@ -631,9 +662,8 @@ contract Hive {
                 .experienceEarnedAfterRaidFailed();
         }
 
-        beeStatus[_tokenId].beeProductivity += gameConfig
-            .productivityEarnAfterRaid();
-        hiveProductivity += gameConfig.productivityEarnAfterRaid();
+        bee.beeProductivity += gameConfig.productivityEarnAfterRaid();
+        hive.hiveProductivity += gameConfig.productivityEarnAfterRaid();
 
         buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
 
@@ -649,16 +679,22 @@ contract Hive {
      * @dev Endure a raid initiated by another hive.
      * This function handles the raid mechanics, comparing raid power and hive defense, and deducts honey if the raid is successful.
      * Can only be called by the hive contract.
+     * @param _hiveId The hive ID being raided.
      * @param _tokenId The Bee NFT token ID initiating the raid.
      * @return The amount of honey raided.
      * @notice Reverts if the bee is not outside the hive.
      */
-    function endureRaid(uint256 _tokenId) external onlyHive returns (uint256) {
-        if (beeStatus[_tokenId].owner != address(0)) {
+    function endureRaid(
+        uint256 _hiveId,
+        uint256 _tokenId
+    ) public onlyHive returns (uint256) {
+        if (beeStatus[_hiveId][_tokenId].owner != address(0)) {
             revert BeeMustBeOutsideHive();
         }
 
-        _updateHive();
+        _updateHive(_hiveId);
+
+        Hive storage hive = hives[_hiveId];
 
         IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
@@ -669,16 +705,16 @@ contract Hive {
         );
 
         uint256 raidBoost = randomBeeRaidBoost();
-        uint256 hiveDefenseBoost = randomHiveDefenseBoost();
+        uint256 hiveDefenseBoost = randomHiveDefenseBoost(_hiveId);
 
         uint256 caculatedRaidPower = beeTraits.attack * raidBoost;
-        uint256 caculatedHiveDefense = hiveDefense * hiveDefenseBoost;
+        uint256 caculatedHiveDefense = hive.hiveDefense * hiveDefenseBoost;
 
         uint256 amountHoneyRaided;
 
         if (caculatedRaidPower > caculatedHiveDefense) {
-            uint256 _honeyPot = getAvailableHoneyInHive();
-            uint256 hiveCapacity = _hiveCapacity();
+            uint256 _honeyPot = getAvailableHoneyInHive(_hiveId);
+            uint256 hiveCapacity = _hiveCapacity(_hiveId);
             // Formular: Honey = Base * Capacity * Constant1 + HivePool * Forage * Constant2
             // Constant1 is currrently 1 and Constant2 is currently 0.01
             IGameConfig gameConfig = IGameConfig(
@@ -692,7 +728,7 @@ contract Hive {
             if (amountHoneyRaided > _honeyPot) {
                 amountHoneyRaided = _honeyPot;
             }
-            availableHoneyInHive -= amountHoneyRaided;
+            hive.availableHoneyInHive -= amountHoneyRaided;
         }
 
         return amountHoneyRaided;
@@ -706,12 +742,16 @@ contract Hive {
      * @param _tokenId The Bee NFT token ID.
      * @notice Reverts if the caller is not the owner of the Bee NFT, if there are no queen bees, if there is no honey to collect, or if the bee does not have enough nectar to claim.
      */
-    function collectHoney(uint256 _tokenId) external onlyOneAction(_tokenId) {
-        if (msg.sender != beeStatus[_tokenId].owner) {
+    function collectHoney(
+        uint256 _hiveId,
+        uint256 _tokenId
+    ) external onlyOneAction(_hiveId, _tokenId) {
+        BeeStatus storage bee = beeStatus[_hiveId][_tokenId];
+        if (msg.sender != bee.owner) {
             revert NotBeeOwner();
         }
-
-        if (numQueens == 0) {
+        Hive storage hive = hives[_hiveId];
+        if (hive.numQueens == 0) {
             revert NoQueenBee();
         }
 
@@ -722,9 +762,9 @@ contract Hive {
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
 
-        _updateHive();
+        _updateHive(_hiveId);
 
-        uint256 claimableHoney = getUserClaimableHoney(_tokenId);
+        uint256 claimableHoney = getUserClaimableHoney(_hiveId, _tokenId);
 
         if (claimableHoney == 0) {
             revert NoHoneyToCollect();
@@ -745,17 +785,17 @@ contract Hive {
 
         uint256 currentBeeBaseIncentive = getBeeBaseIncentive(
             _tokenId,
-            beeStatus[_tokenId].lastClaimedBlock
+            bee.lastClaimedBlock
         );
-        uint256 currentBeeWorkIncentive = beeStatus[_tokenId].beeWorkIncentive;
+        uint256 currentBeeWorkIncentive = bee.beeWorkIncentive;
         uint256 beeTotalIncentive = currentBeeBaseIncentive +
             currentBeeWorkIncentive;
 
-        beeStatus[_tokenId].lastClaimedBlock = block.number;
-        beeStatus[_tokenId].beeWorkIncentive = 0;
-        hiveTotalIncentive -= beeTotalIncentive;
+        bee.lastClaimedBlock = block.number;
+        bee.beeWorkIncentive = 0;
+        hive.hiveTotalIncentive -= beeTotalIncentive;
 
-        availableHoneyInHive -= claimableHoney;
+        hive.availableHoneyInHive -= claimableHoney;
 
         beeTraits.nectar -= gameConfig.nectarRequiredToClaim();
 
@@ -797,6 +837,62 @@ contract Hive {
         return currentBeeBaseIncentive;
     }
 
+    function startForageAndCaculateResources(
+        uint256 _hiveId,
+        uint256 _tokenId,
+        uint256 _habitatId
+    ) internal {
+        Hive storage hive = hives[_hiveId];
+        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
+            buzzkillAddressProvider.buzzkillNFTAddress()
+        );
+        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
+            _tokenId
+        );
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+
+        // Minimum amount for each resource is 20
+        (
+            uint256 nectarGathered,
+            uint256 pollenGathered,
+            uint256 sapGathered
+        ) = IWorldMap(buzzkillAddressProvider.worldMapAddress()).forage(
+                _tokenId,
+                _habitatId
+            );
+
+        uint256 foragePercentage = gameConfig.foragePercentage();
+        uint256 sharedNectar = ((nectarGathered * foragePercentage) /
+            BASE_DENOMINATOR) < 1
+            ? 1
+            : (nectarGathered * foragePercentage) / BASE_DENOMINATOR;
+        uint256 sharedPollen = ((pollenGathered * foragePercentage) /
+            BASE_DENOMINATOR) < 1
+            ? 1
+            : (pollenGathered * foragePercentage) / BASE_DENOMINATOR;
+        uint256 sharedSap = ((sapGathered * foragePercentage) /
+            BASE_DENOMINATOR) < 1
+            ? 1
+            : (sapGathered * foragePercentage) / BASE_DENOMINATOR;
+
+        hive.nectar += sharedNectar;
+        hive.pollen += sharedPollen;
+        hive.sap += sharedSap;
+
+        beeTraits.nectar += nectarGathered - sharedNectar;
+        beeTraits.pollen += pollenGathered - sharedPollen;
+        beeTraits.sap += sapGathered - sharedSap;
+
+        beeTraits.nectar +=
+            nectarGathered -
+            (nectarGathered * foragePercentage) /
+            BASE_DENOMINATOR;
+
+        emit ResourcesCollected(sharedNectar, sharedPollen, sharedSap);
+    }
+
     /* -------------------------------------------------------------------------- */
     /*  Private Functions                                                         */
     /* -------------------------------------------------------------------------- */
@@ -829,27 +925,30 @@ contract Hive {
      * @dev Get the hive capacity.
      * @return The hive capacity.
      */
-    function _hiveCapacity() private view returns (uint256) {
+    function _hiveCapacity(uint256 _hiveId) private view returns (uint256) {
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
+        Hive memory hive = hives[_hiveId];
         if (
-            numQueens + numWorkers ==
+            hive.numQueens + hive.numWorkers ==
             gameConfig.maxQueen() + gameConfig.maxWorker()
         ) return 2;
         return 1;
     }
 
     /**
-     * @dev Update the hive collective pool of honey. The hive collective pool of honey is updated every epoch.
+     * @dev Update the hive collective pool of honey and hive stats. The hive collective pool of honey is updated every epoch.
+     @param _hiveId The hive ID.
      */
-    function _updateHive() private {
-        if (block.number <= lastAvailableHoneyUpdateBlock) {
+    function _updateHive(uint256 _hiveId) private {
+        Hive storage hive = hives[_hiveId];
+        if (block.number <= hive.lastAvailableHoneyUpdateBlock) {
             return;
         }
 
-        if (hiveProductivity == 0) {
-            lastAvailableHoneyUpdateBlock = block.number;
+        if (hive.hiveProductivity == 0) {
+            hive.lastAvailableHoneyUpdateBlock = block.number;
             return;
         }
 
@@ -857,13 +956,13 @@ contract Hive {
             buzzkillAddressProvider.gameConfigAddress()
         );
 
-        uint256 hiveMultiplier = getHivePoolMultiplier();
+        uint256 hiveMultiplier = getHivePoolMultiplier(_hiveId);
         uint256 baseHoneyYield = gameConfig.baseHoneyYield();
         uint256 epochPassedSinceLastUpdateHoney = (block.number -
-            lastAvailableHoneyUpdateBlock) / ONE_EPOCH;
+            hive.lastAvailableHoneyUpdateBlock) / ONE_EPOCH;
 
         uint256 epochPassedSinceLastUpdateBaseIncentive = (block.number -
-            lastBaseIncentiveUpdateBlock) / ONE_EPOCH;
+            hive.lastBaseIncentiveUpdateBlock) / ONE_EPOCH;
 
         if (
             epochPassedSinceLastUpdateHoney == 0 &&
@@ -876,16 +975,18 @@ contract Hive {
             hiveMultiplier *
             gameConfig.honeyYieldConstant()) / BASE_DENOMINATOR;
 
-        availableHoneyInHive += honeyProduced * epochPassedSinceLastUpdateHoney;
+        hive.availableHoneyInHive +=
+            honeyProduced *
+            epochPassedSinceLastUpdateHoney;
 
         uint256 baseIncentiveDistribute = gameConfig.baseIncentivePerEpoch() *
             epochPassedSinceLastUpdateBaseIncentive *
-            (numWorkers + numQueens * 2);
+            (hive.numWorkers + hive.numQueens * 2);
 
-        hiveTotalIncentive += baseIncentiveDistribute;
+        hive.hiveTotalIncentive += baseIncentiveDistribute;
 
-        lastAvailableHoneyUpdateBlock = block.number;
-        lastBaseIncentiveUpdateBlock = block.number;
+        hive.lastAvailableHoneyUpdateBlock = block.number;
+        hive.lastBaseIncentiveUpdateBlock = block.number;
     }
 
     /* -------------------------------------------------------------------------- */

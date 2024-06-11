@@ -4,7 +4,7 @@
 export type { IBuzzkillAddressProvider } from "./IBuzzkillAddressProvider";
 export type { IBuzzkillNFT } from "./IBuzzkillNFT";
 export type { IGameConfig } from "./IGameConfig";
-export type { IHive } from "./IHive";
+export type { IHiveManager } from "./IHiveManager";
 export type { IHoney } from "./IHoney";
 export type { IHoneyDistribution } from "./IHoneyDistribution";
 export type { IWorldMap } from "./IWorldMap";

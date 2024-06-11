@@ -150,13 +150,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.HoneyDistribution__factory>;
     getContractFactory(
-      name: "Hive",
+      name: "HiveManager",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Hive__factory>;
-    getContractFactory(
-      name: "HiveFactory",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.HiveFactory__factory>;
+    ): Promise<Contracts.HiveManager__factory>;
     getContractFactory(
       name: "Honey",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -178,9 +174,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IGameConfig__factory>;
     getContractFactory(
-      name: "IHive",
+      name: "IHiveManager",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IHive__factory>;
+    ): Promise<Contracts.IHiveManager__factory>;
     getContractFactory(
       name: "IHoney",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -365,15 +361,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.HoneyDistribution>;
     getContractAt(
-      name: "Hive",
+      name: "HiveManager",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.Hive>;
-    getContractAt(
-      name: "HiveFactory",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.HiveFactory>;
+    ): Promise<Contracts.HiveManager>;
     getContractAt(
       name: "Honey",
       address: string | ethers.Addressable,
@@ -400,10 +391,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IGameConfig>;
     getContractAt(
-      name: "IHive",
+      name: "IHiveManager",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.IHive>;
+    ): Promise<Contracts.IHiveManager>;
     getContractAt(
       name: "IHoney",
       address: string | ethers.Addressable,
@@ -557,13 +548,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.HoneyDistribution>;
     deployContract(
-      name: "Hive",
+      name: "HiveManager",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Hive>;
-    deployContract(
-      name: "HiveFactory",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.HiveFactory>;
+    ): Promise<Contracts.HiveManager>;
     deployContract(
       name: "Honey",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -585,9 +572,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IGameConfig>;
     deployContract(
-      name: "IHive",
+      name: "IHiveManager",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IHive>;
+    ): Promise<Contracts.IHiveManager>;
     deployContract(
       name: "IHoney",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -772,15 +759,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.HoneyDistribution>;
     deployContract(
-      name: "Hive",
+      name: "HiveManager",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Hive>;
-    deployContract(
-      name: "HiveFactory",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.HiveFactory>;
+    ): Promise<Contracts.HiveManager>;
     deployContract(
       name: "Honey",
       args: any[],
@@ -807,10 +789,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IGameConfig>;
     deployContract(
-      name: "IHive",
+      name: "IHiveManager",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IHive>;
+    ): Promise<Contracts.IHiveManager>;
     deployContract(
       name: "IHoney",
       args: any[],

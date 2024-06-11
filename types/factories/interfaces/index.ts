@@ -4,7 +4,7 @@
 export { IBuzzkillAddressProvider__factory } from "./IBuzzkillAddressProvider__factory";
 export { IBuzzkillNFT__factory } from "./IBuzzkillNFT__factory";
 export { IGameConfig__factory } from "./IGameConfig__factory";
-export { IHive__factory } from "./IHive__factory";
+export { IHiveManager__factory } from "./IHiveManager__factory";
 export { IHoney__factory } from "./IHoney__factory";
 export { IHoneyDistribution__factory } from "./IHoneyDistribution__factory";
 export { IWorldMap__factory } from "./IWorldMap__factory";

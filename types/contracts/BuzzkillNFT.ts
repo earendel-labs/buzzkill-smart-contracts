@@ -78,7 +78,6 @@ export interface BuzzkillNFTInterface extends Interface {
       | "getApproved"
       | "getBeeLevel"
       | "getBeeTraits"
-      | "hiveFactory"
       | "isApprovedForAll"
       | "issuer"
       | "minFee"
@@ -100,7 +99,6 @@ export interface BuzzkillNFTInterface extends Interface {
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
       | "setApprovalForAll"
-      | "setHiveFactoryAddress"
       | "setMintFee"
       | "supportsInterface"
       | "symbol"
@@ -186,10 +184,6 @@ export interface BuzzkillNFTInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "hiveFactory",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [AddressLike, AddressLike]
   ): string;
@@ -202,7 +196,7 @@ export interface BuzzkillNFTInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "modifyBeeTraits",
-    values: [BigNumberish, BuzzkillNFT.BeeTraitsStruct]
+    values: [BigNumberish, BigNumberish, BuzzkillNFT.BeeTraitsStruct]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -251,10 +245,6 @@ export interface BuzzkillNFTInterface extends Interface {
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
     values: [AddressLike, boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setHiveFactoryAddress",
-    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setMintFee",
@@ -362,10 +352,6 @@ export interface BuzzkillNFTInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "hiveFactory",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
@@ -414,10 +400,6 @@ export interface BuzzkillNFTInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setApprovalForAll",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setHiveFactoryAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setMintFee", data: BytesLike): Result;
@@ -674,8 +656,6 @@ export interface BuzzkillNFT extends BaseContract {
     "view"
   >;
 
-  hiveFactory: TypedContractMethod<[], [string], "view">;
-
   isApprovedForAll: TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
     [boolean],
@@ -695,7 +675,11 @@ export interface BuzzkillNFT extends BaseContract {
   >;
 
   modifyBeeTraits: TypedContractMethod<
-    [tokenId: BigNumberish, _beeTraits: BuzzkillNFT.BeeTraitsStruct],
+    [
+      hiveId: BigNumberish,
+      tokenId: BigNumberish,
+      _beeTraits: BuzzkillNFT.BeeTraitsStruct
+    ],
     [void],
     "nonpayable"
   >;
@@ -769,12 +753,6 @@ export interface BuzzkillNFT extends BaseContract {
 
   setApprovalForAll: TypedContractMethod<
     [operator: AddressLike, approved: boolean],
-    [void],
-    "nonpayable"
-  >;
-
-  setHiveFactoryAddress: TypedContractMethod<
-    [_hiveFactory: AddressLike],
     [void],
     "nonpayable"
   >;
@@ -937,9 +915,6 @@ export interface BuzzkillNFT extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "hiveFactory"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "isApprovedForAll"
   ): TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
@@ -965,7 +940,11 @@ export interface BuzzkillNFT extends BaseContract {
   getFunction(
     nameOrSignature: "modifyBeeTraits"
   ): TypedContractMethod<
-    [tokenId: BigNumberish, _beeTraits: BuzzkillNFT.BeeTraitsStruct],
+    [
+      hiveId: BigNumberish,
+      tokenId: BigNumberish,
+      _beeTraits: BuzzkillNFT.BeeTraitsStruct
+    ],
     [void],
     "nonpayable"
   >;
@@ -1049,9 +1028,6 @@ export interface BuzzkillNFT extends BaseContract {
     [void],
     "nonpayable"
   >;
-  getFunction(
-    nameOrSignature: "setHiveFactoryAddress"
-  ): TypedContractMethod<[_hiveFactory: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "setMintFee"
   ): TypedContractMethod<[_mintFee: BigNumberish], [void], "nonpayable">;

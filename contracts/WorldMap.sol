@@ -3,7 +3,6 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "../interfaces/IHive.sol";
 import "../interfaces/IBuzzkillNFT.sol";
 import "../interfaces/IBuzzkillAddressProvider.sol";
 import "../interfaces/IGameConfig.sol";
@@ -85,8 +84,7 @@ contract WorldMap is Ownable {
     /*  Modifiers                                                                 */
     /* -------------------------------------------------------------------------- */
     modifier onlyHive() {
-        IHive hive = IHive(msg.sender);
-        if (hive.creator() != buzzkillAddressProvider.hiveFactoryAddress()) {
+        if (msg.sender != buzzkillAddressProvider.hiveManagerAddress()) {
             revert HiveOnly();
         }
         _;

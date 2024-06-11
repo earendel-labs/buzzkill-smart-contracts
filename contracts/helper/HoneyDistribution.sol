@@ -2,7 +2,6 @@
 pragma solidity ^0.8.24;
 
 import "../../interfaces/IHoney.sol";
-import "../../interfaces/IHive.sol";
 import "../../interfaces/IBuzzkillAddressProvider.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -22,9 +21,7 @@ contract HoneyDistribution is Ownable {
     /* -------------------------------------------------------------------------- */
     /*  Constructor                                                               */
     /* -------------------------------------------------------------------------- */
-    constructor(
-        address _buzzkillAddressProvider
-    ) Ownable(msg.sender) {
+    constructor(address _buzzkillAddressProvider) Ownable(msg.sender) {
         buzzkillAddressProvider = IBuzzkillAddressProvider(
             _buzzkillAddressProvider
         );
@@ -34,8 +31,7 @@ contract HoneyDistribution is Ownable {
     /*  Modifiers                                                                 */
     /* -------------------------------------------------------------------------- */
     modifier onlyHive() {
-        IHive hive = IHive(msg.sender);
-        if (hive.creator() != buzzkillAddressProvider.hiveFactoryAddress()) {
+        if (msg.sender != buzzkillAddressProvider.hiveManagerAddress()) {
             revert HiveOnly();
         }
         _;

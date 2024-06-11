@@ -3,7 +3,6 @@
 /* eslint-disable */
 export * as helper from "./helper";
 export { BuzzkillNFT__factory } from "./BuzzkillNFT__factory";
-export { Hive__factory } from "./Hive__factory";
-export { HiveFactory__factory } from "./HiveFactory__factory";
+export { HiveManager__factory } from "./HiveManager__factory";
 export { Honey__factory } from "./Honey__factory";
 export { WorldMap__factory } from "./WorldMap__factory";
