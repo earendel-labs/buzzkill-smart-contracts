@@ -40,19 +40,30 @@ contract HiveManager is Initializable {
     event HiveCreated(uint256 hiveId, uint256 habitatId);
     event NFTStaked(uint256 tokenId);
     event NFTUnstaked(uint256 tokenId);
-    event ResourcesCollected(uint256 nectar, uint256 pollen, uint256 sap);
+    event ResourcesCollected(
+        uint256 tokenId,
+        uint256 hiveId,
+        uint256 nectarGathered,
+        uint256 pollenGathered,
+        uint256 sapGathered,
+        uint256 sharedNectar,
+        uint256 sharedPollen,
+        uint256 sharedSap
+    );
     event ForageFinished(
         uint256 tokenId,
+        uint256 hiveId,
         uint256 productivityEarned,
         uint256 experienceEarned
     );
     event RaidFinished(
         uint256 tokenId,
+        uint256 hiveId,
         uint256 honey,
         uint256 productivityEarned,
         uint256 experienceEarned
     );
-    event CollectHoney(uint256 tokenId, uint256 honey);
+    event CollectHoney(uint256 tokenId, uint256 hiveId, uint256 honey);
 
     /* -------------------------------------------------------------------------- */
     /*  Structs                                                                   */
@@ -570,6 +581,7 @@ contract HiveManager is Initializable {
 
         emit ForageFinished(
             _tokenId,
+            _hiveId,
             productivityEarned,
             gameConfig.experienceEarnedAfterForage()
         );
@@ -669,6 +681,7 @@ contract HiveManager is Initializable {
 
         emit RaidFinished(
             _tokenId,
+            _hiveId,
             amountHoneyRaided,
             gameConfig.productivityEarnAfterRaid(),
             beeTraits.experience
@@ -803,7 +816,7 @@ contract HiveManager is Initializable {
 
         honeyDistribution.distributeHoney(msg.sender, claimableHoney);
 
-        emit CollectHoney(_tokenId, claimableHoney);
+        emit CollectHoney(_tokenId, _hiveId, claimableHoney);
     }
 
     /* -------------------------------------------------------------------------- */
@@ -890,7 +903,16 @@ contract HiveManager is Initializable {
             (nectarGathered * foragePercentage) /
             BASE_DENOMINATOR;
 
-        emit ResourcesCollected(sharedNectar, sharedPollen, sharedSap);
+        emit ResourcesCollected(
+            _tokenId,
+            _hiveId,
+            nectarGathered,
+            pollenGathered,
+            sapGathered,
+            sharedNectar,
+            sharedPollen,
+            sharedSap
+        );
     }
 
     /* -------------------------------------------------------------------------- */
