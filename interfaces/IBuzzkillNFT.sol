@@ -10,7 +10,10 @@ interface IBuzzkillNFT is IVRC725 {
         uint256 attack;
         uint256 defense;
         uint256 forage;
+        uint256 baseProductivity;
+        uint256 maxProductivity;
         uint256 experience;
+        uint256 level;
         uint256 nectar;
         uint256 pollen;
         uint256 sap;

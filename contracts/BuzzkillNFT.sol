@@ -52,7 +52,10 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         uint256 attack;
         uint256 defense;
         uint256 forage;
+        uint256 baseProductivity;
+        uint256 maxProductivity;
         uint256 experience;
+        uint256 level;
         uint256 nectar;
         uint256 pollen;
         uint256 sap;
@@ -63,6 +66,13 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         uint256 baseHealth;
         uint256 lastEnergyRefreshTimestamp;
         uint256 lastHealthRefreshTimestamp;
+    }
+
+    struct Quest {
+        uint256 forageCount;
+        uint256 raidCount;
+        uint256 raidSuccessCount;
+        uint256 upgradeCount;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -83,6 +93,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     mapping(uint256 => BeeCharacteristics) public tokenIdToCharacteristics;
     mapping(uint256 => BeeTraits) public tokenIdToTraits;
     mapping(uint256 => BeeStatus) public tokenIdToStatus;
+    mapping(uint256 => mapping(uint256 => Quest)) public beeQuestTracking;
 
     string public constant workerBeeImage =
         "https://photos.app.goo.gl/6QWvzWw5L3DnijFs6";
@@ -93,10 +104,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
     /*  Constructor                                                               */
     /* -------------------------------------------------------------------------- */
 
-    constructor(
-        uint256 _mintFee,
-        address _buzzkillAddressProvider
-    ) {
+    constructor(uint256 _mintFee, address _buzzkillAddressProvider) {
         if (_mintFee < MIN_FEE) revert MintFeeTooLow();
         if (_mintFee > MAX_FEE) revert MintFeeTooHigh();
         __VRC725_init("Buzzkill", "BZK", msg.sender);
@@ -155,14 +163,14 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 '"type": "',
                 beeCharacteristics.beeType,
                 '"',
-                '"energy": "'
-            ),
-            abi.encodePacked(
+                '"energy": "',
                 beeTraits.energy.toString(),
                 '"',
                 '"health": "',
                 beeTraits.health.toString(),
-                '"',
+                '"'
+            ),
+            abi.encodePacked(
                 '"attack": "',
                 beeTraits.attack.toString(),
                 '"',
@@ -172,9 +180,14 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 '"forage": "',
                 beeTraits.forage.toString(),
                 '"',
-                '"experience": "',
-                beeTraits.experience.toString(),
+                '"baseProductivity": "',
+                beeTraits.baseProductivity.toString(),
                 '"',
+                '"maxProductivity": "',
+                beeTraits.maxProductivity.toString(),
+                '"',
+                '"level": "',
+                beeTraits.level.toString(),
                 "}"
             )
         );
@@ -245,16 +258,38 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
 
     /**
      * @dev Retrieves the bee characteristics for a given token ID.
+     * We have the equation to caculate XP per level: XP = (d x n x (n - 1))/2 with d is differenceBetweenLevels and n is bee level
+     * Transform the equation to: n^2 - n - 2XP/d = 0 (Bring the equation to the form ax^2 + bx + c = 0)
+     * Quadratic formula: x = (-b ± sqrt(b^2 - 4ac)) / 2a
+     * From the base equation, we have: n = (sqrt(8 * XP/d + 1) + 1)/2 using quadratic formula
      * @param tokenId The ID of the token.
      * @return The bee characteristics.
      */
     function getBeeLevel(uint256 tokenId) public view returns (uint256) {
+        // Ensure difference between level is not zero to avoid division by zero
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
-        uint256 beeExperience = tokenIdToTraits[tokenId].experience;
+        uint256 differenceBetweenLevels = gameConfig.differenceBetweenLevels();
+        require(
+            differenceBetweenLevels > 0,
+            "Difference between level must be greater than zero"
+        );
 
-        return beeExperience / gameConfig.amountToLevelUp();
+        BeeTraits memory beeTraits = tokenIdToTraits[tokenId];
+
+        // Calculate the discriminant of the quadratic equation
+        uint256 discriminant = (8 * beeTraits.experience) /
+            differenceBetweenLevels +
+            1;
+
+        // Calculate the square root of the discriminant
+        uint256 sqrtDiscriminant = sqrt(discriminant);
+
+        // Calculate the value of bee level using the quadratic formula
+        uint256 beeLevel = (sqrtDiscriminant + 1) / 2;
+
+        return beeLevel;
     }
 
     /**
@@ -266,6 +301,100 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         uint256 tokenId
     ) public view returns (BeeTraits memory) {
         return tokenIdToTraits[tokenId];
+    }
+
+    /**
+     * @dev Retrieves the number of foraging quests for a given bee level.
+     * Caculation equation: Qfn = baseNumberOfForagingQuest + (n-1) x 2
+     * @param level The level of the bee.
+     * @return The number of foraging quests.
+     */
+    function getForagingNumQuestsForLevel(
+        uint256 level
+    ) public view returns (uint256) {
+        require(level > 0, "Level must be greater than zero");
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        return gameConfig.baseNumberOfForagingQuest() + (level - 1) * 2;
+    }
+
+    /**
+     * @dev Retrieves the number of raid quests for a given bee level.
+     * Caculation equation: Qrn = baseNumberOfRaidQuest + n
+     * @param level The level of the bee.
+     * @return The number of raid quests.
+     */
+    function getRaidNumQuestsForLevel(
+        uint256 level
+    ) public view returns (uint256) {
+        require(level > 0, "Level must be greater than zero");
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        return gameConfig.baseNumberOfRaidQuest() + level;
+    }
+
+    /**
+     * @dev Retrieves the number of raid success quests for a given bee level.
+     * Caculation equation: Qrsn = baseNumberOfRaidSuccessQuest + (n-1) / 2
+     * @param level The level of the bee.
+     * @return The number of raid success quests.
+     */
+    function getRaidSuccessNumQuestsForLevel(
+        uint256 level
+    ) public view returns (uint256) {
+        require(level > 0, "Level must be greater than zero");
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        return gameConfig.baseNumberOfRaidSuccessQuest() + (level - 1) / 2;
+    }
+
+    /**
+     * @dev Retrieves the number of upgrade quests for a given bee level.
+     * Caculation equation: Qun = baseNumberOfUpgradeQuest + n
+     * @param level The level of the bee.
+     * @return The number of upgrade quests.
+     */
+    function getUpgradeNumQuestsForLevel(
+        uint256 level
+    ) public view returns (uint256) {
+        require(level > 0, "Level must be greater than zero");
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        return gameConfig.baseNumberOfUpgradeQuest() + level;
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*  Internal Functions                                                        */
+    /* -------------------------------------------------------------------------- */
+    // Helper function to calculate the square root using the Babylonian method
+    function sqrt(uint256 x) internal pure returns (uint256 y) {
+        if (x == 0) {
+            return 0;
+        } else if (x <= 3) {
+            return 1;
+        }
+        uint256 z = (x + 1) / 2;
+        y = x;
+        while (z < y) {
+            y = z;
+            z = (x / z + z) / 2;
+        }
+    }
+
+    function levelUpBeeAndUpdateHiveStatus(
+        uint256 _hiveId,
+        uint256 _tokenId
+    ) internal {
+        IHiveManager hiveManager = IHiveManager(
+            buzzkillAddressProvider.hiveManagerAddress()
+        );
+        _upgradeBeeTraitsOnLevelUp(_tokenId);
+        hiveManager.updateHiveDefense(_hiveId, _tokenId);
+        hiveManager.updateHiveProductivity(_hiveId, _tokenId);
     }
 
     /* -------------------------------------------------------------------------- */
@@ -298,15 +427,18 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Worker"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                10,
-                10,
-                1,
-                1,
-                1,
-                0,
-                0,
-                0,
-                0
+                10, // energy
+                10, // health
+                1, // attack
+                1, // defense
+                1, // forage
+                20, // baseProductivity
+                100, // maxProductivity
+                0, // experience
+                1, // level
+                0, // nectar
+                0, // pollen
+                0 // sap
             );
         } else if (_beeType == 1) {
             tokenIdToCharacteristics[newTokenId] = BeeCharacteristics(
@@ -314,15 +446,18 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Queen"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                20,
-                20,
-                2,
-                2,
-                2,
-                0,
-                0,
-                0,
-                0
+                20, // energy
+                20, // health
+                2, // attack
+                2, // defense
+                2, // forage
+                25, // baseProductivity
+                120, // maxProductivity
+                0, // experience
+                1, // level
+                0, // nectar
+                0, // pollen
+                0 // sap
             );
         } else {
             revert InvalidBeeType();
@@ -338,36 +473,43 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
      * @dev Modifies the traits of a bee token.
      * Only the Hive contract can call this function.
      * @param tokenId The ID of the token to modify.
-     * @param _beeTraits The new traits to set.
+     * @param _newBeeTraits The new traits to set.
      */
     function modifyBeeTraits(
         uint256 hiveId,
         uint256 tokenId,
-        BeeTraits memory _beeTraits
+        BeeTraits memory _newBeeTraits
     ) public onlyHive {
         require(_exists(tokenId), "Token does not exist");
         // Hive is holding the NFT
         require(ownerOf(tokenId) == msg.sender, "Not owner");
-        // Check if bee can level up
-        if (_beeTraits.experience > tokenIdToTraits[tokenId].experience) {
-            IGameConfig gameConfig = IGameConfig(
-                buzzkillAddressProvider.gameConfigAddress()
-            );
-            uint256 level = getBeeLevel(tokenId);
-            uint256 newLevel = _beeTraits.experience /
-                gameConfig.amountToLevelUp();
-            if (newLevel > level) {
-                // Level up
-                _beeTraits.energy += 5;
-                _beeTraits.health += 5;
-                _beeTraits.attack += 1;
-                _beeTraits.defense += 1;
-                _beeTraits.forage += 1;
-                IHiveManager hiveManager = IHiveManager(buzzkillAddressProvider.hiveManagerAddress());
-                hiveManager.updateHiveDefense(hiveId, tokenId);
+        // Get bee traits state before update
+        BeeTraits memory prevBeeTraits = tokenIdToTraits[tokenId];
+        // Update bee traits, expect level to be the same as the current level
+        require(
+            _newBeeTraits.level == prevBeeTraits.level,
+            "Invalid level value"
+        );
+        tokenIdToTraits[tokenId] = _newBeeTraits;
+        // Check if bee level up
+        if (_newBeeTraits.experience > prevBeeTraits.experience) {
+            uint256 currentBeeLevel = getBeeLevel(tokenId);
+            if (currentBeeLevel > prevBeeTraits.level) {
+                _upgradeBeeTraitsOnLevelUp(tokenId);
             }
         }
-        tokenIdToTraits[tokenId] = _beeTraits;
+        IHiveManager hiveManager = IHiveManager(
+            buzzkillAddressProvider.hiveManagerAddress()
+        );
+        if (tokenIdToTraits[tokenId].defense > prevBeeTraits.defense) {
+            hiveManager.updateHiveDefense(hiveId, tokenId);
+        }
+        if (
+            tokenIdToTraits[tokenId].baseProductivity >
+            prevBeeTraits.baseProductivity
+        ) {
+            hiveManager.updateHiveProductivity(hiveId, tokenId);
+        }
         tokenURIs[tokenId] = _getTokenURI(tokenId);
     }
 
@@ -396,6 +538,150 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         uint256 healthRefreshed = _amountHealthRefreshed(tokenId);
         if (healthRefreshed > 0) {
             beeTraits.health = healthRefreshed;
+        }
+    }
+
+    /**
+     * @dev Updates the foraging quests progress for a bee.
+     * Only the Hive contract can call this function.
+     * @param hiveId The ID of the hive.
+     * @param tokenId The ID of the token to update.
+     */
+    function updateForagingQuestCount(
+        uint256 hiveId,
+        uint256 tokenId
+    ) external onlyHive {
+        require(_exists(tokenId), "Token does not exist");
+        uint256 currentBeeLevel = getBeeLevel(tokenId);
+        uint256 accomplishedForagingQuestsBefore = beeQuestTracking[tokenId][
+            currentBeeLevel
+        ].forageCount;
+        uint256 amountQuestsRequired = getForagingNumQuestsForLevel(
+            currentBeeLevel
+        );
+
+        beeQuestTracking[tokenId][currentBeeLevel].forageCount++;
+
+        if (
+            accomplishedForagingQuestsBefore < amountQuestsRequired &&
+            beeQuestTracking[tokenId][currentBeeLevel].forageCount >=
+            amountQuestsRequired
+        ) {
+            tokenIdToTraits[tokenId].experience +=
+                IGameConfig(buzzkillAddressProvider.gameConfigAddress())
+                    .experienceEarnedAfterForage() *
+                amountQuestsRequired;
+            if (getBeeLevel(tokenId) > currentBeeLevel) {
+                levelUpBeeAndUpdateHiveStatus(hiveId, tokenId);
+            }
+        }
+    }
+
+    /**
+     * @dev Updates the raid quests progress for a bee.
+     * Only the Hive contract can call this function.
+     * @param hiveId The ID of the hive.
+     * @param tokenId The ID of the token to update.
+     */
+    function updateRaidQuestCount(
+        uint256 hiveId,
+        uint256 tokenId
+    ) external onlyHive {
+        require(_exists(tokenId), "Token does not exist");
+        uint256 currentBeeLevel = getBeeLevel(tokenId);
+        uint256 accomplishedRaidQuestsBefore = beeQuestTracking[tokenId][
+            currentBeeLevel
+        ].raidCount;
+        uint256 amountQuestsRequired = getRaidNumQuestsForLevel(
+            currentBeeLevel
+        );
+
+        beeQuestTracking[tokenId][currentBeeLevel].raidCount++;
+
+        if (
+            accomplishedRaidQuestsBefore < amountQuestsRequired &&
+            beeQuestTracking[tokenId][currentBeeLevel].raidCount >=
+            amountQuestsRequired
+        ) {
+            tokenIdToTraits[tokenId].experience +=
+                IGameConfig(buzzkillAddressProvider.gameConfigAddress())
+                    .experienceEarnedAfterRaidFailed() *
+                amountQuestsRequired;
+            if (getBeeLevel(tokenId) > currentBeeLevel) {
+                levelUpBeeAndUpdateHiveStatus(hiveId, tokenId);
+            }
+        }
+    }
+
+    /**
+     * @dev Updates the raid success quests progress for a bee.
+     * Only the Hive contract can call this function.
+     * @param hiveId The ID of the hive.
+     * @param tokenId The ID of the token to update.
+     */
+    function updateRaidSuccessQuestCount(
+        uint256 hiveId,
+        uint256 tokenId
+    ) external onlyHive {
+        require(_exists(tokenId), "Token does not exist");
+        uint256 currentBeeLevel = getBeeLevel(tokenId);
+        uint256 accomplishedRaidSuccessQuestsBefore = beeQuestTracking[tokenId][
+            currentBeeLevel
+        ].raidSuccessCount;
+        uint256 amountQuestsRequired = getRaidSuccessNumQuestsForLevel(
+            currentBeeLevel
+        );
+
+        beeQuestTracking[tokenId][currentBeeLevel].raidSuccessCount++;
+
+        if (
+            accomplishedRaidSuccessQuestsBefore < amountQuestsRequired &&
+            beeQuestTracking[tokenId][currentBeeLevel].raidSuccessCount >=
+            amountQuestsRequired
+        ) {
+            tokenIdToTraits[tokenId].experience +=
+                IGameConfig(buzzkillAddressProvider.gameConfigAddress())
+                    .experienceEarnedAfterRaidSuccess() *
+                amountQuestsRequired;
+            if (getBeeLevel(tokenId) > currentBeeLevel) {
+                levelUpBeeAndUpdateHiveStatus(hiveId, tokenId);
+            }
+        }
+    }
+
+    /**
+     * @dev Updates the upgrade quests progress for a bee.
+     * Only the Hive contract can call this function.
+     * @param hiveId The ID of the hive.
+     * @param tokenId The ID of the token to update.
+     */
+    function updateUpgradeQuestCount(
+        uint256 hiveId,
+        uint256 tokenId
+    ) external onlyHive {
+        require(_exists(tokenId), "Token does not exist");
+        uint256 currentBeeLevel = getBeeLevel(tokenId);
+        uint256 accomplishedUpgradeQuestsBefore = beeQuestTracking[tokenId][
+            currentBeeLevel
+        ].upgradeCount;
+        uint256 amountQuestsRequired = getUpgradeNumQuestsForLevel(
+            currentBeeLevel
+        );
+
+        beeQuestTracking[tokenId][currentBeeLevel].upgradeCount++;
+        
+        if (
+            accomplishedUpgradeQuestsBefore < amountQuestsRequired &&
+            beeQuestTracking[tokenId][currentBeeLevel].upgradeCount >=
+            amountQuestsRequired
+        ) {
+            tokenIdToTraits[tokenId].experience +=
+                IGameConfig(buzzkillAddressProvider.gameConfigAddress())
+                    .experienceEarnedAfterUpgrade() *
+                amountQuestsRequired;
+            if (getBeeLevel(tokenId) > currentBeeLevel) {
+                levelUpBeeAndUpdateHiveStatus(hiveId, tokenId);
+            }
         }
     }
 
@@ -451,6 +737,36 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
      */
     function unpause() external onlyOwner {
         super._unpause();
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*  Private functions                                                         */
+    /* -------------------------------------------------------------------------- */
+    function _upgradeBeeTraitsOnLevelUp(uint256 _tokenId) private {
+        BeeTraits storage beeTraits = tokenIdToTraits[_tokenId];
+
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        // Level up
+        beeTraits.level = getBeeLevel(_tokenId);
+        beeTraits.attack += gameConfig.amountAttackIncreaseOnLevelUp();
+        beeTraits.defense += gameConfig.amountDefenseIncreaseOnLevelUp();
+        beeTraits.forage += gameConfig.amountForageIncreaseOnLevelUp();
+        beeTraits.energy += gameConfig.amountEnergyIncreaseOnLevelUp();
+        beeTraits.health += gameConfig.amountHealthIncreaseOnLevelUp();
+        beeTraits.maxProductivity += gameConfig
+            .amountMaxProductivityIncreaseOnLevelUp();
+        if (
+            beeTraits.baseProductivity +
+                gameConfig.amountBaseProductivityIncreaseOnLevelUp() >
+            beeTraits.maxProductivity
+        ) {
+            beeTraits.baseProductivity = beeTraits.maxProductivity;
+        } else {
+            beeTraits.baseProductivity += gameConfig
+                .amountBaseProductivityIncreaseOnLevelUp();
+        }
     }
 
     /* -------------------------------------------------------------------------- */

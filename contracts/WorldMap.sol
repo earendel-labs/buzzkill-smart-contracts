@@ -28,7 +28,7 @@ contract WorldMap is Ownable {
         uint256 pollen,
         uint256 sap,
         uint256 energyDeductionAfterForage,
-        uint256 productivityBoostAfterForage
+        uint256 incentiveEarnAfterForage
     );
 
     /* -------------------------------------------------------------------------- */
@@ -43,7 +43,7 @@ contract WorldMap is Ownable {
     struct HabitatInfo {
         uint256 lastRefreshTime;
         uint256 energyDeductionAfterForage;
-        uint256 productivityBoostAfterForage;
+        uint256 incentiveEarnAfterForage;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -131,15 +131,15 @@ contract WorldMap is Ownable {
     }
 
     /**
-     * @dev Get the amount of productivity boost after foraging in a habitat.
+     * @dev Get the amount of incentive earned after foraging in a habitat.
      * @param _habitatId The habitat ID.
-     * @return The amount of productivity boost after foraging.
+     * @return The amount of incentive earned after foraging.
      */
-    function getAmountProductivityBoostAfterForage(
+    function getAmountIncentiveEarnAfterForage(
         uint256 _habitatId
     ) external view returns (uint256) {
         HabitatInfo storage habitat = habitatsInfo[_habitatId];
-        return habitat.productivityBoostAfterForage;
+        return habitat.incentiveEarnAfterForage;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -312,14 +312,14 @@ contract WorldMap is Ownable {
      * @param pollen The amount of pollen in the habitat. Range from 1 to 100
      * @param sap The amount of sap in the habitat. Range from 1 to 100
      * @param _energyDeductionAfterForage The energy deduction after foraging.
-     * @param _productivityBoostAfterForage The productivity boost after foraging.
+     * @param _incentiveEarnAfterForage The incentive earned after foraging.
      */
     function addHabitat(
         uint256 nectar,
         uint256 pollen,
         uint256 sap,
         uint256 _energyDeductionAfterForage,
-        uint256 _productivityBoostAfterForage
+        uint256 _incentiveEarnAfterForage
     ) external onlyOwner {
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
@@ -346,11 +346,11 @@ contract WorldMap is Ownable {
             pollen,
             sap
         );
-        // Habitat info is initialized with the energy deduction and productivity boost values
+        // Habitat info is initialized with the energy deduction and incentive earned values
         habitatsInfo[newHabitatId] = HabitatInfo(
             block.timestamp,
             _energyDeductionAfterForage,
-            _productivityBoostAfterForage
+            _incentiveEarnAfterForage
         );
 
         currentHabitatId++;
@@ -361,7 +361,7 @@ contract WorldMap is Ownable {
             pollen,
             sap,
             _energyDeductionAfterForage,
-            _productivityBoostAfterForage
+            _incentiveEarnAfterForage
         );
     }
 }

@@ -375,6 +375,29 @@ contract HiveManager is Initializable {
         hives[_hiveId].hiveDefense += beeTraits.defense;
     }
 
+    function updateHiveProductivity(uint256 _hiveId, uint256 _tokenId) external {
+                IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
+            buzzkillAddressProvider.buzzkillNFTAddress()
+        );
+        if (_hiveId >= totalHives) {
+            revert HiveNotExists();
+        }
+        if (
+            buzzkillNFT.ownerOf(_tokenId) != address(this) &&
+            beeStatus[_hiveId][_tokenId].owner == address(0)
+        ) {
+            revert BeeNotInHive();
+        }
+
+        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
+            _tokenId
+        );
+
+        hives[_hiveId].hiveProductivity -= beeStatus[_hiveId][_tokenId].beeProductivity;
+        beeStatus[_hiveId][_tokenId].beeProductivity = beeTraits.baseProductivity;
+        hives[_hiveId].hiveDefense += beeTraits.baseProductivity;
+    }
+
     /**
      * @dev Stake a Bee NFT to the hive. The hive can only have a maximum of 3 queens and 55 workers.
      * @param _hiveId The hive ID.
@@ -569,9 +592,8 @@ contract HiveManager is Initializable {
 
         uint256 productivityEarned = IWorldMap(
             buzzkillAddressProvider.worldMapAddress()
-        ).getAmountProductivityBoostAfterForage(_habitatId);
+        ).getAmountIncentiveEarnAfterForage(_habitatId);
 
-        // hives[_hiveId].hiveProductivity += productivityEarned;
         beeTraits.energy -= energyDeduction;
         beeTraits.experience += gameConfig.experienceEarnedAfterForage();
 
@@ -674,8 +696,7 @@ contract HiveManager is Initializable {
                 .experienceEarnedAfterRaidFailed();
         }
 
-        bee.beeProductivity += gameConfig.productivityEarnAfterRaid();
-        hive.hiveProductivity += gameConfig.productivityEarnAfterRaid();
+        bee.beeWorkIncentive += gameConfig.incentiveEarnAfterRaid();
 
         buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
 
@@ -683,7 +704,7 @@ contract HiveManager is Initializable {
             _tokenId,
             _hiveId,
             amountHoneyRaided,
-            gameConfig.productivityEarnAfterRaid(),
+            gameConfig.incentiveEarnAfterRaid(),
             beeTraits.experience
         );
     }
