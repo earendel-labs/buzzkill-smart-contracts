@@ -50,7 +50,111 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "amountAttackIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountBaseProductivityIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountDefenseIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountEnergyIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountForageIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountHealthIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountMaxProductivityIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "amountToLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseEnergyDeductionAfterRaid",
     outputs: [
       {
         internalType: "uint256",
@@ -115,6 +219,58 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "baseNumberOfForagingQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseNumberOfRaidQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseNumberOfRaidSuccessQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseNumberOfUpgradeQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "beeEnergyRefreshInterval",
     outputs: [
       {
@@ -142,6 +298,19 @@ const _abi = [
   {
     inputs: [],
     name: "claimTimeInterval",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "differenceBetweenLevels",
     outputs: [
       {
         internalType: "uint256",
@@ -193,6 +362,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "experienceEarnedAfterUpgrade",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "foragePercentage",
     outputs: [
       {
@@ -219,7 +401,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "maxEnergyDeductionValue",
+    name: "incentiveEarnAfterRaid",
     outputs: [
       {
         internalType: "uint256",
@@ -271,19 +453,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "minEnergyDeductionValue",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "minResourcesValue",
     outputs: [
       {
@@ -298,19 +467,6 @@ const _abi = [
   {
     inputs: [],
     name: "nectarRequiredToClaim",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "productivityEarnAfterRaid",
     outputs: [
       {
         internalType: "uint256",
@@ -364,11 +520,115 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "_amountAttackIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountAttackIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountBaseProductivityIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountBaseProductivityIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountDefenseIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountDefenseIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountEnergyIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountEnergyIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountForageIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountForageIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountHealthIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountHealthIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountMaxProductivityIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountMaxProductivityIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_amountToLevelUp",
         type: "uint256",
       },
     ],
     name: "setAmountToLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseEnergyDeductionAfterRaid",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseEnergyDeductionAfterRaid",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -421,6 +681,58 @@ const _abi = [
       },
     ],
     name: "setBaseIncentivePerEpoch",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfForagingQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfForagingQuest",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfRaidQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfRaidQuest",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfRaidSuccessQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfRaidSuccessQuest",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfUpgradeQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfUpgradeQuest",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -507,6 +819,19 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "_differenceBetweenLevels",
+        type: "uint256",
+      },
+    ],
+    name: "setDifferenceBetweenLevels",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_experienceEarnedAfterForage",
         type: "uint256",
       },
@@ -546,6 +871,19 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "_experienceEarnedAfterUpgrade",
+        type: "uint256",
+      },
+    ],
+    name: "setExperienceEarnedAfterUpgrade",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_foragePercentage",
         type: "uint256",
       },
@@ -572,11 +910,11 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_maxEnergyDeductionValue",
+        name: "_IncentiveEarnAfterRaid",
         type: "uint256",
       },
     ],
-    name: "setMaxEnergyDeductionValue",
+    name: "setIncentiveEarnAfterRaid",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -624,19 +962,6 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_minEnergyDeductionValue",
-        type: "uint256",
-      },
-    ],
-    name: "setMinEnergyDeductionValue",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
         name: "_minResourcesValue",
         type: "uint256",
       },
@@ -655,19 +980,6 @@ const _abi = [
       },
     ],
     name: "setNectarRequiredToClaim",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_productivityEarnAfterRaid",
-        type: "uint256",
-      },
-    ],
-    name: "setProductivityEarnAfterRaid",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

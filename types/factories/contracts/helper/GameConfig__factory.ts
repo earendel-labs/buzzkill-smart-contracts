@@ -53,11 +53,115 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "newAmountAttackIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "AmountAttackIncreaseOnLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newAmountBaseProductivityIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "AmountBaseProductivityIncreaseOnLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newAmountDefenseIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "AmountDefenseIncreaseOnLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newAmountEnergyIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "AmountEnergyIncreaseOnLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newAmountForageIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "AmountForageIncreaseOnLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newAmountHealthIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "AmountHealthIncreaseOnLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newAmountMaxProductivityIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "AmountMaxProductivityIncreaseOnLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "newAmountToLevelUp",
         type: "uint256",
       },
     ],
     name: "AmountToLevelUpChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBaseEnergyDeductionAfterRaid",
+        type: "uint256",
+      },
+    ],
+    name: "BaseEnergyDeductionAfterRaidChanged",
     type: "event",
   },
   {
@@ -84,6 +188,84 @@ const _abi = [
       },
     ],
     name: "BaseHoneyRaidRewardChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBaseHoneyYield",
+        type: "uint256",
+      },
+    ],
+    name: "BaseHoneyYieldChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBaseIncentivePerEpoch",
+        type: "uint256",
+      },
+    ],
+    name: "BaseIncentivePerEpochChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBaseNumberOfForagingQuest",
+        type: "uint256",
+      },
+    ],
+    name: "BaseNumberOfForagingQuestChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBaseNumberOfRaidQuest",
+        type: "uint256",
+      },
+    ],
+    name: "BaseNumberOfRaidQuestChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBaseNumberOfRaidSuccessQuest",
+        type: "uint256",
+      },
+    ],
+    name: "BaseNumberOfRaidSuccessQuestChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newBaseNumberOfUpgradeQuest",
+        type: "uint256",
+      },
+    ],
+    name: "BaseNumberOfUpgradeQuestChanged",
     type: "event",
   },
   {
@@ -170,6 +352,19 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "newDifferenceBetweenLevels",
+        type: "uint256",
+      },
+    ],
+    name: "DifferenceBetweenLevelsChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "newExperienceEarnedAfterForage",
         type: "uint256",
       },
@@ -209,6 +404,19 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "newExperienceEarnedAfterUpgrade",
+        type: "uint256",
+      },
+    ],
+    name: "ExperienceEarnedAfterUpgradeChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "newForagePercentage",
         type: "uint256",
       },
@@ -227,6 +435,19 @@ const _abi = [
       },
     ],
     name: "HoneyYieldConstantChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newIncentiveEarnAfterRaid",
+        type: "uint256",
+      },
+    ],
+    name: "IncentiveEarnAfterRaidChanged",
     type: "event",
   },
   {
@@ -358,19 +579,6 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "newProductivityEarnAfterRaid",
-        type: "uint256",
-      },
-    ],
-    name: "ProductivityEarnAfterRaidChanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
         name: "newRaidHoneyFee",
         type: "uint256",
       },
@@ -445,7 +653,111 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "amountAttackIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountBaseProductivityIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountDefenseIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountEnergyIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountForageIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountHealthIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "amountMaxProductivityIncreaseOnLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "amountToLevelUp",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseEnergyDeductionAfterRaid",
     outputs: [
       {
         internalType: "uint256",
@@ -510,6 +822,58 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "baseNumberOfForagingQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseNumberOfRaidQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseNumberOfRaidSuccessQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseNumberOfUpgradeQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "beeEnergyRefreshInterval",
     outputs: [
       {
@@ -537,6 +901,19 @@ const _abi = [
   {
     inputs: [],
     name: "claimTimeInterval",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "differenceBetweenLevels",
     outputs: [
       {
         internalType: "uint256",
@@ -588,6 +965,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "experienceEarnedAfterUpgrade",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "foragePercentage",
     outputs: [
       {
@@ -614,14 +1004,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "maxEnergyDeductionValue",
+    name: "incentiveEarnAfterRaid",
     outputs: [
       {
         internalType: "uint256",
@@ -630,6 +1013,13 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -661,19 +1051,6 @@ const _abi = [
   {
     inputs: [],
     name: "maxWorker",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "minEnergyDeductionValue",
     outputs: [
       {
         internalType: "uint256",
@@ -718,19 +1095,6 @@ const _abi = [
         internalType: "address",
         name: "",
         type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "productivityEarnAfterRaid",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -786,11 +1150,115 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "_amountAttackIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountAttackIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountBaseProductivityIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountBaseProductivityIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountDefenseIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountDefenseIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountEnergyIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountEnergyIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountForageIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountForageIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountHealthIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountHealthIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amountMaxProductivityIncreaseOnLevelUp",
+        type: "uint256",
+      },
+    ],
+    name: "setAmountMaxProductivityIncreaseOnLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_amountToLevelUp",
         type: "uint256",
       },
     ],
     name: "setAmountToLevelUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseEnergyDeductionAfterRaid",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseEnergyDeductionAfterRaid",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -843,6 +1311,58 @@ const _abi = [
       },
     ],
     name: "setBaseIncentivePerEpoch",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfForagingQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfForagingQuest",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfRaidQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfRaidQuest",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfRaidSuccessQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfRaidSuccessQuest",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_baseNumberOfUpgradeQuest",
+        type: "uint256",
+      },
+    ],
+    name: "setBaseNumberOfUpgradeQuest",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -929,6 +1449,19 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "_differenceBetweenLevels",
+        type: "uint256",
+      },
+    ],
+    name: "setDifferenceBetweenLevels",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_experienceEarnedAfterForage",
         type: "uint256",
       },
@@ -968,6 +1501,19 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "_experienceEarnedAfterUpgrade",
+        type: "uint256",
+      },
+    ],
+    name: "setExperienceEarnedAfterUpgrade",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_foragePercentage",
         type: "uint256",
       },
@@ -994,11 +1540,11 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_maxEnergyDeductionValue",
+        name: "_incentiveEarnAfterRaid",
         type: "uint256",
       },
     ],
-    name: "setMaxEnergyDeductionValue",
+    name: "setIncentiveEarnAfterRaid",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1046,19 +1592,6 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_minEnergyDeductionValue",
-        type: "uint256",
-      },
-    ],
-    name: "setMinEnergyDeductionValue",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
         name: "_minResourcesValue",
         type: "uint256",
       },
@@ -1077,19 +1610,6 @@ const _abi = [
       },
     ],
     name: "setNectarRequiredToClaim",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_productivityEarnAfterRaid",
-        type: "uint256",
-      },
-    ],
-    name: "setProductivityEarnAfterRaid",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1149,7 +1669,7 @@ const _abi = [
 ] as const;
 
 const _bytecode =
-  "0x608060405234801561001057600080fd5b506110c1806100206000396000f3fe608060405234801561001057600080fd5b506004361061038e5760003560e01c806387063ead116101de578063bfcce4f61161010f578063d656ccd6116100ad578063eeeb7ad21161007c578063eeeb7ad2146106c1578063f2fde38b146106ca578063f8ac2843146106dd578063ff2c4b03146106e657600080fd5b8063d656ccd614610689578063d9403d161461069c578063dc33615c146106af578063e35ef3b4146106b857600080fd5b8063c8a93336116100e9578063c8a9333614610647578063ca7f790a14610650578063cabae1a514610663578063d375a9b41461067657600080fd5b8063bfcce4f614610618578063c3cee85b1461062b578063c688e25d1461063e57600080fd5b8063b6d075751161017c578063b96d7e9211610156578063b96d7e92146105ea578063b9e59a07146105fd578063ba7f387814610606578063bcd47fc01461060f57600080fd5b8063b6d07575146105c5578063b6f9cf6a146105ce578063b7de13c1146105d757600080fd5b80638ff0ae37116101b85780638ff0ae3714610597578063945b6123146105a05780639a1aa197146105a9578063adfa1647146105bc57600080fd5b806387063ead1461054b5780638ccf96d7146105545780638da5cb5b1461055d57600080fd5b80633cf4766b116102c357806364a817bf116102615780637f19b63c116102305780637f19b63c146105145780637f50b6fd146105275780638129fc1c146105305780638454964a1461053857600080fd5b806364a817bf146104d3578063715018a6146104e657806371cc9f84146104ee5780637391c4431461050157600080fd5b80634c5bd4a11161029d5780634c5bd4a114610487578063591bd0051461049a5780635ce7e020146104ad578063646216e4146104c057600080fd5b80633cf4766b1461046c5780633d6e3e6514610475578063477e8c411461047e57600080fd5b8063265670e7116103305780632bb16c1e1161030a5780632bb16c1e1461042a5780632e4157a21461043d57806337a11a631461045057806337b769b91461045957600080fd5b8063265670e714610405578063290059951461040e5780632aa26b3c1461042157600080fd5b80630c52bbbc1161036c5780630c52bbbc146103ce578063166ce745146103ea57806316b24c0b146103f35780631ffc45a3146103fc57600080fd5b806305657e371461039357806308e388fd146103a85780630a232149146103bb575b600080fd5b6103a66103a1366004611042565b6106f9565b005b6103a66103b6366004611042565b61073d565b6103a66103c9366004611042565b61077a565b6103d760155481565b6040519081526020015b60405180910390f35b6103d760095481565b6103d7600c5481565b6103d760175481565b6103d760085481565b6103a661041c366004611042565b6107b7565b6103d760005481565b6103a6610438366004611042565b6107f4565b6103a661044b366004611042565b610831565b6103d7600b5481565b6103a6610467366004611042565b61086e565b6103d760115481565b6103d760015481565b6103d760075481565b6103a6610495366004611042565b6108ab565b6103a66104a8366004611042565b6108e8565b6103a66104bb366004611042565b610925565b6103a66104ce366004611042565b610932565b6103a66104e1366004611042565b61096f565b6103a66109ac565b6103a66104fc366004611042565b6109c0565b6103a661050f366004611042565b6109fd565b6103a6610522366004611042565b610a3a565b6103d760055481565b6103a6610a77565b6103a6610546366004611042565b610c25565b6103d760065481565b6103d760035481565b7f9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300546040516001600160a01b0390911681526020016103e1565b6103d760025481565b6103d760045481565b6103a66105b7366004611042565b610c62565b6103d7600d5481565b6103d7600f5481565b6103d760185481565b6103a66105e5366004611042565b610c9f565b6103a66105f8366004611042565b610cac565b6103d760165481565b6103d7601a5481565b6103d760145481565b6103a6610626366004611042565b610ce9565b6103a6610639366004611042565b610d26565b6103d7600e5481565b6103d7600a5481565b6103a661065e366004611042565b610d63565b6103a6610671366004611042565b610da0565b6103a6610684366004611042565b610ddd565b6103a6610697366004611042565b610e1a565b6103a66106aa366004611042565b610e57565b6103d760105481565b6103d760195481565b6103d760135481565b6103a66106d836600461105b565b610e94565b6103d760125481565b6103a66106f4366004611042565b610ed7565b610701610f14565b60048190556040518181527facde2766dd9eadbc2048ec6df042a0936d90cd33e001208c8d67178b71659f04906020015b60405180910390a150565b610745610f14565b600d8190556040518181527fae2c222c862b4f99f464f4ec1139235115b8af76ca1d549d522ec24a1dd1185e90602001610732565b610782610f14565b60028190556040518181527f23ce6c0b03287ba198c044954569964448f7592f31cb440a0af6f03f2cf807b690602001610732565b6107bf610f14565b600a8190556040518181527f0afd5f9d14537a9ab54988defa08e7dba8a7271114f2c659ff964462509d32ee90602001610732565b6107fc610f14565b601a8190556040518181527fe8178b6234ca6e8722b598550f4812863f24666d11be0cf90888a4d742de769290602001610732565b610839610f14565b60038190556040518181527f49f2206a0e7b2869449ef5811e305726864b18da1f7518a483f992a8caeb290890602001610732565b610876610f14565b60118190556040518181527fe9150848e042d928d5abcf8253e2c1e765ebfb694373fea6baadf38cb660ba6990602001610732565b6108b3610f14565b600b8190556040518181527ffb0b0afd7f18b8148d17d12c3fde1e6dcaebed6e9d0f74c7f2f8fc06a43cd23690602001610732565b6108f0610f14565b60198190556040518181527f3b6d88b7545a257675b7563e084f4872308dc11e39297157aef24d36e579059a90602001610732565b61092d610f14565b601755565b61093a610f14565b60068190556040518181527f74554d08a65764ce3fdf443a333eddd368b2c716d9e661c0049d99eaf4fd333690602001610732565b610977610f14565b60158190556040518181527f4ee50028b6e404f0f8853cd723ed638dfe11a02f31edf100ba689040c386cb2090602001610732565b6109b4610f14565b6109be6000610f6f565b565b6109c8610f14565b60188190556040518181527f282b23c71f5a94df850ea42e0728094bf316b90ffda3f690e0ccbe90125843bb90602001610732565b610a05610f14565b600f8190556040518181527f4a974ed13d8a08353ce9900ff624982773a6289f21bdb3a2f2ecca062979893290602001610732565b610a42610f14565b60128190556040518181527f672d0592dd1f0ee85645ceed655fc8cbb16bd616e45ec2caeaf16299e6be94a590602001610732565b7ff0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a008054600160401b810460ff16159067ffffffffffffffff16600081158015610abd5750825b905060008267ffffffffffffffff166001148015610ada5750303b155b905081158015610ae8575080155b15610b065760405163f92ee8a960e01b815260040160405180910390fd5b845467ffffffffffffffff191660011785558315610b3057845460ff60401b1916600160401b1785555b610b3933610fe0565b6201518060008190556001818155606460028190556003805560376004556101f4600590815562093a80600655620186a06007556103e860085560146009819055600a808055601e600b55600c839055678ac7230489e80000600d819055600e859055600f556010556011929092556012839055601355908155601591909155670de0b6b3a76400006016556017556161a860188190556019819055601a558315610c1e57845460ff60401b19168555604051600181527fc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d29060200160405180910390a15b5050505050565b610c2d610f14565b60098190556040518181527f84d1f8d2c9ba454b06df43183ae338b2b5a74577165a4f6da4bf9fb1c97150b990602001610732565b610c6a610f14565b60008190556040518181527f22fe2223e14ea505e8019060275c616c925fe1b70ac950d69710607cae7dbdb490602001610732565b610ca7610f14565b601655565b610cb4610f14565b60078190556040518181527f6f22eee821d9a1be7f38eb2bb9dd0079d15218a35ae8b2a76edb58da09745bfa90602001610732565b610cf1610f14565b60108190556040518181527f37922645ead4cf90188f0a4bbaf4d7024527062c6dbb7935e2b0c5dd5e93a14c90602001610732565b610d2e610f14565b60148190556040518181527f72d13688fb5cfd8d2a1274e1ed6f2632dfe603cd82d672d443fc6b0c05030a9b90602001610732565b610d6b610f14565b60088190556040518181527f2ff566136cf6fdd04afd45f5a82fd17dfe63d4c97ab769b17cc58a970ff836a090602001610732565b610da8610f14565b60058190556040518181527fc0f54bca20d00cc23e3a07d08226264ab44cfa8047b5f1811e03337a46370b8a90602001610732565b610de5610f14565b60018190556040518181527ffb17b2d1826d4e33039da2bf34ab0fe52c237879b381da3eddfe3a2a3c5f225890602001610732565b610e22610f14565b60138190556040518181527f23957cd2dc14a1aedfe6601744a9b208807bffe4891fb3726e7c618f8686b24090602001610732565b610e5f610f14565b600c8190556040518181527fe8a9347956404e5db33e93654506ddb13e7c6308729fddabd3b46aed46b8e41c90602001610732565b610e9c610f14565b6001600160a01b038116610ecb57604051631e4fbdf760e01b8152600060048201526024015b60405180910390fd5b610ed481610f6f565b50565b610edf610f14565b600e8190556040518181527f6783c913461f586fec289f9970953a3374484aa9a21f174d64d14ddb8c87963390602001610732565b33610f467f9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300546001600160a01b031690565b6001600160a01b0316146109be5760405163118cdaa760e01b8152336004820152602401610ec2565b7f9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c19930080546001600160a01b031981166001600160a01b03848116918217845560405192169182907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3505050565b610fe8610ff1565b610ed48161103a565b7ff0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a0054600160401b900460ff166109be57604051631afcd79f60e31b815260040160405180910390fd5b610e9c610ff1565b60006020828403121561105457600080fd5b5035919050565b60006020828403121561106d57600080fd5b81356001600160a01b038116811461108457600080fd5b939250505056fea26469706673582212200f7d8a61e45ff40c69481f3283da578099ef500901647b6971c92747080ab76264736f6c63430008180033";
+  "0x608060405234801561001057600080fd5b50611698806100206000396000f3fe608060405234801561001057600080fd5b50600436106104965760003560e01c80638129fc1c11610262578063ba7f387811610151578063e35ef3b4116100ce578063f5e2dfa111610092578063f5e2dfa1146108f3578063f65ebdf814610906578063f7d9426d1461090f578063f7f583e614610922578063f8ac284314610935578063ff2c4b031461093e57600080fd5b8063e35ef3b4146108b2578063ecec5076146108bb578063f28508b6146108c4578063f2fde38b146108cd578063f4d10be1146108e057600080fd5b8063cabae1a511610115578063cabae1a514610853578063cb949e3214610866578063cc0344dc14610879578063d375a9b41461088c578063d9403d161461089f57600080fd5b8063ba7f387814610812578063bce321661461081b578063c688e25d1461082e578063c8a9333614610837578063ca7f790a1461084057600080fd5b8063a158298a116101df578063b6d07575116101a3578063b6d07575146107d1578063b6f9cf6a146107da578063b7de13c1146107e3578063b96d7e92146107f6578063b9e59a071461080957600080fd5b8063a158298a1461079a578063a37acd07146107ad578063aa2018b9146107b6578063adfa1647146107bf578063b308b103146107c857600080fd5b80638ff0ae37116102265780638ff0ae3714610763578063908cf6ec1461076c57806390ca239014610775578063945b61231461077e5780639a1aa1971461078757600080fd5b80638129fc1c146106fc5780638454964a1461070457806387063ead146107175780638ccf96d7146107205780638da5cb5b1461072957600080fd5b806331c66828116103895780635ce7e0201161030657806371cc9f84116102ca57806371cc9f84146106945780637391c443146106a75780637497b7f3146106ba5780637701c733146106cd5780637f19b63c146106e05780637f50b6fd146106f357600080fd5b80635ce7e02014610640578063646216e41461065357806364a817bf14610666578063710f2a2d14610679578063715018a61461068c57600080fd5b8063448021891161034d57806344802189146105f5578063477e8c41146106085780634c5bd4a11461061157806352539b7914610624578063591bd0051461062d57600080fd5b806331c66828146105b457806337a11a63146105c757806337b769b9146105d05780633cf4766b146105e35780633d6e3e65146105ec57600080fd5b80631ecfc8dc116104175780632aa26b3c116103db5780632aa26b3c146105695780632bb16c1e146105725780632e4157a2146105855780632ef3a8ae14610598578063303e966a146105a157600080fd5b80631ecfc8dc146105325780631ffc45a31461053b578063265670e7146105445780632694f2a51461054d578063290059951461055657600080fd5b806310a2028a1161045e57806310a2028a146104fb57806314f97f3a14610504578063166ce7451461050d57806316b24c0b146105165780631ebc34c81461051f57600080fd5b806304dbe8731461049b57806305657e37146104b757806308e388fd146104cc5780630a232149146104df5780630c52bbbc146104f2575b600080fd5b6104a4601c5481565b6040519081526020015b60405180910390f35b6104ca6104c5366004611619565b610951565b005b6104ca6104da366004611619565b610995565b6104ca6104ed366004611619565b6109d2565b6104a460155481565b6104a460205481565b6104a4600e5481565b6104a460095481565b6104a4600d5481565b6104ca61052d366004611619565b610a0f565b6104a460215481565b6104a460175481565b6104a460085481565b6104a460195481565b6104ca610564366004611619565b610a4c565b6104a460005481565b6104ca610580366004611619565b610a89565b6104ca610593366004611619565b610ac6565b6104a460225481565b6104ca6105af366004611619565b610b03565b6104ca6105c2366004611619565b610b40565b6104a4600b5481565b6104ca6105de366004611619565b610b7d565b6104a460135481565b6104a460015481565b6104ca610603366004611619565b610bba565b6104a460075481565b6104ca61061f366004611619565b610bf7565b6104a4601f5481565b6104ca61063b366004611619565b610c34565b6104ca61064e366004611619565b610c71565b6104ca610661366004611619565b610cae565b6104ca610674366004611619565b610ceb565b6104ca610687366004611619565b610d28565b6104ca610d65565b6104ca6106a2366004611619565b610d79565b6104ca6106b5366004611619565b610db6565b6104ca6106c8366004611619565b610df3565b6104ca6106db366004611619565b610e30565b6104ca6106ee366004611619565b610e6d565b6104a460055481565b6104ca610eaa565b6104ca610712366004611619565b61109d565b6104a460065481565b6104a460035481565b7f9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300546040516001600160a01b0390911681526020016104ae565b6104a460025481565b6104a460235481565b6104a460125481565b6104a460045481565b6104ca610795366004611619565b6110da565b6104ca6107a8366004611619565b611117565b6104a4601d5481565b6104a4601b5481565b6104a4600f5481565b6104a460185481565b6104a460115481565b6104a460245481565b6104ca6107f1366004611619565b611154565b6104ca610804366004611619565b611191565b6104a460165481565b6104a460265481565b6104ca610829366004611619565b6111ce565b6104a460105481565b6104a4600a5481565b6104ca61084e366004611619565b61120b565b6104ca610861366004611619565b611248565b6104ca610874366004611619565b611285565b6104ca610887366004611619565b6112c2565b6104ca61089a366004611619565b6112ff565b6104ca6108ad366004611619565b61133c565b6104a460255481565b6104a4600c5481565b6104a4601a5481565b6104ca6108db366004611632565b611379565b6104ca6108ee366004611619565b6113bc565b6104ca610901366004611619565b6113f9565b6104a4601e5481565b6104ca61091d366004611619565b611434565b6104ca610930366004611619565b611471565b6104a460145481565b6104ca61094c366004611619565b6114ae565b6109596114eb565b60048190556040518181527facde2766dd9eadbc2048ec6df042a0936d90cd33e001208c8d67178b71659f04906020015b60405180910390a150565b61099d6114eb565b600f8190556040518181527fae2c222c862b4f99f464f4ec1139235115b8af76ca1d549d522ec24a1dd1185e9060200161098a565b6109da6114eb565b60028190556040518181527f23ce6c0b03287ba198c044954569964448f7592f31cb440a0af6f03f2cf807b69060200161098a565b610a176114eb565b600c8190556040518181527f5bcafd59963fd74fd4215944ae0ea6eada8614ac4fda3f21a22ea75ec612b09e9060200161098a565b610a546114eb565b600a8190556040518181527f0afd5f9d14537a9ab54988defa08e7dba8a7271114f2c659ff964462509d32ee9060200161098a565b610a916114eb565b60268190556040518181527fe8178b6234ca6e8722b598550f4812863f24666d11be0cf90888a4d742de76929060200161098a565b610ace6114eb565b60038190556040518181527f49f2206a0e7b2869449ef5811e305726864b18da1f7518a483f992a8caeb29089060200161098a565b610b0b6114eb565b601d8190556040518181527f8c9b928307ad87642f3b837f5bdebe46edeb2b3a90b5900371f12b46907813be9060200161098a565b610b486114eb565b601e8190556040518181527fd639c5fabe952b77b2fb5a3ac8b6c0efc5f54743bd25b5e705a8be2ed61f08009060200161098a565b610b856114eb565b60138190556040518181527fe9150848e042d928d5abcf8253e2c1e765ebfb694373fea6baadf38cb660ba699060200161098a565b610bc26114eb565b60228190556040518181527f3e19fb39f056ceffb517ca24e6ae1cb1cdedffb06910c7ece74309ecc932e9ff9060200161098a565b610bff6114eb565b600b8190556040518181527ffb0b0afd7f18b8148d17d12c3fde1e6dcaebed6e9d0f74c7f2f8fc06a43cd2369060200161098a565b610c3c6114eb565b60258190556040518181527f3b6d88b7545a257675b7563e084f4872308dc11e39297157aef24d36e579059a9060200161098a565b610c796114eb565b60178190556040518181527f897d3d775de88c12ed6d0d8630fab583eee6806327dbd54f0ea38158d7f95aa99060200161098a565b610cb66114eb565b60068190556040518181527f74554d08a65764ce3fdf443a333eddd368b2c716d9e661c0049d99eaf4fd33369060200161098a565b610cf36114eb565b60158190556040518181527f4ee50028b6e404f0f8853cd723ed638dfe11a02f31edf100ba689040c386cb209060200161098a565b610d306114eb565b60198190556040518181527fdb2e1e4f8416e3438a36f2b7b87096f113f40a83df5f5828878ef802844e89f19060200161098a565b610d6d6114eb565b610d776000611546565b565b610d816114eb565b60248190556040518181527f282b23c71f5a94df850ea42e0728094bf316b90ffda3f690e0ccbe90125843bb9060200161098a565b610dbe6114eb565b60118190556040518181527f4a974ed13d8a08353ce9900ff624982773a6289f21bdb3a2f2ecca06297989329060200161098a565b610dfb6114eb565b60238190556040518181527f8987c1ce953e061d6465823375cd86ef1065cf2efe84a29fc0fa286d3e509c4d9060200161098a565b610e386114eb565b601b8190556040518181527f12dd9d64fd19d3ea715925948ed4e23febde025a55de83972b0949dc9ba19e889060200161098a565b610e756114eb565b60148190556040518181527f672d0592dd1f0ee85645ceed655fc8cbb16bd616e45ec2caeaf16299e6be94a59060200161098a565b7ff0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a008054600160401b810460ff16159067ffffffffffffffff16600081158015610ef05750825b905060008267ffffffffffffffff166001148015610f0d5750303b155b905081158015610f1b575080155b15610f395760405163f92ee8a960e01b815260040160405180910390fd5b845467ffffffffffffffff191660011785558315610f6357845460ff60401b1916600160401b1785555b610f6c336115b7565b62015180600081905560018181556064600281815560038055603760049081556101f4600590815562093a80600655620186a06007556103e8600855600a60098190556014808255600b819055601e600c819055600d93909355600e819055678ac7230489e80000600f8190556010879055601155601291909155601394909455848455601595909555670de0b6b3a764000060165560179290925560c86018556019839055601a819055601b819055601c819055601d83905592839055601f82905560205560219190915560228190556023556161a860248190556025819055602655831561109657845460ff60401b19168555604051600181527fc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d29060200160405180910390a15b5050505050565b6110a56114eb565b60098190556040518181527f84d1f8d2c9ba454b06df43183ae338b2b5a74577165a4f6da4bf9fb1c97150b99060200161098a565b6110e26114eb565b60008190556040518181527f22fe2223e14ea505e8019060275c616c925fe1b70ac950d69710607cae7dbdb49060200161098a565b61111f6114eb565b60188190556040518181527fbf6ef1fa5e95913e4f91fc33985fa16b61c5ff8b24c9ce2ed5f8f2b8843479029060200161098a565b61115c6114eb565b60168190556040518181527f10394d59fbecff59e12f8fafcf6eaa334d910c97091a0bcbb2802dc9ad34e0809060200161098a565b6111996114eb565b60078190556040518181527f6f22eee821d9a1be7f38eb2bb9dd0079d15218a35ae8b2a76edb58da09745bfa9060200161098a565b6111d66114eb565b601c8190556040518181527f77ff37a2d3a03061afc9df837e0d6be8909c9435c88b40b2629678fa6aa9def79060200161098a565b6112136114eb565b60088190556040518181527f2ff566136cf6fdd04afd45f5a82fd17dfe63d4c97ab769b17cc58a970ff836a09060200161098a565b6112506114eb565b60058190556040518181527fc0f54bca20d00cc23e3a07d08226264ab44cfa8047b5f1811e03337a46370b8a9060200161098a565b61128d6114eb565b601f8190556040518181527f3af1adeca8bed71526593ea1fe3782341626d1c9f93b53b3a2609dd19f0cd3359060200161098a565b6112ca6114eb565b60128190556040518181527f80400bce596e93663b4b48654080dd105b59e8d9293e732a4959dc58871669f49060200161098a565b6113076114eb565b60018190556040518181527ffb17b2d1826d4e33039da2bf34ab0fe52c237879b381da3eddfe3a2a3c5f22589060200161098a565b6113446114eb565b600d8190556040518181527fe8a9347956404e5db33e93654506ddb13e7c6308729fddabd3b46aed46b8e41c9060200161098a565b6113816114eb565b6001600160a01b0381166113b057604051631e4fbdf760e01b8152600060048201526024015b60405180910390fd5b6113b981611546565b50565b6113c46114eb565b60218190556040518181527fd693406f847930c5a69ba437f7ac31a093f3a74d1d6c78506b81fcc8e0f02db89060200161098a565b6114016114eb565b60208181556040518281527f4b2c78d0f6f37d314437eacf70687ef8393be366880003d234489e0b1cb874c3910161098a565b61143c6114eb565b601a8190556040518181527f78c4c77597a919fd36764fbf4b8051d1e8a84d6996178e894b9ce68e3545355e9060200161098a565b6114796114eb565b600e8190556040518181527f12ee07eb98d7d395e7fdcb20fbd3a14878c48dff40a4464fa5c3dfe3e15b73a69060200161098a565b6114b66114eb565b60108190556040518181527f6783c913461f586fec289f9970953a3374484aa9a21f174d64d14ddb8c8796339060200161098a565b3361151d7f9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c199300546001600160a01b031690565b6001600160a01b031614610d775760405163118cdaa760e01b81523360048201526024016113a7565b7f9016d09d72d40fdae2fd8ceac6b6234c7706214fd39c1cd1e609a0528c19930080546001600160a01b031981166001600160a01b03848116918217845560405192169182907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a3505050565b6115bf6115c8565b6113b981611611565b7ff0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a0054600160401b900460ff16610d7757604051631afcd79f60e31b815260040160405180910390fd5b6113816115c8565b60006020828403121561162b57600080fd5b5035919050565b60006020828403121561164457600080fd5b81356001600160a01b038116811461165b57600080fd5b939250505056fea2646970667358221220ff6e1f42e370feeabaef26af9c133e3f3b27c02675645293c9c5badbcd61573464736f6c63430008180033";
 
 type GameConfigConstructorParams =
   | [signer?: Signer]

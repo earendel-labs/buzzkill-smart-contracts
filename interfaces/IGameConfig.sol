@@ -17,14 +17,13 @@ interface IGameConfig {
     function experienceEarnedAfterRaidSuccess() external view returns (uint256);
     function experienceEarnedAfterUpgrade() external view returns (uint256);
     function baseHealthDeductionAfterRaid() external view returns (uint256);
+    function baseEnergyDeductionAfterRaid() external view returns (uint256);
     function raidHoneyFee() external view returns (uint256);
     function raidSapFee() external view returns (uint256);
     function baseHoneyRaidReward() external view returns (uint256);
     function incentiveEarnAfterRaid() external view returns (uint256);
     function maxResourcesValue() external view returns (uint256);
     function minResourcesValue() external view returns (uint256);
-    function maxEnergyDeductionValue() external view returns (uint256);
-    function minEnergyDeductionValue() external view returns (uint256);
     function resourcesRefreshInterval() external view returns (uint256);
     function baseHoneyYield() external view returns (uint256);
     function baseIncentivePerEpoch() external view returns (uint256);
@@ -79,6 +78,9 @@ interface IGameConfig {
     function setBaseHealthDeductionAfterRaid(
         uint256 _baseHealthDeductionAfterRaid
     ) external;
+    function setBaseEnergyDeductionAfterRaid(
+        uint256 _baseEnergyDeductionAfterRaid
+    ) external;
     function setRaidHoneyFee(uint256 _raidHoneyFee) external;
     function setRaidSapFee(uint256 _raidSapFee) external;
     function setBaseHoneyRaidReward(uint256 _baseHoneyRaidReward) external;
@@ -87,12 +89,6 @@ interface IGameConfig {
     ) external;
     function setMaxResourcesValue(uint256 _maxResourcesValue) external;
     function setMinResourcesValue(uint256 _minResourcesValue) external;
-    function setMaxEnergyDeductionValue(
-        uint256 _maxEnergyDeductionValue
-    ) external;
-    function setMinEnergyDeductionValue(
-        uint256 _minEnergyDeductionValue
-    ) external;
     function setResourcesRefreshInterval(
         uint256 _resourcesRefreshInterval
     ) external;

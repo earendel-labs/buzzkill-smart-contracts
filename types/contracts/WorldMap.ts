@@ -35,7 +35,7 @@ export interface WorldMapInterface extends Interface {
       | "currentHabitatId"
       | "forage"
       | "getAmountEnergyDeductionAfterForage"
-      | "getAmountProductivityBoostAfterForage"
+      | "getAmountIncentiveEarnAfterForage"
       | "getHabitatResources"
       | "getInitialHabitatResources"
       | "habitatsInfo"
@@ -85,7 +85,7 @@ export interface WorldMapInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getAmountProductivityBoostAfterForage",
+    functionFragment: "getAmountIncentiveEarnAfterForage",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -144,7 +144,7 @@ export interface WorldMapInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getAmountProductivityBoostAfterForage",
+    functionFragment: "getAmountIncentiveEarnAfterForage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -189,7 +189,7 @@ export namespace HabitatAddedEvent {
     pollen: BigNumberish,
     sap: BigNumberish,
     energyDeductionAfterForage: BigNumberish,
-    productivityBoostAfterForage: BigNumberish
+    incentiveEarnAfterForage: BigNumberish
   ];
   export type OutputTuple = [
     habitatId: bigint,
@@ -197,7 +197,7 @@ export namespace HabitatAddedEvent {
     pollen: bigint,
     sap: bigint,
     energyDeductionAfterForage: bigint,
-    productivityBoostAfterForage: bigint
+    incentiveEarnAfterForage: bigint
   ];
   export interface OutputObject {
     habitatId: bigint;
@@ -205,7 +205,7 @@ export namespace HabitatAddedEvent {
     pollen: bigint;
     sap: bigint;
     energyDeductionAfterForage: bigint;
-    productivityBoostAfterForage: bigint;
+    incentiveEarnAfterForage: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -283,7 +283,7 @@ export interface WorldMap extends BaseContract {
       pollen: BigNumberish,
       sap: BigNumberish,
       _energyDeductionAfterForage: BigNumberish,
-      _productivityBoostAfterForage: BigNumberish
+      _incentiveEarnAfterForage: BigNumberish
     ],
     [void],
     "nonpayable"
@@ -311,7 +311,7 @@ export interface WorldMap extends BaseContract {
     "view"
   >;
 
-  getAmountProductivityBoostAfterForage: TypedContractMethod<
+  getAmountIncentiveEarnAfterForage: TypedContractMethod<
     [_habitatId: BigNumberish],
     [bigint],
     "view"
@@ -335,7 +335,7 @@ export interface WorldMap extends BaseContract {
       [bigint, bigint, bigint] & {
         lastRefreshTime: bigint;
         energyDeductionAfterForage: bigint;
-        productivityBoostAfterForage: bigint;
+        incentiveEarnAfterForage: bigint;
       }
     ],
     "view"
@@ -387,7 +387,7 @@ export interface WorldMap extends BaseContract {
       pollen: BigNumberish,
       sap: BigNumberish,
       _energyDeductionAfterForage: BigNumberish,
-      _productivityBoostAfterForage: BigNumberish
+      _incentiveEarnAfterForage: BigNumberish
     ],
     [void],
     "nonpayable"
@@ -415,7 +415,7 @@ export interface WorldMap extends BaseContract {
     nameOrSignature: "getAmountEnergyDeductionAfterForage"
   ): TypedContractMethod<[_habitatId: BigNumberish], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getAmountProductivityBoostAfterForage"
+    nameOrSignature: "getAmountIncentiveEarnAfterForage"
   ): TypedContractMethod<[_habitatId: BigNumberish], [bigint], "view">;
   getFunction(
     nameOrSignature: "getHabitatResources"
@@ -439,7 +439,7 @@ export interface WorldMap extends BaseContract {
       [bigint, bigint, bigint] & {
         lastRefreshTime: bigint;
         energyDeductionAfterForage: bigint;
-        productivityBoostAfterForage: bigint;
+        incentiveEarnAfterForage: bigint;
       }
     ],
     "view"

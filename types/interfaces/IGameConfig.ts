@@ -26,54 +26,78 @@ export interface IGameConfigInterface extends Interface {
       | "Cn"
       | "Cp"
       | "Cs"
+      | "amountAttackIncreaseOnLevelUp"
+      | "amountBaseProductivityIncreaseOnLevelUp"
+      | "amountDefenseIncreaseOnLevelUp"
+      | "amountEnergyIncreaseOnLevelUp"
+      | "amountForageIncreaseOnLevelUp"
+      | "amountHealthIncreaseOnLevelUp"
+      | "amountMaxProductivityIncreaseOnLevelUp"
       | "amountToLevelUp"
+      | "baseEnergyDeductionAfterRaid"
       | "baseHealthDeductionAfterRaid"
       | "baseHoneyRaidReward"
       | "baseHoneyYield"
       | "baseIncentivePerEpoch"
+      | "baseNumberOfForagingQuest"
+      | "baseNumberOfRaidQuest"
+      | "baseNumberOfRaidSuccessQuest"
+      | "baseNumberOfUpgradeQuest"
       | "beeEnergyRefreshInterval"
       | "beeHealthRefreshInterval"
       | "claimTimeInterval"
+      | "differenceBetweenLevels"
       | "experienceEarnedAfterForage"
       | "experienceEarnedAfterRaidFailed"
       | "experienceEarnedAfterRaidSuccess"
+      | "experienceEarnedAfterUpgrade"
       | "foragePercentage"
       | "honeyYieldConstant"
-      | "maxEnergyDeductionValue"
+      | "incentiveEarnAfterRaid"
       | "maxQueen"
       | "maxResourcesValue"
       | "maxWorker"
-      | "minEnergyDeductionValue"
       | "minResourcesValue"
       | "nectarRequiredToClaim"
-      | "productivityEarnAfterRaid"
       | "raidHoneyFee"
       | "raidSapFee"
       | "resourcesRefreshInterval"
+      | "setAmountAttackIncreaseOnLevelUp"
+      | "setAmountBaseProductivityIncreaseOnLevelUp"
+      | "setAmountDefenseIncreaseOnLevelUp"
+      | "setAmountEnergyIncreaseOnLevelUp"
+      | "setAmountForageIncreaseOnLevelUp"
+      | "setAmountHealthIncreaseOnLevelUp"
+      | "setAmountMaxProductivityIncreaseOnLevelUp"
       | "setAmountToLevelUp"
+      | "setBaseEnergyDeductionAfterRaid"
       | "setBaseHealthDeductionAfterRaid"
       | "setBaseHoneyRaidReward"
       | "setBaseHoneyYield"
       | "setBaseIncentivePerEpoch"
+      | "setBaseNumberOfForagingQuest"
+      | "setBaseNumberOfRaidQuest"
+      | "setBaseNumberOfRaidSuccessQuest"
+      | "setBaseNumberOfUpgradeQuest"
       | "setBeeEnergyRefreshInterval"
       | "setBeeHealthRefreshInterval"
       | "setClaimTimeInterval"
       | "setCn"
       | "setCp"
       | "setCs"
+      | "setDifferenceBetweenLevels"
       | "setExperienceEarnedAfterForage"
       | "setExperienceEarnedAfterRaidFailed"
       | "setExperienceEarnedAfterRaidSuccess"
+      | "setExperienceEarnedAfterUpgrade"
       | "setForagePercentage"
       | "setHoneyYieldConstant"
-      | "setMaxEnergyDeductionValue"
+      | "setIncentiveEarnAfterRaid"
       | "setMaxQueen"
       | "setMaxResourcesValue"
       | "setMaxWorker"
-      | "setMinEnergyDeductionValue"
       | "setMinResourcesValue"
       | "setNectarRequiredToClaim"
-      | "setProductivityEarnAfterRaid"
       | "setRaidHoneyFee"
       | "setRaidSapFee"
       | "setResourcesRefreshInterval"
@@ -83,7 +107,39 @@ export interface IGameConfigInterface extends Interface {
   encodeFunctionData(functionFragment: "Cp", values?: undefined): string;
   encodeFunctionData(functionFragment: "Cs", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "amountAttackIncreaseOnLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "amountBaseProductivityIncreaseOnLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "amountDefenseIncreaseOnLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "amountEnergyIncreaseOnLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "amountForageIncreaseOnLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "amountHealthIncreaseOnLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "amountMaxProductivityIncreaseOnLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "amountToLevelUp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "baseEnergyDeductionAfterRaid",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -103,6 +159,22 @@ export interface IGameConfigInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "baseNumberOfForagingQuest",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "baseNumberOfRaidQuest",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "baseNumberOfRaidSuccessQuest",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "baseNumberOfUpgradeQuest",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "beeEnergyRefreshInterval",
     values?: undefined
   ): string;
@@ -112,6 +184,10 @@ export interface IGameConfigInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "claimTimeInterval",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "differenceBetweenLevels",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -127,6 +203,10 @@ export interface IGameConfigInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "experienceEarnedAfterUpgrade",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "foragePercentage",
     values?: undefined
   ): string;
@@ -135,7 +215,7 @@ export interface IGameConfigInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "maxEnergyDeductionValue",
+    functionFragment: "incentiveEarnAfterRaid",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "maxQueen", values?: undefined): string;
@@ -145,19 +225,11 @@ export interface IGameConfigInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "maxWorker", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "minEnergyDeductionValue",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "minResourcesValue",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "nectarRequiredToClaim",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "productivityEarnAfterRaid",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -173,7 +245,39 @@ export interface IGameConfigInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setAmountAttackIncreaseOnLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAmountBaseProductivityIncreaseOnLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAmountDefenseIncreaseOnLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAmountEnergyIncreaseOnLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAmountForageIncreaseOnLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAmountHealthIncreaseOnLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAmountMaxProductivityIncreaseOnLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setAmountToLevelUp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBaseEnergyDeductionAfterRaid",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -193,6 +297,22 @@ export interface IGameConfigInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setBaseNumberOfForagingQuest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBaseNumberOfRaidQuest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBaseNumberOfRaidSuccessQuest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBaseNumberOfUpgradeQuest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setBeeEnergyRefreshInterval",
     values: [BigNumberish]
   ): string;
@@ -208,6 +328,10 @@ export interface IGameConfigInterface extends Interface {
   encodeFunctionData(functionFragment: "setCp", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "setCs", values: [BigNumberish]): string;
   encodeFunctionData(
+    functionFragment: "setDifferenceBetweenLevels",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setExperienceEarnedAfterForage",
     values: [BigNumberish]
   ): string;
@@ -220,6 +344,10 @@ export interface IGameConfigInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setExperienceEarnedAfterUpgrade",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setForagePercentage",
     values: [BigNumberish]
   ): string;
@@ -228,7 +356,7 @@ export interface IGameConfigInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMaxEnergyDeductionValue",
+    functionFragment: "setIncentiveEarnAfterRaid",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -244,19 +372,11 @@ export interface IGameConfigInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMinEnergyDeductionValue",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setMinResourcesValue",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setNectarRequiredToClaim",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setProductivityEarnAfterRaid",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -276,7 +396,39 @@ export interface IGameConfigInterface extends Interface {
   decodeFunctionResult(functionFragment: "Cp", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "Cs", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "amountAttackIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "amountBaseProductivityIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "amountDefenseIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "amountEnergyIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "amountForageIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "amountHealthIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "amountMaxProductivityIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "amountToLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "baseEnergyDeductionAfterRaid",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -296,6 +448,22 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "baseNumberOfForagingQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "baseNumberOfRaidQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "baseNumberOfRaidSuccessQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "baseNumberOfUpgradeQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "beeEnergyRefreshInterval",
     data: BytesLike
   ): Result;
@@ -305,6 +473,10 @@ export interface IGameConfigInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "claimTimeInterval",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "differenceBetweenLevels",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -320,6 +492,10 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "experienceEarnedAfterUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "foragePercentage",
     data: BytesLike
   ): Result;
@@ -328,7 +504,7 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "maxEnergyDeductionValue",
+    functionFragment: "incentiveEarnAfterRaid",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "maxQueen", data: BytesLike): Result;
@@ -338,19 +514,11 @@ export interface IGameConfigInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "maxWorker", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "minEnergyDeductionValue",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "minResourcesValue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "nectarRequiredToClaim",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "productivityEarnAfterRaid",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -363,7 +531,39 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setAmountAttackIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAmountBaseProductivityIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAmountDefenseIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAmountEnergyIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAmountForageIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAmountHealthIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setAmountMaxProductivityIncreaseOnLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setAmountToLevelUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setBaseEnergyDeductionAfterRaid",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -383,6 +583,22 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setBaseNumberOfForagingQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setBaseNumberOfRaidQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setBaseNumberOfRaidSuccessQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setBaseNumberOfUpgradeQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setBeeEnergyRefreshInterval",
     data: BytesLike
   ): Result;
@@ -398,6 +614,10 @@ export interface IGameConfigInterface extends Interface {
   decodeFunctionResult(functionFragment: "setCp", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setCs", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "setDifferenceBetweenLevels",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setExperienceEarnedAfterForage",
     data: BytesLike
   ): Result;
@@ -410,6 +630,10 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setExperienceEarnedAfterUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setForagePercentage",
     data: BytesLike
   ): Result;
@@ -418,7 +642,7 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setMaxEnergyDeductionValue",
+    functionFragment: "setIncentiveEarnAfterRaid",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -434,19 +658,11 @@ export interface IGameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setMinEnergyDeductionValue",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "setMinResourcesValue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setNectarRequiredToClaim",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setProductivityEarnAfterRaid",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -512,7 +728,31 @@ export interface IGameConfig extends BaseContract {
 
   Cs: TypedContractMethod<[], [bigint], "view">;
 
+  amountAttackIncreaseOnLevelUp: TypedContractMethod<[], [bigint], "view">;
+
+  amountBaseProductivityIncreaseOnLevelUp: TypedContractMethod<
+    [],
+    [bigint],
+    "view"
+  >;
+
+  amountDefenseIncreaseOnLevelUp: TypedContractMethod<[], [bigint], "view">;
+
+  amountEnergyIncreaseOnLevelUp: TypedContractMethod<[], [bigint], "view">;
+
+  amountForageIncreaseOnLevelUp: TypedContractMethod<[], [bigint], "view">;
+
+  amountHealthIncreaseOnLevelUp: TypedContractMethod<[], [bigint], "view">;
+
+  amountMaxProductivityIncreaseOnLevelUp: TypedContractMethod<
+    [],
+    [bigint],
+    "view"
+  >;
+
   amountToLevelUp: TypedContractMethod<[], [bigint], "view">;
+
+  baseEnergyDeductionAfterRaid: TypedContractMethod<[], [bigint], "view">;
 
   baseHealthDeductionAfterRaid: TypedContractMethod<[], [bigint], "view">;
 
@@ -522,11 +762,21 @@ export interface IGameConfig extends BaseContract {
 
   baseIncentivePerEpoch: TypedContractMethod<[], [bigint], "view">;
 
+  baseNumberOfForagingQuest: TypedContractMethod<[], [bigint], "view">;
+
+  baseNumberOfRaidQuest: TypedContractMethod<[], [bigint], "view">;
+
+  baseNumberOfRaidSuccessQuest: TypedContractMethod<[], [bigint], "view">;
+
+  baseNumberOfUpgradeQuest: TypedContractMethod<[], [bigint], "view">;
+
   beeEnergyRefreshInterval: TypedContractMethod<[], [bigint], "view">;
 
   beeHealthRefreshInterval: TypedContractMethod<[], [bigint], "view">;
 
   claimTimeInterval: TypedContractMethod<[], [bigint], "view">;
+
+  differenceBetweenLevels: TypedContractMethod<[], [bigint], "view">;
 
   experienceEarnedAfterForage: TypedContractMethod<[], [bigint], "view">;
 
@@ -534,11 +784,13 @@ export interface IGameConfig extends BaseContract {
 
   experienceEarnedAfterRaidSuccess: TypedContractMethod<[], [bigint], "view">;
 
+  experienceEarnedAfterUpgrade: TypedContractMethod<[], [bigint], "view">;
+
   foragePercentage: TypedContractMethod<[], [bigint], "view">;
 
   honeyYieldConstant: TypedContractMethod<[], [bigint], "view">;
 
-  maxEnergyDeductionValue: TypedContractMethod<[], [bigint], "view">;
+  incentiveEarnAfterRaid: TypedContractMethod<[], [bigint], "view">;
 
   maxQueen: TypedContractMethod<[], [bigint], "view">;
 
@@ -546,13 +798,9 @@ export interface IGameConfig extends BaseContract {
 
   maxWorker: TypedContractMethod<[], [bigint], "view">;
 
-  minEnergyDeductionValue: TypedContractMethod<[], [bigint], "view">;
-
   minResourcesValue: TypedContractMethod<[], [bigint], "view">;
 
   nectarRequiredToClaim: TypedContractMethod<[], [bigint], "view">;
-
-  productivityEarnAfterRaid: TypedContractMethod<[], [bigint], "view">;
 
   raidHoneyFee: TypedContractMethod<[], [bigint], "view">;
 
@@ -560,8 +808,56 @@ export interface IGameConfig extends BaseContract {
 
   resourcesRefreshInterval: TypedContractMethod<[], [bigint], "view">;
 
+  setAmountAttackIncreaseOnLevelUp: TypedContractMethod<
+    [_amountAttackIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setAmountBaseProductivityIncreaseOnLevelUp: TypedContractMethod<
+    [_amountBaseProductivityIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setAmountDefenseIncreaseOnLevelUp: TypedContractMethod<
+    [_amountDefenseIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setAmountEnergyIncreaseOnLevelUp: TypedContractMethod<
+    [_amountEnergyIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setAmountForageIncreaseOnLevelUp: TypedContractMethod<
+    [_amountForageIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setAmountHealthIncreaseOnLevelUp: TypedContractMethod<
+    [_amountHealthIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setAmountMaxProductivityIncreaseOnLevelUp: TypedContractMethod<
+    [_amountMaxProductivityIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   setAmountToLevelUp: TypedContractMethod<
     [_amountToLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setBaseEnergyDeductionAfterRaid: TypedContractMethod<
+    [_baseEnergyDeductionAfterRaid: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -590,6 +886,30 @@ export interface IGameConfig extends BaseContract {
     "nonpayable"
   >;
 
+  setBaseNumberOfForagingQuest: TypedContractMethod<
+    [_baseNumberOfForagingQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setBaseNumberOfRaidQuest: TypedContractMethod<
+    [_baseNumberOfRaidQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setBaseNumberOfRaidSuccessQuest: TypedContractMethod<
+    [_baseNumberOfRaidSuccessQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setBaseNumberOfUpgradeQuest: TypedContractMethod<
+    [_baseNumberOfUpgradeQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   setBeeEnergyRefreshInterval: TypedContractMethod<
     [_beeEnergyRefreshInterval: BigNumberish],
     [void],
@@ -614,6 +934,12 @@ export interface IGameConfig extends BaseContract {
 
   setCs: TypedContractMethod<[_Cs: BigNumberish], [void], "nonpayable">;
 
+  setDifferenceBetweenLevels: TypedContractMethod<
+    [_differenceBetweenLevels: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   setExperienceEarnedAfterForage: TypedContractMethod<
     [_experienceEarnedAfterForage: BigNumberish],
     [void],
@@ -632,6 +958,12 @@ export interface IGameConfig extends BaseContract {
     "nonpayable"
   >;
 
+  setExperienceEarnedAfterUpgrade: TypedContractMethod<
+    [_experienceEarnedAfterUpgrade: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   setForagePercentage: TypedContractMethod<
     [_foragePercentage: BigNumberish],
     [void],
@@ -644,8 +976,8 @@ export interface IGameConfig extends BaseContract {
     "nonpayable"
   >;
 
-  setMaxEnergyDeductionValue: TypedContractMethod<
-    [_maxEnergyDeductionValue: BigNumberish],
+  setIncentiveEarnAfterRaid: TypedContractMethod<
+    [_IncentiveEarnAfterRaid: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -668,12 +1000,6 @@ export interface IGameConfig extends BaseContract {
     "nonpayable"
   >;
 
-  setMinEnergyDeductionValue: TypedContractMethod<
-    [_minEnergyDeductionValue: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
   setMinResourcesValue: TypedContractMethod<
     [_minResourcesValue: BigNumberish],
     [void],
@@ -682,12 +1008,6 @@ export interface IGameConfig extends BaseContract {
 
   setNectarRequiredToClaim: TypedContractMethod<
     [_nectarRequiredToClaim: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  setProductivityEarnAfterRaid: TypedContractMethod<
-    [_productivityEarnAfterRaid: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -718,7 +1038,31 @@ export interface IGameConfig extends BaseContract {
   getFunction(nameOrSignature: "Cp"): TypedContractMethod<[], [bigint], "view">;
   getFunction(nameOrSignature: "Cs"): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "amountAttackIncreaseOnLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "amountBaseProductivityIncreaseOnLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "amountDefenseIncreaseOnLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "amountEnergyIncreaseOnLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "amountForageIncreaseOnLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "amountHealthIncreaseOnLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "amountMaxProductivityIncreaseOnLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "amountToLevelUp"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "baseEnergyDeductionAfterRaid"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "baseHealthDeductionAfterRaid"
@@ -733,6 +1077,18 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "baseIncentivePerEpoch"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "baseNumberOfForagingQuest"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "baseNumberOfRaidQuest"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "baseNumberOfRaidSuccessQuest"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "baseNumberOfUpgradeQuest"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "beeEnergyRefreshInterval"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
@@ -740,6 +1096,9 @@ export interface IGameConfig extends BaseContract {
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "claimTimeInterval"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "differenceBetweenLevels"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "experienceEarnedAfterForage"
@@ -751,13 +1110,16 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "experienceEarnedAfterRaidSuccess"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "experienceEarnedAfterUpgrade"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "foragePercentage"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "honeyYieldConstant"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "maxEnergyDeductionValue"
+    nameOrSignature: "incentiveEarnAfterRaid"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "maxQueen"
@@ -769,16 +1131,10 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "maxWorker"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "minEnergyDeductionValue"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "minResourcesValue"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "nectarRequiredToClaim"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "productivityEarnAfterRaid"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "raidHoneyFee"
@@ -790,9 +1146,65 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "resourcesRefreshInterval"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "setAmountAttackIncreaseOnLevelUp"
+  ): TypedContractMethod<
+    [_amountAttackIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setAmountBaseProductivityIncreaseOnLevelUp"
+  ): TypedContractMethod<
+    [_amountBaseProductivityIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setAmountDefenseIncreaseOnLevelUp"
+  ): TypedContractMethod<
+    [_amountDefenseIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setAmountEnergyIncreaseOnLevelUp"
+  ): TypedContractMethod<
+    [_amountEnergyIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setAmountForageIncreaseOnLevelUp"
+  ): TypedContractMethod<
+    [_amountForageIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setAmountHealthIncreaseOnLevelUp"
+  ): TypedContractMethod<
+    [_amountHealthIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setAmountMaxProductivityIncreaseOnLevelUp"
+  ): TypedContractMethod<
+    [_amountMaxProductivityIncreaseOnLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "setAmountToLevelUp"
   ): TypedContractMethod<
     [_amountToLevelUp: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBaseEnergyDeductionAfterRaid"
+  ): TypedContractMethod<
+    [_baseEnergyDeductionAfterRaid: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -817,6 +1229,34 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "setBaseIncentivePerEpoch"
   ): TypedContractMethod<
     [_baseIncentivePerEpoch: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBaseNumberOfForagingQuest"
+  ): TypedContractMethod<
+    [_baseNumberOfForagingQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBaseNumberOfRaidQuest"
+  ): TypedContractMethod<
+    [_baseNumberOfRaidQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBaseNumberOfRaidSuccessQuest"
+  ): TypedContractMethod<
+    [_baseNumberOfRaidSuccessQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBaseNumberOfUpgradeQuest"
+  ): TypedContractMethod<
+    [_baseNumberOfUpgradeQuest: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -851,6 +1291,13 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "setCs"
   ): TypedContractMethod<[_Cs: BigNumberish], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "setDifferenceBetweenLevels"
+  ): TypedContractMethod<
+    [_differenceBetweenLevels: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "setExperienceEarnedAfterForage"
   ): TypedContractMethod<
     [_experienceEarnedAfterForage: BigNumberish],
@@ -872,6 +1319,13 @@ export interface IGameConfig extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "setExperienceEarnedAfterUpgrade"
+  ): TypedContractMethod<
+    [_experienceEarnedAfterUpgrade: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "setForagePercentage"
   ): TypedContractMethod<
     [_foragePercentage: BigNumberish],
@@ -886,9 +1340,9 @@ export interface IGameConfig extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "setMaxEnergyDeductionValue"
+    nameOrSignature: "setIncentiveEarnAfterRaid"
   ): TypedContractMethod<
-    [_maxEnergyDeductionValue: BigNumberish],
+    [_IncentiveEarnAfterRaid: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -906,13 +1360,6 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "setMaxWorker"
   ): TypedContractMethod<[_maxWorker: BigNumberish], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "setMinEnergyDeductionValue"
-  ): TypedContractMethod<
-    [_minEnergyDeductionValue: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
     nameOrSignature: "setMinResourcesValue"
   ): TypedContractMethod<
     [_minResourcesValue: BigNumberish],
@@ -923,13 +1370,6 @@ export interface IGameConfig extends BaseContract {
     nameOrSignature: "setNectarRequiredToClaim"
   ): TypedContractMethod<
     [_nectarRequiredToClaim: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "setProductivityEarnAfterRaid"
-  ): TypedContractMethod<
-    [_productivityEarnAfterRaid: BigNumberish],
     [void],
     "nonpayable"
   >;

@@ -30,7 +30,10 @@ export declare namespace BuzzkillNFT {
     attack: BigNumberish;
     defense: BigNumberish;
     forage: BigNumberish;
+    baseProductivity: BigNumberish;
+    maxProductivity: BigNumberish;
     experience: BigNumberish;
+    level: BigNumberish;
     nectar: BigNumberish;
     pollen: BigNumberish;
     sap: BigNumberish;
@@ -42,7 +45,10 @@ export declare namespace BuzzkillNFT {
     attack: bigint,
     defense: bigint,
     forage: bigint,
+    baseProductivity: bigint,
+    maxProductivity: bigint,
     experience: bigint,
+    level: bigint,
     nectar: bigint,
     pollen: bigint,
     sap: bigint
@@ -52,7 +58,10 @@ export declare namespace BuzzkillNFT {
     attack: bigint;
     defense: bigint;
     forage: bigint;
+    baseProductivity: bigint;
+    maxProductivity: bigint;
     experience: bigint;
+    level: bigint;
     nectar: bigint;
     pollen: bigint;
     sap: bigint;
@@ -72,12 +81,17 @@ export interface BuzzkillNFTInterface extends Interface {
       | "acceptOwnership"
       | "approve"
       | "balanceOf"
+      | "beeQuestTracking"
       | "burn"
       | "buzzkillAddressProvider"
       | "currentTokenId"
       | "getApproved"
       | "getBeeLevel"
       | "getBeeTraits"
+      | "getForagingNumQuestsForLevel"
+      | "getRaidNumQuestsForLevel"
+      | "getRaidSuccessNumQuestsForLevel"
+      | "getUpgradeNumQuestsForLevel"
       | "isApprovedForAll"
       | "issuer"
       | "minFee"
@@ -113,6 +127,10 @@ export interface BuzzkillNFTInterface extends Interface {
       | "transferFrom"
       | "transferOwnership"
       | "unpause"
+      | "updateForagingQuestCount"
+      | "updateRaidQuestCount"
+      | "updateRaidSuccessQuestCount"
+      | "updateUpgradeQuestCount"
       | "withdrawPayments"
       | "workerBeeImage"
   ): FunctionFragment;
@@ -162,6 +180,10 @@ export interface BuzzkillNFTInterface extends Interface {
     functionFragment: "balanceOf",
     values: [AddressLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "beeQuestTracking",
+    values: [BigNumberish, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "buzzkillAddressProvider",
@@ -181,6 +203,22 @@ export interface BuzzkillNFTInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getBeeTraits",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getForagingNumQuestsForLevel",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRaidNumQuestsForLevel",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRaidSuccessNumQuestsForLevel",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getUpgradeNumQuestsForLevel",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -297,6 +335,22 @@ export interface BuzzkillNFTInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "updateForagingQuestCount",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateRaidQuestCount",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateRaidSuccessQuestCount",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateUpgradeQuestCount",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "withdrawPayments",
     values: [AddressLike]
   ): string;
@@ -330,6 +384,10 @@ export interface BuzzkillNFTInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "beeQuestTracking",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "buzzkillAddressProvider",
@@ -349,6 +407,22 @@ export interface BuzzkillNFTInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getBeeTraits",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getForagingNumQuestsForLevel",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRaidNumQuestsForLevel",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRaidSuccessNumQuestsForLevel",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getUpgradeNumQuestsForLevel",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -443,6 +517,22 @@ export interface BuzzkillNFTInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "updateForagingQuestCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateRaidQuestCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateRaidSuccessQuestCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateUpgradeQuestCount",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "withdrawPayments",
     data: BytesLike
@@ -640,6 +730,19 @@ export interface BuzzkillNFT extends BaseContract {
 
   balanceOf: TypedContractMethod<[owner: AddressLike], [bigint], "view">;
 
+  beeQuestTracking: TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint] & {
+        forageCount: bigint;
+        raidCount: bigint;
+        raidSuccessCount: bigint;
+        upgradeCount: bigint;
+      }
+    ],
+    "view"
+  >;
+
   burn: TypedContractMethod<[tokenId: BigNumberish], [void], "nonpayable">;
 
   buzzkillAddressProvider: TypedContractMethod<[], [string], "view">;
@@ -653,6 +756,30 @@ export interface BuzzkillNFT extends BaseContract {
   getBeeTraits: TypedContractMethod<
     [tokenId: BigNumberish],
     [BuzzkillNFT.BeeTraitsStructOutput],
+    "view"
+  >;
+
+  getForagingNumQuestsForLevel: TypedContractMethod<
+    [level: BigNumberish],
+    [bigint],
+    "view"
+  >;
+
+  getRaidNumQuestsForLevel: TypedContractMethod<
+    [level: BigNumberish],
+    [bigint],
+    "view"
+  >;
+
+  getRaidSuccessNumQuestsForLevel: TypedContractMethod<
+    [level: BigNumberish],
+    [bigint],
+    "view"
+  >;
+
+  getUpgradeNumQuestsForLevel: TypedContractMethod<
+    [level: BigNumberish],
+    [bigint],
     "view"
   >;
 
@@ -678,7 +805,7 @@ export interface BuzzkillNFT extends BaseContract {
     [
       hiveId: BigNumberish,
       tokenId: BigNumberish,
-      _beeTraits: BuzzkillNFT.BeeTraitsStruct
+      _newBeeTraits: BuzzkillNFT.BeeTraitsStruct
     ],
     [void],
     "nonpayable"
@@ -804,6 +931,9 @@ export interface BuzzkillNFT extends BaseContract {
         bigint,
         bigint,
         bigint,
+        bigint,
+        bigint,
+        bigint,
         bigint
       ] & {
         energy: bigint;
@@ -811,7 +941,10 @@ export interface BuzzkillNFT extends BaseContract {
         attack: bigint;
         defense: bigint;
         forage: bigint;
+        baseProductivity: bigint;
+        maxProductivity: bigint;
         experience: bigint;
+        level: bigint;
         nectar: bigint;
         pollen: bigint;
         sap: bigint;
@@ -845,6 +978,30 @@ export interface BuzzkillNFT extends BaseContract {
   >;
 
   unpause: TypedContractMethod<[], [void], "nonpayable">;
+
+  updateForagingQuestCount: TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  updateRaidQuestCount: TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  updateRaidSuccessQuestCount: TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  updateUpgradeQuestCount: TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
   withdrawPayments: TypedContractMethod<
     [payee: AddressLike],
@@ -893,6 +1050,20 @@ export interface BuzzkillNFT extends BaseContract {
     nameOrSignature: "balanceOf"
   ): TypedContractMethod<[owner: AddressLike], [bigint], "view">;
   getFunction(
+    nameOrSignature: "beeQuestTracking"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint] & {
+        forageCount: bigint;
+        raidCount: bigint;
+        raidSuccessCount: bigint;
+        upgradeCount: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "burn"
   ): TypedContractMethod<[tokenId: BigNumberish], [void], "nonpayable">;
   getFunction(
@@ -914,6 +1085,18 @@ export interface BuzzkillNFT extends BaseContract {
     [BuzzkillNFT.BeeTraitsStructOutput],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "getForagingNumQuestsForLevel"
+  ): TypedContractMethod<[level: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getRaidNumQuestsForLevel"
+  ): TypedContractMethod<[level: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getRaidSuccessNumQuestsForLevel"
+  ): TypedContractMethod<[level: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getUpgradeNumQuestsForLevel"
+  ): TypedContractMethod<[level: BigNumberish], [bigint], "view">;
   getFunction(
     nameOrSignature: "isApprovedForAll"
   ): TypedContractMethod<
@@ -943,7 +1126,7 @@ export interface BuzzkillNFT extends BaseContract {
     [
       hiveId: BigNumberish,
       tokenId: BigNumberish,
-      _beeTraits: BuzzkillNFT.BeeTraitsStruct
+      _newBeeTraits: BuzzkillNFT.BeeTraitsStruct
     ],
     [void],
     "nonpayable"
@@ -1075,6 +1258,9 @@ export interface BuzzkillNFT extends BaseContract {
         bigint,
         bigint,
         bigint,
+        bigint,
+        bigint,
+        bigint,
         bigint
       ] & {
         energy: bigint;
@@ -1082,7 +1268,10 @@ export interface BuzzkillNFT extends BaseContract {
         attack: bigint;
         defense: bigint;
         forage: bigint;
+        baseProductivity: bigint;
+        maxProductivity: bigint;
         experience: bigint;
+        level: bigint;
         nectar: bigint;
         pollen: bigint;
         sap: bigint;
@@ -1119,6 +1308,34 @@ export interface BuzzkillNFT extends BaseContract {
   getFunction(
     nameOrSignature: "unpause"
   ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "updateForagingQuestCount"
+  ): TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "updateRaidQuestCount"
+  ): TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "updateRaidSuccessQuestCount"
+  ): TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "updateUpgradeQuestCount"
+  ): TypedContractMethod<
+    [hiveId: BigNumberish, tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "withdrawPayments"
   ): TypedContractMethod<[payee: AddressLike], [void], "nonpayable">;

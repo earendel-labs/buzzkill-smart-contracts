@@ -23,14 +23,13 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     uint256 public experienceEarnedAfterRaidSuccess; // 20 experience points earned after a successful raid
     uint256 public experienceEarnedAfterUpgrade; // 30 experience points earned after an upgrade
     uint256 public baseHealthDeductionAfterRaid; // 5 HP deducted after a raid
+    uint256 public baseEnergyDeductionAfterRaid; // 20 energy deducted after a raid
     uint256 public raidHoneyFee; // 10 $HONEY paid for one raid
     uint256 public raidSapFee; // 100 sap for one raid
     uint256 public baseHoneyRaidReward; // base honey earn for one raid success is 10 $HONEY
     uint256 public incentiveEarnAfterRaid; // 200 incentive points earned after a raid
     uint256 public maxResourcesValue; // The maximum density or availability of nectar, pollen, and sap in the environment is 100
     uint256 public minResourcesValue; // The minimum density or availability of nectar, pollen, and sap in the environment is 1
-    uint256 public maxEnergyDeductionValue; // The maximum energy deduction value is 5
-    uint256 public minEnergyDeductionValue; // The minimum energy deduction value is 1
     uint256 public resourcesRefreshInterval; // Resources refresh every 24 hours
     uint256 public baseHoneyYield; // Base amount of honey yield each epoch
     uint256 public baseIncentivePerEpoch; // Base amount of incentive per epoch
@@ -82,6 +81,9 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     );
     event BaseHealthDeductionAfterRaidChanged(
         uint256 newBaseHealthDeductionAfterRaid
+    );
+    event BaseEnergyDeductionAfterRaidChanged(
+        uint256 newBaseEnergyDeductionAfterRaid
     );
     event RaidHoneyFeeChanged(uint256 newRaidHoneyFee);
     event RaidSapFeeChanged(uint256 newRaidSapFee);
@@ -148,14 +150,13 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         experienceEarnedAfterRaidSuccess = 20;
         experienceEarnedAfterUpgrade = 30;
         baseHealthDeductionAfterRaid = 5;
+        baseEnergyDeductionAfterRaid = 20;
         raidHoneyFee = 10 ether;
         raidSapFee = 100;
         baseHoneyRaidReward = 10 ether;
         incentiveEarnAfterRaid = 10;
         maxResourcesValue = 100;
         minResourcesValue = 1;
-        maxEnergyDeductionValue = 5;
-        minEnergyDeductionValue = 1;
         resourcesRefreshInterval = 1 days;
         baseHoneyYield = 1 ether;
         baseIncentivePerEpoch = 20;
@@ -331,6 +332,17 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     }
 
     /**
+     * @dev Sets the base energy deduction after a raid.
+     * @param _baseEnergyDeductionAfterRaid The new base energy deduction after a raid.
+     */
+    function setBaseEnergyDeductionAfterRaid(
+        uint256 _baseEnergyDeductionAfterRaid
+    ) external onlyOwner {
+        baseEnergyDeductionAfterRaid = _baseEnergyDeductionAfterRaid;
+        emit BaseEnergyDeductionAfterRaidChanged(_baseEnergyDeductionAfterRaid);
+    }
+
+    /**
      * @dev Sets the honey fee for a raid.
      * @param _raidHoneyFee The new honey fee for a raid.
      */
@@ -390,28 +402,6 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     ) external onlyOwner {
         minResourcesValue = _minResourcesValue;
         emit MinResourcesValueChanged(_minResourcesValue);
-    }
-
-    /**
-     * @dev Sets the maximum energy deduction value.
-     * @param _maxEnergyDeductionValue The new maximum energy deduction value.
-     */
-    function setMaxEnergyDeductionValue(
-        uint256 _maxEnergyDeductionValue
-    ) external onlyOwner {
-        maxEnergyDeductionValue = _maxEnergyDeductionValue;
-        emit MaxEnergyDeductionValueChanged(_maxEnergyDeductionValue);
-    }
-
-    /**
-     * @dev Set the minimum energy deduction value.
-     * @param _minEnergyDeductionValue The minimum energy deduction value.
-     */
-    function setMinEnergyDeductionValue(
-        uint256 _minEnergyDeductionValue
-    ) external onlyOwner {
-        minEnergyDeductionValue = _minEnergyDeductionValue;
-        emit MinEnergyDeductionValueChanged(_minEnergyDeductionValue);
     }
 
     /**

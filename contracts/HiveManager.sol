@@ -375,8 +375,11 @@ contract HiveManager is Initializable {
         hives[_hiveId].hiveDefense += beeTraits.defense;
     }
 
-    function updateHiveProductivity(uint256 _hiveId, uint256 _tokenId) external {
-                IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
+    function updateHiveProductivity(
+        uint256 _hiveId,
+        uint256 _tokenId
+    ) external {
+        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
         if (_hiveId >= totalHives) {
@@ -393,9 +396,11 @@ contract HiveManager is Initializable {
             _tokenId
         );
 
-        hives[_hiveId].hiveProductivity -= beeStatus[_hiveId][_tokenId].beeProductivity;
-        beeStatus[_hiveId][_tokenId].beeProductivity = beeTraits.baseProductivity;
-        hives[_hiveId].hiveDefense += beeTraits.baseProductivity;
+        hives[_hiveId].hiveProductivity -= beeStatus[_hiveId][_tokenId]
+            .beeProductivity;
+        beeStatus[_hiveId][_tokenId].beeProductivity = beeTraits
+            .baseProductivity;
+        hives[_hiveId].hiveDefense += beeTraits.defense;
     }
 
     /**
@@ -568,10 +573,6 @@ contract HiveManager is Initializable {
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
 
-        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
-            _tokenId
-        );
-
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
@@ -580,31 +581,40 @@ contract HiveManager is Initializable {
             buzzkillAddressProvider.worldMapAddress()
         ).getAmountEnergyDeductionAfterForage(_habitatId);
 
-        if (beeTraits.energy < energyDeduction) {
+        // Call to refresh before forage
+        buzzkillNFT.refreshBeeEnergy(_tokenId);
+
+        if (buzzkillNFT.tokenIdToTraits(_tokenId).energy < energyDeduction) {
             revert InsufficientEnergy();
         }
 
-        // Call to refresh before forage
-        buzzkillNFT.refreshBeeEnergy(_tokenId);
+        buzzkillNFT.updateForagingQuestCount(_hiveId, _tokenId);
 
         // 5% of the gathered resources are added to the hive
         startForageAndCaculateResources(_hiveId, _tokenId, _habitatId);
 
-        uint256 productivityEarned = IWorldMap(
+        IBuzzkillNFT.BeeTraits memory _beeTraits = buzzkillNFT.tokenIdToTraits(
+            _tokenId
+        );
+        _beeTraits.energy -= energyDeduction;
+        _beeTraits.experience += gameConfig.experienceEarnedAfterForage();
+
+        buzzkillNFT.modifyBeeTraits(_tokenId, _beeTraits);
+
+        uint256 incentiveGathered = IWorldMap(
             buzzkillAddressProvider.worldMapAddress()
         ).getAmountIncentiveEarnAfterForage(_habitatId);
 
-        beeTraits.energy -= energyDeduction;
-        beeTraits.experience += gameConfig.experienceEarnedAfterForage();
+        uint256 workIncentiveEarned = (incentiveGathered *
+            bee.beeProductivity) / hives[_hiveId].hiveProductivity;
 
-        bee.beeProductivity += productivityEarned;
-
-        buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
+        bee.beeWorkIncentive += workIncentiveEarned;
+        hives[_hiveId].hiveTotalIncentive += workIncentiveEarned;
 
         emit ForageFinished(
             _tokenId,
             _hiveId,
-            productivityEarned,
+            workIncentiveEarned,
             gameConfig.experienceEarnedAfterForage()
         );
     }
@@ -634,28 +644,18 @@ contract HiveManager is Initializable {
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
 
-        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
-            _tokenId
-        );
-
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
 
-        if (beeTraits.sap < gameConfig.raidSapFee()) {
-            revert InsufficientSap();
-        }
+        checkBeeStatusBeforeRaid(_tokenId);
 
-        beeTraits.sap -= gameConfig.raidSapFee();
-
-        IHoney honey = IHoney(buzzkillAddressProvider.honeyAddress());
-        Hive storage hive = hives[_hiveId];
-
-        if (beeTraits.health == 0) {
-            revert InsufficientHealth();
-        }
         uint256 honeyFee = gameConfig.raidHoneyFee();
-        if (honey.balanceOf(msg.sender) < honeyFee) {
+        if (
+            IHoney(buzzkillAddressProvider.honeyAddress()).balanceOf(
+                msg.sender
+            ) < honeyFee
+        ) {
             revert InsufficientHoney();
         }
 
@@ -666,45 +666,27 @@ contract HiveManager is Initializable {
         honeyDistribution.burnHoney(msg.sender, honeyFee);
 
         uint256 amountHoneyRaided = endureRaid(_raidedHiveId, _tokenId);
-        uint256 baseHealthDeductionAfterRaid = gameConfig
-            .baseHealthDeductionAfterRaid();
 
-        if (amountHoneyRaided > 0) {
-            if (beeTraits.health < baseHealthDeductionAfterRaid) {
-                beeTraits.health = 0;
-            } else {
-                beeTraits.health -= baseHealthDeductionAfterRaid;
-            }
-
-            uint256 amountHoneyShared = (amountHoneyRaided * 500) /
-                BASE_DENOMINATOR; // Hive take 5% of the raided honey
-            hive.availableHoneyInHive += amountHoneyShared;
-            beeTraits.experience += gameConfig
-                .experienceEarnedAfterRaidSuccess();
-
-            honeyDistribution.distributeHoney(
-                msg.sender,
-                amountHoneyRaided - amountHoneyShared
+        IBuzzkillNFT.BeeTraits
+            memory beeTraits = caculateBeeStatsAndUpdateQuestAfterRaid(
+                _hiveId,
+                _tokenId,
+                amountHoneyRaided
             );
-        } else {
-            if (beeTraits.health < baseHealthDeductionAfterRaid * 2) {
-                beeTraits.health = 0;
-            } else {
-                beeTraits.health -= baseHealthDeductionAfterRaid * 2;
-            }
-            beeTraits.experience += gameConfig
-                .experienceEarnedAfterRaidFailed();
-        }
-
-        bee.beeWorkIncentive += gameConfig.incentiveEarnAfterRaid();
 
         buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
+
+        uint256 workIncentiveEarned = (gameConfig.incentiveEarnAfterRaid() *
+            bee.beeProductivity) / hives[_hiveId].hiveProductivity;
+
+        bee.beeWorkIncentive += workIncentiveEarned;
+        hives[_hiveId].hiveTotalIncentive += workIncentiveEarned;
 
         emit RaidFinished(
             _tokenId,
             _hiveId,
             amountHoneyRaided,
-            gameConfig.incentiveEarnAfterRaid(),
+            workIncentiveEarned,
             beeTraits.experience
         );
     }
@@ -769,6 +751,22 @@ contract HiveManager is Initializable {
     }
 
     /**
+     */
+    function updradeBeeSkills(
+        uint256 _hiveId,
+        uint256 _tokenId
+    ) external onlyOneAction(_hiveId, _tokenId) {
+        BeeStatus storage bee = beeStatus[_hiveId][_tokenId];
+        if (msg.sender != bee.owner) {
+            revert NotBeeOwner();
+        }
+        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
+            buzzkillAddressProvider.buzzkillNFTAddress()
+        );
+        buzzkillNFT.updateUpgradeQuestCount(_hiveId, _tokenId);
+    }
+
+    /**
      * @dev Collect the claimable honey for a specific Bee NFT token.
      * This function allows the owner of a Bee NFT to collect the honey it has accumulated.
      * The function checks ownership, ensures there are queen bees, and validates nectar requirements.
@@ -821,9 +819,8 @@ contract HiveManager is Initializable {
             _tokenId,
             bee.lastClaimedBlock
         );
-        uint256 currentBeeWorkIncentive = bee.beeWorkIncentive;
         uint256 beeTotalIncentive = currentBeeBaseIncentive +
-            currentBeeWorkIncentive;
+            bee.beeWorkIncentive;
 
         bee.lastClaimedBlock = block.number;
         bee.beeWorkIncentive = 0;
@@ -934,6 +931,84 @@ contract HiveManager is Initializable {
             sharedPollen,
             sharedSap
         );
+    }
+
+    function checkBeeStatusBeforeRaid(uint256 _tokenId) internal view {
+        IBuzzkillNFT.BeeTraits memory _beeStatsBeforeRaid = IBuzzkillNFT(
+            buzzkillAddressProvider.buzzkillNFTAddress()
+        ).tokenIdToTraits(_tokenId);
+
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+
+        if (_beeStatsBeforeRaid.sap < gameConfig.raidSapFee()) {
+            revert InsufficientSap();
+        }
+
+        if (_beeStatsBeforeRaid.health == 0) {
+            revert InsufficientHealth();
+        }
+
+        if (
+            _beeStatsBeforeRaid.energy <
+            gameConfig.baseEnergyDeductionAfterRaid()
+        ) {
+            revert InsufficientEnergy();
+        }
+    }
+
+    function caculateBeeStatsAndUpdateQuestAfterRaid(
+        uint256 _hiveId,
+        uint256 _tokenId,
+        uint256 _amountHoneyRaided
+    ) internal returns (IBuzzkillNFT.BeeTraits memory _beeTraits) {
+        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
+            buzzkillAddressProvider.buzzkillNFTAddress()
+        );
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        uint256 baseHealthDeductionAfterRaid = gameConfig
+            .baseHealthDeductionAfterRaid();
+
+        buzzkillNFT.updateRaidQuestCount(_hiveId, _tokenId);
+
+        if (_amountHoneyRaided > 0) {
+            buzzkillNFT.updateRaidSuccessQuestCount(_hiveId, _tokenId);
+
+            _beeTraits = buzzkillNFT.tokenIdToTraits(_tokenId);
+
+            if (_beeTraits.health < baseHealthDeductionAfterRaid) {
+                _beeTraits.health = 0;
+            } else {
+                _beeTraits.health -= baseHealthDeductionAfterRaid;
+            }
+
+            uint256 amountHoneyShared = (_amountHoneyRaided * 500) /
+                BASE_DENOMINATOR; // Hive take 5% of the raided honey
+            hives[_hiveId].availableHoneyInHive += amountHoneyShared;
+            _beeTraits.experience += gameConfig
+                .experienceEarnedAfterRaidSuccess();
+
+            IHoneyDistribution(
+                buzzkillAddressProvider.honeyDistributionAddress()
+            ).distributeHoney(
+                    msg.sender,
+                    _amountHoneyRaided - amountHoneyShared
+                );
+        } else {
+            _beeTraits = buzzkillNFT.tokenIdToTraits(_tokenId);
+            if (_beeTraits.health < baseHealthDeductionAfterRaid * 2) {
+                _beeTraits.health = 0;
+            } else {
+                _beeTraits.health -= baseHealthDeductionAfterRaid * 2;
+            }
+            _beeTraits.energy -= gameConfig.baseEnergyDeductionAfterRaid();
+            _beeTraits.experience += gameConfig
+                .experienceEarnedAfterRaidFailed();
+        }
+        _beeTraits.sap -= gameConfig.raidSapFee();
     }
 
     /* -------------------------------------------------------------------------- */

@@ -47,6 +47,7 @@ export interface HiveManagerInterface extends Interface {
       | "totalHives"
       | "unstakeBee"
       | "updateHiveDefense"
+      | "updateHiveProductivity"
   ): FunctionFragment;
 
   getEvent(
@@ -58,6 +59,7 @@ export interface HiveManagerInterface extends Interface {
       | "NFTStaked"
       | "NFTUnstaked"
       | "RaidFinished"
+      | "ResourcesCollected"
   ): EventFragment;
 
   encodeFunctionData(
@@ -138,6 +140,10 @@ export interface HiveManagerInterface extends Interface {
     functionFragment: "updateHiveDefense",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "updateHiveProductivity",
+    values: [BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "BASE_DENOMINATOR",
@@ -190,13 +196,22 @@ export interface HiveManagerInterface extends Interface {
     functionFragment: "updateHiveDefense",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateHiveProductivity",
+    data: BytesLike
+  ): Result;
 }
 
 export namespace CollectHoneyEvent {
-  export type InputTuple = [tokenId: BigNumberish, honey: BigNumberish];
-  export type OutputTuple = [tokenId: bigint, honey: bigint];
+  export type InputTuple = [
+    tokenId: BigNumberish,
+    hiveId: BigNumberish,
+    honey: BigNumberish
+  ];
+  export type OutputTuple = [tokenId: bigint, hiveId: bigint, honey: bigint];
   export interface OutputObject {
     tokenId: bigint;
+    hiveId: bigint;
     honey: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -208,25 +223,19 @@ export namespace CollectHoneyEvent {
 export namespace ForageFinishedEvent {
   export type InputTuple = [
     tokenId: BigNumberish,
-    nectar: BigNumberish,
-    pollen: BigNumberish,
-    sap: BigNumberish,
+    hiveId: BigNumberish,
     productivityEarned: BigNumberish,
     experienceEarned: BigNumberish
   ];
   export type OutputTuple = [
     tokenId: bigint,
-    nectar: bigint,
-    pollen: bigint,
-    sap: bigint,
+    hiveId: bigint,
     productivityEarned: bigint,
     experienceEarned: bigint
   ];
   export interface OutputObject {
     tokenId: bigint;
-    nectar: bigint;
-    pollen: bigint;
-    sap: bigint;
+    hiveId: bigint;
     productivityEarned: bigint;
     experienceEarned: bigint;
   }
@@ -288,21 +297,61 @@ export namespace NFTUnstakedEvent {
 export namespace RaidFinishedEvent {
   export type InputTuple = [
     tokenId: BigNumberish,
+    hiveId: BigNumberish,
     honey: BigNumberish,
     productivityEarned: BigNumberish,
     experienceEarned: BigNumberish
   ];
   export type OutputTuple = [
     tokenId: bigint,
+    hiveId: bigint,
     honey: bigint,
     productivityEarned: bigint,
     experienceEarned: bigint
   ];
   export interface OutputObject {
     tokenId: bigint;
+    hiveId: bigint;
     honey: bigint;
     productivityEarned: bigint;
     experienceEarned: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ResourcesCollectedEvent {
+  export type InputTuple = [
+    tokenId: BigNumberish,
+    hiveId: BigNumberish,
+    nectarGathered: BigNumberish,
+    pollenGathered: BigNumberish,
+    sapGathered: BigNumberish,
+    sharedNectar: BigNumberish,
+    sharedPollen: BigNumberish,
+    sharedSap: BigNumberish
+  ];
+  export type OutputTuple = [
+    tokenId: bigint,
+    hiveId: bigint,
+    nectarGathered: bigint,
+    pollenGathered: bigint,
+    sapGathered: bigint,
+    sharedNectar: bigint,
+    sharedPollen: bigint,
+    sharedSap: bigint
+  ];
+  export interface OutputObject {
+    tokenId: bigint;
+    hiveId: bigint;
+    nectarGathered: bigint;
+    pollenGathered: bigint;
+    sapGathered: bigint;
+    sharedNectar: bigint;
+    sharedPollen: bigint;
+    sharedSap: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -504,6 +553,12 @@ export interface HiveManager extends BaseContract {
     "nonpayable"
   >;
 
+  updateHiveProductivity: TypedContractMethod<
+    [_hiveId: BigNumberish, _tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -668,6 +723,13 @@ export interface HiveManager extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "updateHiveProductivity"
+  ): TypedContractMethod<
+    [_hiveId: BigNumberish, _tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
   getEvent(
     key: "CollectHoney"
@@ -718,9 +780,16 @@ export interface HiveManager extends BaseContract {
     RaidFinishedEvent.OutputTuple,
     RaidFinishedEvent.OutputObject
   >;
+  getEvent(
+    key: "ResourcesCollected"
+  ): TypedContractEvent<
+    ResourcesCollectedEvent.InputTuple,
+    ResourcesCollectedEvent.OutputTuple,
+    ResourcesCollectedEvent.OutputObject
+  >;
 
   filters: {
-    "CollectHoney(uint256,uint256)": TypedContractEvent<
+    "CollectHoney(uint256,uint256,uint256)": TypedContractEvent<
       CollectHoneyEvent.InputTuple,
       CollectHoneyEvent.OutputTuple,
       CollectHoneyEvent.OutputObject
@@ -731,7 +800,7 @@ export interface HiveManager extends BaseContract {
       CollectHoneyEvent.OutputObject
     >;
 
-    "ForageFinished(uint256,uint256,uint256,uint256,uint256,uint256)": TypedContractEvent<
+    "ForageFinished(uint256,uint256,uint256,uint256)": TypedContractEvent<
       ForageFinishedEvent.InputTuple,
       ForageFinishedEvent.OutputTuple,
       ForageFinishedEvent.OutputObject
@@ -786,7 +855,7 @@ export interface HiveManager extends BaseContract {
       NFTUnstakedEvent.OutputObject
     >;
 
-    "RaidFinished(uint256,uint256,uint256,uint256)": TypedContractEvent<
+    "RaidFinished(uint256,uint256,uint256,uint256,uint256)": TypedContractEvent<
       RaidFinishedEvent.InputTuple,
       RaidFinishedEvent.OutputTuple,
       RaidFinishedEvent.OutputObject
@@ -795,6 +864,17 @@ export interface HiveManager extends BaseContract {
       RaidFinishedEvent.InputTuple,
       RaidFinishedEvent.OutputTuple,
       RaidFinishedEvent.OutputObject
+    >;
+
+    "ResourcesCollected(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)": TypedContractEvent<
+      ResourcesCollectedEvent.InputTuple,
+      ResourcesCollectedEvent.OutputTuple,
+      ResourcesCollectedEvent.OutputObject
+    >;
+    ResourcesCollected: TypedContractEvent<
+      ResourcesCollectedEvent.InputTuple,
+      ResourcesCollectedEvent.OutputTuple,
+      ResourcesCollectedEvent.OutputObject
     >;
   };
 }

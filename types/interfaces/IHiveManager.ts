@@ -21,15 +21,25 @@ import type {
 } from "../common";
 
 export interface IHiveManagerInterface extends Interface {
-  getFunction(nameOrSignature: "updateHiveDefense"): FunctionFragment;
+  getFunction(
+    nameOrSignature: "updateHiveDefense" | "updateHiveProductivity"
+  ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "updateHiveDefense",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "updateHiveProductivity",
+    values: [BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "updateHiveDefense",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateHiveProductivity",
     data: BytesLike
   ): Result;
 }
@@ -83,12 +93,25 @@ export interface IHiveManager extends BaseContract {
     "nonpayable"
   >;
 
+  updateHiveProductivity: TypedContractMethod<
+    [_hiveId: BigNumberish, _tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
     nameOrSignature: "updateHiveDefense"
+  ): TypedContractMethod<
+    [_hiveId: BigNumberish, _tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "updateHiveProductivity"
   ): TypedContractMethod<
     [_hiveId: BigNumberish, _tokenId: BigNumberish],
     [void],
