@@ -1,5 +1,5 @@
 import hre from "hardhat";
-const { ethers } = hre;
+const { ethers, upgrades } = hre;
 
 import { getContracts, saveContract } from "./utils";
 
@@ -13,11 +13,14 @@ async function main() {
   const contracts = getContracts(network)[network];
 
   const HiveManager = await ethers.getContractFactory("HiveManager");
-  const hiveManager = await HiveManager.deploy(
-    contracts.buzzkillAddressProvider,
+  // Deploy contract, for the second script, the ProxyAdmin has already been deployed
+  // Then only TransparentUpgradeableProxy and GameConfig implementation contract will be deployed
+  // So it is important to set nonce to +2 in order to avoid nonce too low error
+  const hiveManager = await upgrades.deployProxy(
+    HiveManager,
+    [contracts.buzzkillAddressProvider],
     {
-      gasLimit: "0x5000000",
-      nonce: nonce++,
+      txOverrides: { gasLimit: "0x5000000", nonce: nonce + 2 },
     }
   );
 
@@ -32,12 +35,18 @@ async function main() {
 
   saveContract(network, "hiveManager", hiveManagerContract);
 
-  await hre.run("verify:verify", {
-    address: hiveManagerContract,
-    constructorArguments: [contracts.buzzkillAddressProvider],
-  });
-
   console.log("Completed!");
+
+  // Get the implementation contract address from the proxy
+  const implementationAddress = await upgrades.erc1967.getImplementationAddress(
+    hiveManagerContract
+  );
+  console.log("Implementation contract address:", implementationAddress);
+
+  await hre.run("verify:verify", {
+    address: implementationAddress,
+    constructorArguments: [],
+  });
 }
 
 main()
