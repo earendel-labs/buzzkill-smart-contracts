@@ -24,6 +24,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     uint256 public experienceEarnedAfterUpgrade; // 30 experience points earned after an upgrade
     uint256 public baseHealthDeductionAfterRaid; // 5 HP deducted after a raid
     uint256 public baseEnergyDeductionAfterRaid; // 20 energy deducted after a raid
+    uint256 public baseEnergyDeductionAfterUpgrade; // 20 energy deducted after an upgrade
     uint256 public raidHoneyFee; // 10 $HONEY paid for one raid
     uint256 public raidSapFee; // 100 sap for one raid
     uint256 public baseHoneyRaidReward; // base honey earn for one raid success is 10 $HONEY
@@ -45,6 +46,9 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     uint256 public baseNumberOfRaidQuest; // Base number of raid quest, currently 2
     uint256 public baseNumberOfRaidSuccessQuest; // Base number of raid success quest, currently 1
     uint256 public baseNumberOfUpgradeQuest; // Base number of upgrade quest, currently 1
+    uint256 public baseNectarUsePerUpgrade; // Base number of nectar use for upgrade skill, currently 100
+    uint256 public basePollenUsePerUpgrade; // Base number of pollen use for upgrade skill, currently 100
+    uint256 public baseSapUsePerUpgrade; // Base number of sap use for upgrade skill, currently 100
 
     /**
      * Cn ,Cp ,Cs are constants that adjust the scale of resources gathered to fit the game's economy and balance.
@@ -84,6 +88,9 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     );
     event BaseEnergyDeductionAfterRaidChanged(
         uint256 newBaseEnergyDeductionAfterRaid
+    );
+    event BaseEnergyDeductionAfterUpgradeChanged(
+        uint256 newBaseEnergyDeductionAfterUpgrade
     );
     event RaidHoneyFeeChanged(uint256 newRaidHoneyFee);
     event RaidSapFeeChanged(uint256 newRaidSapFee);
@@ -126,6 +133,9 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         uint256 newBaseNumberOfRaidSuccessQuest
     );
     event BaseNumberOfUpgradeQuestChanged(uint256 newBaseNumberOfUpgradeQuest);
+    event BaseNectarUsePerUpgradeChanged(uint256 newBaseNectarPerUpgrade);
+    event BasePollenUsePerUpgradeChanged(uint256 newBasePollenPerUpgrade);
+    event BaseSapUsePerUpgradeChanged(uint256 newBaseSapPerUpgrade);
     event CsChanged(uint256 newCs);
     event CnChanged(uint256 newCn);
     event CpChanged(uint256 newCp);
@@ -151,6 +161,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         experienceEarnedAfterUpgrade = 30;
         baseHealthDeductionAfterRaid = 5;
         baseEnergyDeductionAfterRaid = 20;
+        baseEnergyDeductionAfterUpgrade = 20;
         raidHoneyFee = 10 ether;
         raidSapFee = 100;
         baseHoneyRaidReward = 10 ether;
@@ -172,9 +183,12 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         baseNumberOfRaidQuest = 2;
         baseNumberOfRaidSuccessQuest = 1;
         baseNumberOfUpgradeQuest = 1;
-        Cs = 25_000;
-        Cn = 25_000;
-        Cp = 25_000;
+        baseNectarUsePerUpgrade = 100;
+        basePollenUsePerUpgrade = 100;
+        baseSapUsePerUpgrade = 100;
+        Cs = 250_000;
+        Cn = 250_000;
+        Cp = 250_000;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -340,6 +354,19 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     ) external onlyOwner {
         baseEnergyDeductionAfterRaid = _baseEnergyDeductionAfterRaid;
         emit BaseEnergyDeductionAfterRaidChanged(_baseEnergyDeductionAfterRaid);
+    }
+
+    /**
+     * @dev Sets the base energy deduction after an upgrade.
+     * @param _baseEnergyDeductionAfterUpgrade The new base energy deduction after an upgrade.
+     */
+    function setBaseEnergyDeductionAfterUpgrade(
+        uint256 _baseEnergyDeductionAfterUpgrade
+    ) external onlyOwner {
+        baseEnergyDeductionAfterUpgrade = _baseEnergyDeductionAfterUpgrade;
+        emit BaseEnergyDeductionAfterUpgradeChanged(
+            _baseEnergyDeductionAfterUpgrade
+        );
     }
 
     /**
@@ -589,6 +616,39 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     ) external onlyOwner {
         baseNumberOfUpgradeQuest = _baseNumberOfUpgradeQuest;
         emit BaseNumberOfUpgradeQuestChanged(_baseNumberOfUpgradeQuest);
+    }
+
+    /**
+     * @dev Set the base number of nectar use for upgrade.
+     * @param _baseNectarUsePerUpgrade The base number of nectar.
+     */
+    function setBaseNectarUsePerUpgrade(
+        uint256 _baseNectarUsePerUpgrade
+    ) external onlyOwner {
+        baseNectarUsePerUpgrade = _baseNectarUsePerUpgrade;
+        emit BaseNectarUsePerUpgradeChanged(_baseNectarUsePerUpgrade);
+    }
+
+    /**
+     * @dev Set the base number of pollen use for upgrade.
+     * @param _basePollenUsePerUpgrade The base number of pollen.
+     */
+    function setBasePollenUsePerUpgrade(
+        uint256 _basePollenUsePerUpgrade
+    ) external onlyOwner {
+        basePollenUsePerUpgrade = _basePollenUsePerUpgrade;
+        emit BasePollenUsePerUpgradeChanged(_basePollenUsePerUpgrade);
+    }
+
+    /**
+     * @dev Set the base number of sap use for upgrade.
+     * @param _baseSapUsePerUpgrade The base number of sap.
+     */
+    function setBaseSapUsePerUpgrade(
+        uint256 _baseSapUsePerUpgrade
+    ) external onlyOwner {
+        baseSapUsePerUpgrade = _baseSapUsePerUpgrade;
+        emit BaseSapUsePerUpgradeChanged(_baseSapUsePerUpgrade);
     }
 
     /**

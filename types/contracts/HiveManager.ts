@@ -48,6 +48,7 @@ export interface HiveManagerInterface extends Interface {
       | "unstakeBee"
       | "updateHiveDefense"
       | "updateHiveProductivity"
+      | "updradeBeeSkills"
   ): FunctionFragment;
 
   getEvent(
@@ -60,6 +61,7 @@ export interface HiveManagerInterface extends Interface {
       | "NFTUnstaked"
       | "RaidFinished"
       | "ResourcesCollected"
+      | "UpgradeBeeSkillSucceed"
   ): EventFragment;
 
   encodeFunctionData(
@@ -144,6 +146,10 @@ export interface HiveManagerInterface extends Interface {
     functionFragment: "updateHiveProductivity",
     values: [BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "updradeBeeSkills",
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "BASE_DENOMINATOR",
@@ -198,6 +204,10 @@ export interface HiveManagerInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "updateHiveProductivity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updradeBeeSkills",
     data: BytesLike
   ): Result;
 }
@@ -352,6 +362,28 @@ export namespace ResourcesCollectedEvent {
     sharedNectar: bigint;
     sharedPollen: bigint;
     sharedSap: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace UpgradeBeeSkillSucceedEvent {
+  export type InputTuple = [
+    hiveId: BigNumberish,
+    tokenId: BigNumberish,
+    beeSkills: BigNumberish
+  ];
+  export type OutputTuple = [
+    hiveId: bigint,
+    tokenId: bigint,
+    beeSkills: bigint
+  ];
+  export interface OutputObject {
+    hiveId: bigint;
+    tokenId: bigint;
+    beeSkills: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -559,6 +591,17 @@ export interface HiveManager extends BaseContract {
     "nonpayable"
   >;
 
+  updradeBeeSkills: TypedContractMethod<
+    [
+      _hiveId: BigNumberish,
+      _tokenId: BigNumberish,
+      _beeSkill: BigNumberish,
+      amount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -730,6 +773,18 @@ export interface HiveManager extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "updradeBeeSkills"
+  ): TypedContractMethod<
+    [
+      _hiveId: BigNumberish,
+      _tokenId: BigNumberish,
+      _beeSkill: BigNumberish,
+      amount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
 
   getEvent(
     key: "CollectHoney"
@@ -786,6 +841,13 @@ export interface HiveManager extends BaseContract {
     ResourcesCollectedEvent.InputTuple,
     ResourcesCollectedEvent.OutputTuple,
     ResourcesCollectedEvent.OutputObject
+  >;
+  getEvent(
+    key: "UpgradeBeeSkillSucceed"
+  ): TypedContractEvent<
+    UpgradeBeeSkillSucceedEvent.InputTuple,
+    UpgradeBeeSkillSucceedEvent.OutputTuple,
+    UpgradeBeeSkillSucceedEvent.OutputObject
   >;
 
   filters: {
@@ -875,6 +937,17 @@ export interface HiveManager extends BaseContract {
       ResourcesCollectedEvent.InputTuple,
       ResourcesCollectedEvent.OutputTuple,
       ResourcesCollectedEvent.OutputObject
+    >;
+
+    "UpgradeBeeSkillSucceed(uint256,uint256,uint8)": TypedContractEvent<
+      UpgradeBeeSkillSucceedEvent.InputTuple,
+      UpgradeBeeSkillSucceedEvent.OutputTuple,
+      UpgradeBeeSkillSucceedEvent.OutputObject
+    >;
+    UpgradeBeeSkillSucceed: TypedContractEvent<
+      UpgradeBeeSkillSucceedEvent.InputTuple,
+      UpgradeBeeSkillSucceedEvent.OutputTuple,
+      UpgradeBeeSkillSucceedEvent.OutputObject
     >;
   };
 }

@@ -51,15 +51,6 @@ contract WorldMap is Ownable {
     /* -------------------------------------------------------------------------- */
     uint256 public constant BASE_DENOMINATOR = 10_000; // The base denominator for the resources value
 
-    /**
-     * Cn ,Cp ,Cs are constants that adjust the scale of resources gathered to fit the game's economy and balance.
-     * These constants can be used to fine-tune how rewarding foraging feels in the game
-     * Make sure to adjust these constants carefully to ensure the game is not too easy or too hard
-     */
-    uint256 public Cs = 250_000;
-    uint256 public Cn = 250_000;
-    uint256 public Cp = 250_000;
-
     /* -------------------------------------------------------------------------- */
     /*  State variables                                                           */
     /* -------------------------------------------------------------------------- */
@@ -148,7 +139,7 @@ contract WorldMap is Ownable {
 
     /**
      * @dev Pseudo-random number generator, consider using Chainlink VRF later on production
-     * @return A pseudo-random number between 800 and 1200
+     * @return A pseudo-random number between 8000 and 12000
      */
     function random() internal view returns (uint256) {
         return
@@ -160,7 +151,7 @@ contract WorldMap is Ownable {
                         msg.sender
                     )
                 )
-            ) % 401) + 800;
+            ) % 4001) + 8000;
     }
 
     /**
@@ -250,7 +241,7 @@ contract WorldMap is Ownable {
         // Calculate the amount of resources gathered and decrease the resources in the habitat
         if (nectar >= minResourcesValue) {
             nectarGathered =
-                (forageSkill * nectar * R * Cn) /
+                (forageSkill * nectar * R * gameConfig.Cn()) /
                 (BASE_DENOMINATOR * BASE_DENOMINATOR);
 
             if (
@@ -267,7 +258,7 @@ contract WorldMap is Ownable {
 
         if (pollen >= minResourcesValue) {
             pollenGathered =
-                (forageSkill * pollen * R * Cn) /
+                (forageSkill * pollen * R * gameConfig.Cp()) /
                 (BASE_DENOMINATOR * BASE_DENOMINATOR);
 
             if (
@@ -284,7 +275,7 @@ contract WorldMap is Ownable {
 
         if (sap >= minResourcesValue) {
             sapGathered =
-                (forageSkill * sap * R * Cn) /
+                (forageSkill * sap * R * gameConfig.Cs()) /
                 (BASE_DENOMINATOR * BASE_DENOMINATOR);
 
             if (

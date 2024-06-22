@@ -167,6 +167,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "baseEnergyDeductionAfterUpgrade",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "baseHealthDeductionAfterRaid",
     outputs: [
       {
@@ -219,6 +232,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "baseNectarUsePerUpgrade",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "baseNumberOfForagingQuest",
     outputs: [
       {
@@ -259,6 +285,32 @@ const _abi = [
   {
     inputs: [],
     name: "baseNumberOfUpgradeQuest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "basePollenUsePerUpgrade",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseSapUsePerUpgrade",
     outputs: [
       {
         internalType: "uint256",
@@ -514,513 +566,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountAttackIncreaseOnLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountAttackIncreaseOnLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountBaseProductivityIncreaseOnLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountBaseProductivityIncreaseOnLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountDefenseIncreaseOnLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountDefenseIncreaseOnLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountEnergyIncreaseOnLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountEnergyIncreaseOnLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountForageIncreaseOnLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountForageIncreaseOnLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountHealthIncreaseOnLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountHealthIncreaseOnLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountMaxProductivityIncreaseOnLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountMaxProductivityIncreaseOnLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_amountToLevelUp",
-        type: "uint256",
-      },
-    ],
-    name: "setAmountToLevelUp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseEnergyDeductionAfterRaid",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseEnergyDeductionAfterRaid",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseHealthDeductionAfterRaid",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseHealthDeductionAfterRaid",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseHoneyRaidReward",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseHoneyRaidReward",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseHoneyYield",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseHoneyYield",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseIncentivePerEpoch",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseIncentivePerEpoch",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseNumberOfForagingQuest",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseNumberOfForagingQuest",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseNumberOfRaidQuest",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseNumberOfRaidQuest",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseNumberOfRaidSuccessQuest",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseNumberOfRaidSuccessQuest",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_baseNumberOfUpgradeQuest",
-        type: "uint256",
-      },
-    ],
-    name: "setBaseNumberOfUpgradeQuest",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_beeEnergyRefreshInterval",
-        type: "uint256",
-      },
-    ],
-    name: "setBeeEnergyRefreshInterval",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_beeHealthRefreshInterval",
-        type: "uint256",
-      },
-    ],
-    name: "setBeeHealthRefreshInterval",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_claimTimeInterval",
-        type: "uint256",
-      },
-    ],
-    name: "setClaimTimeInterval",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_Cn",
-        type: "uint256",
-      },
-    ],
-    name: "setCn",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_Cp",
-        type: "uint256",
-      },
-    ],
-    name: "setCp",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_Cs",
-        type: "uint256",
-      },
-    ],
-    name: "setCs",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_differenceBetweenLevels",
-        type: "uint256",
-      },
-    ],
-    name: "setDifferenceBetweenLevels",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_experienceEarnedAfterForage",
-        type: "uint256",
-      },
-    ],
-    name: "setExperienceEarnedAfterForage",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_experienceEarnedAfterRaidFailed",
-        type: "uint256",
-      },
-    ],
-    name: "setExperienceEarnedAfterRaidFailed",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_experienceEarnedAfterRaidSuccess",
-        type: "uint256",
-      },
-    ],
-    name: "setExperienceEarnedAfterRaidSuccess",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_experienceEarnedAfterUpgrade",
-        type: "uint256",
-      },
-    ],
-    name: "setExperienceEarnedAfterUpgrade",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_foragePercentage",
-        type: "uint256",
-      },
-    ],
-    name: "setForagePercentage",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_honeyYieldConstant",
-        type: "uint256",
-      },
-    ],
-    name: "setHoneyYieldConstant",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_IncentiveEarnAfterRaid",
-        type: "uint256",
-      },
-    ],
-    name: "setIncentiveEarnAfterRaid",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_maxQueen",
-        type: "uint256",
-      },
-    ],
-    name: "setMaxQueen",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_maxResourcesValue",
-        type: "uint256",
-      },
-    ],
-    name: "setMaxResourcesValue",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_maxWorker",
-        type: "uint256",
-      },
-    ],
-    name: "setMaxWorker",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_minResourcesValue",
-        type: "uint256",
-      },
-    ],
-    name: "setMinResourcesValue",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_nectarRequiredToClaim",
-        type: "uint256",
-      },
-    ],
-    name: "setNectarRequiredToClaim",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_raidHoneyFee",
-        type: "uint256",
-      },
-    ],
-    name: "setRaidHoneyFee",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_raidSapFee",
-        type: "uint256",
-      },
-    ],
-    name: "setRaidSapFee",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_resourcesRefreshInterval",
-        type: "uint256",
-      },
-    ],
-    name: "setResourcesRefreshInterval",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
 ] as const;

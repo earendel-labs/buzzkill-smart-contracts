@@ -87,6 +87,7 @@ export interface IBuzzkillNFTInterface extends Interface {
       | "permit"
       | "permitForAll"
       | "refreshBeeEnergy"
+      | "refreshBeeHealth"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
       | "setApprovalForAll"
@@ -163,6 +164,10 @@ export interface IBuzzkillNFTInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "refreshBeeEnergy",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "refreshBeeHealth",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -260,6 +265,10 @@ export interface IBuzzkillNFTInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "refreshBeeEnergy",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "refreshBeeHealth",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -478,6 +487,12 @@ export interface IBuzzkillNFT extends BaseContract {
     "nonpayable"
   >;
 
+  refreshBeeHealth: TypedContractMethod<
+    [tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   "safeTransferFrom(address,address,uint256)": TypedContractMethod<
     [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
     [void],
@@ -636,6 +651,9 @@ export interface IBuzzkillNFT extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "refreshBeeEnergy"
+  ): TypedContractMethod<[tokenId: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "refreshBeeHealth"
   ): TypedContractMethod<[tokenId: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "safeTransferFrom(address,address,uint256)"

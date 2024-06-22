@@ -27,9 +27,6 @@ export interface WorldMapInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "BASE_DENOMINATOR"
-      | "Cn"
-      | "Cp"
-      | "Cs"
       | "addHabitat"
       | "buzzkillAddressProvider"
       | "currentHabitatId"
@@ -55,9 +52,6 @@ export interface WorldMapInterface extends Interface {
     functionFragment: "BASE_DENOMINATOR",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "Cn", values?: undefined): string;
-  encodeFunctionData(functionFragment: "Cp", values?: undefined): string;
-  encodeFunctionData(functionFragment: "Cs", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "addHabitat",
     values: [
@@ -126,9 +120,6 @@ export interface WorldMapInterface extends Interface {
     functionFragment: "BASE_DENOMINATOR",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "Cn", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "Cp", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "Cs", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "addHabitat", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "buzzkillAddressProvider",
@@ -271,12 +262,6 @@ export interface WorldMap extends BaseContract {
 
   BASE_DENOMINATOR: TypedContractMethod<[], [bigint], "view">;
 
-  Cn: TypedContractMethod<[], [bigint], "view">;
-
-  Cp: TypedContractMethod<[], [bigint], "view">;
-
-  Cs: TypedContractMethod<[], [bigint], "view">;
-
   addHabitat: TypedContractMethod<
     [
       nectar: BigNumberish,
@@ -376,9 +361,6 @@ export interface WorldMap extends BaseContract {
   getFunction(
     nameOrSignature: "BASE_DENOMINATOR"
   ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(nameOrSignature: "Cn"): TypedContractMethod<[], [bigint], "view">;
-  getFunction(nameOrSignature: "Cp"): TypedContractMethod<[], [bigint], "view">;
-  getFunction(nameOrSignature: "Cs"): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "addHabitat"
   ): TypedContractMethod<

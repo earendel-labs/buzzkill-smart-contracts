@@ -42,6 +42,8 @@ interface IBuzzkillNFT is IVRC725 {
 
     function refreshBeeEnergy(uint256 tokenId) external;
 
+    function refreshBeeHealth(uint256 tokenId) external;
+
     function updateForagingQuestCount(uint256 hiveId, uint256 tokenId) external;
 
     function updateRaidQuestCount(uint256 hiveId, uint256 tokenId) external;

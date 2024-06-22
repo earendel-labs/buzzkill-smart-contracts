@@ -32,6 +32,9 @@ contract HiveManager is Initializable {
     error InsufficientHealth();
     error InsufficientHoney();
     error InsufficientSap();
+    error InsufficientNectarForUpgrade();
+    error InsufficientPollenForUpgrade();
+    error InsufficientSapForUpgrade();
     error HiveNotExists();
 
     /* -------------------------------------------------------------------------- */
@@ -63,7 +66,23 @@ contract HiveManager is Initializable {
         uint256 productivityEarned,
         uint256 experienceEarned
     );
+    event UpgradeBeeSkillSucceed(
+        uint256 hiveId,
+        uint256 tokenId,
+        BeeSkills beeSkills
+    );
     event CollectHoney(uint256 tokenId, uint256 hiveId, uint256 honey);
+
+    /* -------------------------------------------------------------------------- */
+    /*  Enum                                                                      */
+    /* -------------------------------------------------------------------------- */
+    enum BeeSkills {
+        ATTACK,
+        DEFENSE,
+        HEALTH,
+        ENERGY,
+        FORAGE
+    }
 
     /* -------------------------------------------------------------------------- */
     /*  Structs                                                                   */
@@ -644,6 +663,9 @@ contract HiveManager is Initializable {
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
 
+        buzzkillNFT.refreshBeeEnergy(_tokenId);
+        buzzkillNFT.refreshBeeHealth(_tokenId);
+
         IGameConfig gameConfig = IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         );
@@ -751,10 +773,22 @@ contract HiveManager is Initializable {
     }
 
     /**
+     * @dev Upgrade a Bee NFT's skill.
+     * This function allows the owner of a Bee NFT to upgrade a specific skill of the Bee NFT.
+     * The function checks ownership, ensures the bee has enough resources, and updates the Bee NFT's traits.
+     * Can only be called once per action per token.
+     * @param _hiveId The hive ID.
+     * @param _tokenId The Bee NFT token ID.
+     * @param _beeSkill The skill to upgrade.
+     * @param amount The amount of resources to use for the upgrade.
+     * @notice Reverts if the caller is not the owner of the Bee NFT,
+      if the bee does not have enough resources to upgrade, or if the bee has already performed an action.
      */
     function updradeBeeSkills(
         uint256 _hiveId,
-        uint256 _tokenId
+        uint256 _tokenId,
+        BeeSkills _beeSkill,
+        uint256 amount
     ) external onlyOneAction(_hiveId, _tokenId) {
         BeeStatus storage bee = beeStatus[_hiveId][_tokenId];
         if (msg.sender != bee.owner) {
@@ -764,6 +798,35 @@ contract HiveManager is Initializable {
             buzzkillAddressProvider.buzzkillNFTAddress()
         );
         buzzkillNFT.updateUpgradeQuestCount(_hiveId, _tokenId);
+
+        _updateHive(_hiveId);
+        buzzkillNFT.refreshBeeEnergy(_tokenId);
+
+        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
+            _tokenId
+        );
+
+        uint256 energyRequiredToUpgrade = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        ).baseEnergyDeductionAfterUpgrade();
+
+        if (beeTraits.energy < energyRequiredToUpgrade) {
+            revert InsufficientEnergy();
+        }
+
+        beeTraits = _updateBeeTraitAndCaculateResources(
+            _beeSkill,
+            beeTraits,
+            amount
+        );
+
+        beeTraits.energy -= energyRequiredToUpgrade;
+        beeTraits.experience += IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        ).experienceEarnedAfterUpgrade();
+        buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
+
+        emit UpgradeBeeSkillSucceed(_hiveId, _tokenId, _beeSkill);
     }
 
     /**
@@ -1011,6 +1074,59 @@ contract HiveManager is Initializable {
         _beeTraits.sap -= gameConfig.raidSapFee();
     }
 
+    function _updateBeeTraitAndCaculateResources(
+        BeeSkills _beeSkill,
+        IBuzzkillNFT.BeeTraits memory beeTraits,
+        uint256 amount
+    ) internal view returns (IBuzzkillNFT.BeeTraits memory) {
+        uint256 currentPoint;
+        uint256 nextPoint;
+        // Update the bee trait based on the skill
+        if (_beeSkill == BeeSkills.ATTACK) {
+            currentPoint = beeTraits.attack;
+            nextPoint = beeTraits.attack + amount;
+            beeTraits.attack = nextPoint;
+        } else if (_beeSkill == BeeSkills.DEFENSE) {
+            currentPoint = beeTraits.defense;
+            nextPoint = beeTraits.defense + amount;
+            beeTraits.defense = nextPoint;
+        } else if (_beeSkill == BeeSkills.ENERGY) {
+            currentPoint = beeTraits.energy;
+            nextPoint = beeTraits.energy + amount;
+            beeTraits.energy = nextPoint;
+        } else if (_beeSkill == BeeSkills.HEALTH) {
+            currentPoint = beeTraits.health;
+            nextPoint = beeTraits.health + amount;
+            beeTraits.health = nextPoint;
+        } else if (_beeSkill == BeeSkills.FORAGE) {
+            currentPoint = beeTraits.forage;
+            nextPoint = beeTraits.forage + amount;
+            beeTraits.forage = nextPoint;
+        }
+
+        (
+            uint256 amountNectarUseForUpgrade,
+            uint256 amountPollenUseForUpgrade,
+            uint256 amountSapUseForUpgrade
+        ) = _getAmountResourcesUseForUpgrade(currentPoint, nextPoint);
+
+        if (beeTraits.nectar < amountNectarUseForUpgrade) {
+            revert InsufficientNectarForUpgrade();
+        }
+        if (beeTraits.pollen < amountPollenUseForUpgrade) {
+            revert InsufficientPollenForUpgrade();
+        }
+        if (beeTraits.sap < amountSapUseForUpgrade) {
+            revert InsufficientSapForUpgrade();
+        }
+
+        beeTraits.nectar -= amountNectarUseForUpgrade;
+        beeTraits.pollen -= amountPollenUseForUpgrade;
+        beeTraits.sap -= amountSapUseForUpgrade;
+
+        return beeTraits;
+    }
+
     /* -------------------------------------------------------------------------- */
     /*  Private Functions                                                         */
     /* -------------------------------------------------------------------------- */
@@ -1053,6 +1169,32 @@ contract HiveManager is Initializable {
             gameConfig.maxQueen() + gameConfig.maxWorker()
         ) return 2;
         return 1;
+    }
+
+    function _getAmountResourcesUseForUpgrade(
+        uint256 _currentPoint,
+        uint256 _nextPoint
+    )
+        private
+        view
+        returns (
+            uint256 amountNectarUsed,
+            uint256 amountPollenUsed,
+            uint256 amountSapUsed
+        )
+    {
+        IGameConfig gameConfig = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        );
+        uint256 baseNectarUsePerUpgrade = gameConfig.baseNectarUsePerUpgrade();
+        uint256 basePollenUsePerUpgrade = gameConfig.basePollenUsePerUpgrade();
+        uint256 baseSapUsePerUpgrade = gameConfig.baseSapUsePerUpgrade();
+
+        for (uint256 i = _currentPoint; i < _nextPoint; i++) {
+            amountNectarUsed += baseNectarUsePerUpgrade * i;
+            amountPollenUsed += basePollenUsePerUpgrade * i;
+            amountSapUsed += baseSapUsePerUpgrade * i;
+        }
     }
 
     /**

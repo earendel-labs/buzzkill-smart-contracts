@@ -38,14 +38,18 @@ export interface GameConfigInterface extends Interface {
       | "amountMaxProductivityIncreaseOnLevelUp"
       | "amountToLevelUp"
       | "baseEnergyDeductionAfterRaid"
+      | "baseEnergyDeductionAfterUpgrade"
       | "baseHealthDeductionAfterRaid"
       | "baseHoneyRaidReward"
       | "baseHoneyYield"
       | "baseIncentivePerEpoch"
+      | "baseNectarUsePerUpgrade"
       | "baseNumberOfForagingQuest"
       | "baseNumberOfRaidQuest"
       | "baseNumberOfRaidSuccessQuest"
       | "baseNumberOfUpgradeQuest"
+      | "basePollenUsePerUpgrade"
+      | "baseSapUsePerUpgrade"
       | "beeEnergyRefreshInterval"
       | "beeHealthRefreshInterval"
       | "claimTimeInterval"
@@ -77,14 +81,18 @@ export interface GameConfigInterface extends Interface {
       | "setAmountMaxProductivityIncreaseOnLevelUp"
       | "setAmountToLevelUp"
       | "setBaseEnergyDeductionAfterRaid"
+      | "setBaseEnergyDeductionAfterUpgrade"
       | "setBaseHealthDeductionAfterRaid"
       | "setBaseHoneyRaidReward"
       | "setBaseHoneyYield"
       | "setBaseIncentivePerEpoch"
+      | "setBaseNectarUsePerUpgrade"
       | "setBaseNumberOfForagingQuest"
       | "setBaseNumberOfRaidQuest"
       | "setBaseNumberOfRaidSuccessQuest"
       | "setBaseNumberOfUpgradeQuest"
+      | "setBasePollenUsePerUpgrade"
+      | "setBaseSapUsePerUpgrade"
       | "setBeeEnergyRefreshInterval"
       | "setBeeHealthRefreshInterval"
       | "setClaimTimeInterval"
@@ -121,14 +129,18 @@ export interface GameConfigInterface extends Interface {
       | "AmountMaxProductivityIncreaseOnLevelUpChanged"
       | "AmountToLevelUpChanged"
       | "BaseEnergyDeductionAfterRaidChanged"
+      | "BaseEnergyDeductionAfterUpgradeChanged"
       | "BaseHealthDeductionAfterRaidChanged"
       | "BaseHoneyRaidRewardChanged"
       | "BaseHoneyYieldChanged"
       | "BaseIncentivePerEpochChanged"
+      | "BaseNectarUsePerUpgradeChanged"
       | "BaseNumberOfForagingQuestChanged"
       | "BaseNumberOfRaidQuestChanged"
       | "BaseNumberOfRaidSuccessQuestChanged"
       | "BaseNumberOfUpgradeQuestChanged"
+      | "BasePollenUsePerUpgradeChanged"
+      | "BaseSapUsePerUpgradeChanged"
       | "BeeEnergyRefreshIntervalChanged"
       | "BeeHealthRefreshIntervalChanged"
       | "ClaimTimeIntervalChanged"
@@ -197,6 +209,10 @@ export interface GameConfigInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "baseEnergyDeductionAfterUpgrade",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "baseHealthDeductionAfterRaid",
     values?: undefined
   ): string;
@@ -213,6 +229,10 @@ export interface GameConfigInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "baseNectarUsePerUpgrade",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "baseNumberOfForagingQuest",
     values?: undefined
   ): string;
@@ -226,6 +246,14 @@ export interface GameConfigInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "baseNumberOfUpgradeQuest",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "basePollenUsePerUpgrade",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "baseSapUsePerUpgrade",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -344,6 +372,10 @@ export interface GameConfigInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setBaseEnergyDeductionAfterUpgrade",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setBaseHealthDeductionAfterRaid",
     values: [BigNumberish]
   ): string;
@@ -360,6 +392,10 @@ export interface GameConfigInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setBaseNectarUsePerUpgrade",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setBaseNumberOfForagingQuest",
     values: [BigNumberish]
   ): string;
@@ -373,6 +409,14 @@ export interface GameConfigInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setBaseNumberOfUpgradeQuest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBasePollenUsePerUpgrade",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBaseSapUsePerUpgrade",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -499,6 +543,10 @@ export interface GameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "baseEnergyDeductionAfterUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "baseHealthDeductionAfterRaid",
     data: BytesLike
   ): Result;
@@ -515,6 +563,10 @@ export interface GameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "baseNectarUsePerUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "baseNumberOfForagingQuest",
     data: BytesLike
   ): Result;
@@ -528,6 +580,14 @@ export interface GameConfigInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "baseNumberOfUpgradeQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "basePollenUsePerUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "baseSapUsePerUpgrade",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -640,6 +700,10 @@ export interface GameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setBaseEnergyDeductionAfterUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setBaseHealthDeductionAfterRaid",
     data: BytesLike
   ): Result;
@@ -656,6 +720,10 @@ export interface GameConfigInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setBaseNectarUsePerUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setBaseNumberOfForagingQuest",
     data: BytesLike
   ): Result;
@@ -669,6 +737,14 @@ export interface GameConfigInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setBaseNumberOfUpgradeQuest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setBasePollenUsePerUpgrade",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setBaseSapUsePerUpgrade",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -870,6 +946,18 @@ export namespace BaseEnergyDeductionAfterRaidChangedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace BaseEnergyDeductionAfterUpgradeChangedEvent {
+  export type InputTuple = [newBaseEnergyDeductionAfterUpgrade: BigNumberish];
+  export type OutputTuple = [newBaseEnergyDeductionAfterUpgrade: bigint];
+  export interface OutputObject {
+    newBaseEnergyDeductionAfterUpgrade: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace BaseHealthDeductionAfterRaidChangedEvent {
   export type InputTuple = [newBaseHealthDeductionAfterRaid: BigNumberish];
   export type OutputTuple = [newBaseHealthDeductionAfterRaid: bigint];
@@ -918,6 +1006,18 @@ export namespace BaseIncentivePerEpochChangedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace BaseNectarUsePerUpgradeChangedEvent {
+  export type InputTuple = [newBaseNectarPerUpgrade: BigNumberish];
+  export type OutputTuple = [newBaseNectarPerUpgrade: bigint];
+  export interface OutputObject {
+    newBaseNectarPerUpgrade: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace BaseNumberOfForagingQuestChangedEvent {
   export type InputTuple = [newBaseNumberOfForagingQuest: BigNumberish];
   export type OutputTuple = [newBaseNumberOfForagingQuest: bigint];
@@ -959,6 +1059,30 @@ export namespace BaseNumberOfUpgradeQuestChangedEvent {
   export type OutputTuple = [newBaseNumberOfUpgradeQuest: bigint];
   export interface OutputObject {
     newBaseNumberOfUpgradeQuest: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace BasePollenUsePerUpgradeChangedEvent {
+  export type InputTuple = [newBasePollenPerUpgrade: BigNumberish];
+  export type OutputTuple = [newBasePollenPerUpgrade: bigint];
+  export interface OutputObject {
+    newBasePollenPerUpgrade: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace BaseSapUsePerUpgradeChangedEvent {
+  export type InputTuple = [newBaseSapPerUpgrade: BigNumberish];
+  export type OutputTuple = [newBaseSapPerUpgrade: bigint];
+  export interface OutputObject {
+    newBaseSapPerUpgrade: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -1354,6 +1478,8 @@ export interface GameConfig extends BaseContract {
 
   baseEnergyDeductionAfterRaid: TypedContractMethod<[], [bigint], "view">;
 
+  baseEnergyDeductionAfterUpgrade: TypedContractMethod<[], [bigint], "view">;
+
   baseHealthDeductionAfterRaid: TypedContractMethod<[], [bigint], "view">;
 
   baseHoneyRaidReward: TypedContractMethod<[], [bigint], "view">;
@@ -1362,6 +1488,8 @@ export interface GameConfig extends BaseContract {
 
   baseIncentivePerEpoch: TypedContractMethod<[], [bigint], "view">;
 
+  baseNectarUsePerUpgrade: TypedContractMethod<[], [bigint], "view">;
+
   baseNumberOfForagingQuest: TypedContractMethod<[], [bigint], "view">;
 
   baseNumberOfRaidQuest: TypedContractMethod<[], [bigint], "view">;
@@ -1369,6 +1497,10 @@ export interface GameConfig extends BaseContract {
   baseNumberOfRaidSuccessQuest: TypedContractMethod<[], [bigint], "view">;
 
   baseNumberOfUpgradeQuest: TypedContractMethod<[], [bigint], "view">;
+
+  basePollenUsePerUpgrade: TypedContractMethod<[], [bigint], "view">;
+
+  baseSapUsePerUpgrade: TypedContractMethod<[], [bigint], "view">;
 
   beeEnergyRefreshInterval: TypedContractMethod<[], [bigint], "view">;
 
@@ -1468,6 +1600,12 @@ export interface GameConfig extends BaseContract {
     "nonpayable"
   >;
 
+  setBaseEnergyDeductionAfterUpgrade: TypedContractMethod<
+    [_baseEnergyDeductionAfterUpgrade: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   setBaseHealthDeductionAfterRaid: TypedContractMethod<
     [_baseHealthDeductionAfterRaid: BigNumberish],
     [void],
@@ -1492,6 +1630,12 @@ export interface GameConfig extends BaseContract {
     "nonpayable"
   >;
 
+  setBaseNectarUsePerUpgrade: TypedContractMethod<
+    [_baseNectarUsePerUpgrade: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   setBaseNumberOfForagingQuest: TypedContractMethod<
     [_baseNumberOfForagingQuest: BigNumberish],
     [void],
@@ -1512,6 +1656,18 @@ export interface GameConfig extends BaseContract {
 
   setBaseNumberOfUpgradeQuest: TypedContractMethod<
     [_baseNumberOfUpgradeQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setBasePollenUsePerUpgrade: TypedContractMethod<
+    [_basePollenUsePerUpgrade: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setBaseSapUsePerUpgrade: TypedContractMethod<
+    [_baseSapUsePerUpgrade: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -1677,6 +1833,9 @@ export interface GameConfig extends BaseContract {
     nameOrSignature: "baseEnergyDeductionAfterRaid"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "baseEnergyDeductionAfterUpgrade"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "baseHealthDeductionAfterRaid"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
@@ -1689,6 +1848,9 @@ export interface GameConfig extends BaseContract {
     nameOrSignature: "baseIncentivePerEpoch"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "baseNectarUsePerUpgrade"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "baseNumberOfForagingQuest"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
@@ -1699,6 +1861,12 @@ export interface GameConfig extends BaseContract {
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "baseNumberOfUpgradeQuest"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "basePollenUsePerUpgrade"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "baseSapUsePerUpgrade"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "beeEnergyRefreshInterval"
@@ -1830,6 +1998,13 @@ export interface GameConfig extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "setBaseEnergyDeductionAfterUpgrade"
+  ): TypedContractMethod<
+    [_baseEnergyDeductionAfterUpgrade: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "setBaseHealthDeductionAfterRaid"
   ): TypedContractMethod<
     [_baseHealthDeductionAfterRaid: BigNumberish],
@@ -1850,6 +2025,13 @@ export interface GameConfig extends BaseContract {
     nameOrSignature: "setBaseIncentivePerEpoch"
   ): TypedContractMethod<
     [_baseIncentivePerEpoch: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBaseNectarUsePerUpgrade"
+  ): TypedContractMethod<
+    [_baseNectarUsePerUpgrade: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -1878,6 +2060,20 @@ export interface GameConfig extends BaseContract {
     nameOrSignature: "setBaseNumberOfUpgradeQuest"
   ): TypedContractMethod<
     [_baseNumberOfUpgradeQuest: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBasePollenUsePerUpgrade"
+  ): TypedContractMethod<
+    [_basePollenUsePerUpgrade: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setBaseSapUsePerUpgrade"
+  ): TypedContractMethod<
+    [_baseSapUsePerUpgrade: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -2075,6 +2271,13 @@ export interface GameConfig extends BaseContract {
     BaseEnergyDeductionAfterRaidChangedEvent.OutputObject
   >;
   getEvent(
+    key: "BaseEnergyDeductionAfterUpgradeChanged"
+  ): TypedContractEvent<
+    BaseEnergyDeductionAfterUpgradeChangedEvent.InputTuple,
+    BaseEnergyDeductionAfterUpgradeChangedEvent.OutputTuple,
+    BaseEnergyDeductionAfterUpgradeChangedEvent.OutputObject
+  >;
+  getEvent(
     key: "BaseHealthDeductionAfterRaidChanged"
   ): TypedContractEvent<
     BaseHealthDeductionAfterRaidChangedEvent.InputTuple,
@@ -2103,6 +2306,13 @@ export interface GameConfig extends BaseContract {
     BaseIncentivePerEpochChangedEvent.OutputObject
   >;
   getEvent(
+    key: "BaseNectarUsePerUpgradeChanged"
+  ): TypedContractEvent<
+    BaseNectarUsePerUpgradeChangedEvent.InputTuple,
+    BaseNectarUsePerUpgradeChangedEvent.OutputTuple,
+    BaseNectarUsePerUpgradeChangedEvent.OutputObject
+  >;
+  getEvent(
     key: "BaseNumberOfForagingQuestChanged"
   ): TypedContractEvent<
     BaseNumberOfForagingQuestChangedEvent.InputTuple,
@@ -2129,6 +2339,20 @@ export interface GameConfig extends BaseContract {
     BaseNumberOfUpgradeQuestChangedEvent.InputTuple,
     BaseNumberOfUpgradeQuestChangedEvent.OutputTuple,
     BaseNumberOfUpgradeQuestChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "BasePollenUsePerUpgradeChanged"
+  ): TypedContractEvent<
+    BasePollenUsePerUpgradeChangedEvent.InputTuple,
+    BasePollenUsePerUpgradeChangedEvent.OutputTuple,
+    BasePollenUsePerUpgradeChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "BaseSapUsePerUpgradeChanged"
+  ): TypedContractEvent<
+    BaseSapUsePerUpgradeChangedEvent.InputTuple,
+    BaseSapUsePerUpgradeChangedEvent.OutputTuple,
+    BaseSapUsePerUpgradeChangedEvent.OutputObject
   >;
   getEvent(
     key: "BeeEnergyRefreshIntervalChanged"
@@ -2413,6 +2637,17 @@ export interface GameConfig extends BaseContract {
       BaseEnergyDeductionAfterRaidChangedEvent.OutputObject
     >;
 
+    "BaseEnergyDeductionAfterUpgradeChanged(uint256)": TypedContractEvent<
+      BaseEnergyDeductionAfterUpgradeChangedEvent.InputTuple,
+      BaseEnergyDeductionAfterUpgradeChangedEvent.OutputTuple,
+      BaseEnergyDeductionAfterUpgradeChangedEvent.OutputObject
+    >;
+    BaseEnergyDeductionAfterUpgradeChanged: TypedContractEvent<
+      BaseEnergyDeductionAfterUpgradeChangedEvent.InputTuple,
+      BaseEnergyDeductionAfterUpgradeChangedEvent.OutputTuple,
+      BaseEnergyDeductionAfterUpgradeChangedEvent.OutputObject
+    >;
+
     "BaseHealthDeductionAfterRaidChanged(uint256)": TypedContractEvent<
       BaseHealthDeductionAfterRaidChangedEvent.InputTuple,
       BaseHealthDeductionAfterRaidChangedEvent.OutputTuple,
@@ -2457,6 +2692,17 @@ export interface GameConfig extends BaseContract {
       BaseIncentivePerEpochChangedEvent.OutputObject
     >;
 
+    "BaseNectarUsePerUpgradeChanged(uint256)": TypedContractEvent<
+      BaseNectarUsePerUpgradeChangedEvent.InputTuple,
+      BaseNectarUsePerUpgradeChangedEvent.OutputTuple,
+      BaseNectarUsePerUpgradeChangedEvent.OutputObject
+    >;
+    BaseNectarUsePerUpgradeChanged: TypedContractEvent<
+      BaseNectarUsePerUpgradeChangedEvent.InputTuple,
+      BaseNectarUsePerUpgradeChangedEvent.OutputTuple,
+      BaseNectarUsePerUpgradeChangedEvent.OutputObject
+    >;
+
     "BaseNumberOfForagingQuestChanged(uint256)": TypedContractEvent<
       BaseNumberOfForagingQuestChangedEvent.InputTuple,
       BaseNumberOfForagingQuestChangedEvent.OutputTuple,
@@ -2499,6 +2745,28 @@ export interface GameConfig extends BaseContract {
       BaseNumberOfUpgradeQuestChangedEvent.InputTuple,
       BaseNumberOfUpgradeQuestChangedEvent.OutputTuple,
       BaseNumberOfUpgradeQuestChangedEvent.OutputObject
+    >;
+
+    "BasePollenUsePerUpgradeChanged(uint256)": TypedContractEvent<
+      BasePollenUsePerUpgradeChangedEvent.InputTuple,
+      BasePollenUsePerUpgradeChangedEvent.OutputTuple,
+      BasePollenUsePerUpgradeChangedEvent.OutputObject
+    >;
+    BasePollenUsePerUpgradeChanged: TypedContractEvent<
+      BasePollenUsePerUpgradeChangedEvent.InputTuple,
+      BasePollenUsePerUpgradeChangedEvent.OutputTuple,
+      BasePollenUsePerUpgradeChangedEvent.OutputObject
+    >;
+
+    "BaseSapUsePerUpgradeChanged(uint256)": TypedContractEvent<
+      BaseSapUsePerUpgradeChangedEvent.InputTuple,
+      BaseSapUsePerUpgradeChangedEvent.OutputTuple,
+      BaseSapUsePerUpgradeChangedEvent.OutputObject
+    >;
+    BaseSapUsePerUpgradeChanged: TypedContractEvent<
+      BaseSapUsePerUpgradeChangedEvent.InputTuple,
+      BaseSapUsePerUpgradeChangedEvent.OutputTuple,
+      BaseSapUsePerUpgradeChangedEvent.OutputObject
     >;
 
     "BeeEnergyRefreshIntervalChanged(uint256)": TypedContractEvent<
