@@ -76,7 +76,6 @@ export interface IBuzzkillNFTInterface extends Interface {
       | "balanceOf"
       | "currentTokenId"
       | "getApproved"
-      | "hiveFactory"
       | "isApprovedForAll"
       | "mintFee"
       | "modifyBeeTraits"
@@ -129,17 +128,13 @@ export interface IBuzzkillNFTInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "hiveFactory",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "mintFee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "modifyBeeTraits",
-    values: [BigNumberish, IBuzzkillNFT.BeeTraitsStruct]
+    values: [BigNumberish, BigNumberish, IBuzzkillNFT.BeeTraitsStruct]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
@@ -236,10 +231,6 @@ export interface IBuzzkillNFTInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "hiveFactory",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -435,8 +426,6 @@ export interface IBuzzkillNFT extends BaseContract {
 
   getApproved: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
-  hiveFactory: TypedContractMethod<[], [string], "view">;
-
   isApprovedForAll: TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
     [boolean],
@@ -446,7 +435,11 @@ export interface IBuzzkillNFT extends BaseContract {
   mintFee: TypedContractMethod<[], [bigint], "view">;
 
   modifyBeeTraits: TypedContractMethod<
-    [tokenId: BigNumberish, _beeTraits: IBuzzkillNFT.BeeTraitsStruct],
+    [
+      hiveId: BigNumberish,
+      tokenId: BigNumberish,
+      _beeTraits: IBuzzkillNFT.BeeTraitsStruct
+    ],
     [void],
     "nonpayable"
   >;
@@ -594,9 +587,6 @@ export interface IBuzzkillNFT extends BaseContract {
     nameOrSignature: "getApproved"
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
   getFunction(
-    nameOrSignature: "hiveFactory"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "isApprovedForAll"
   ): TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
@@ -609,7 +599,11 @@ export interface IBuzzkillNFT extends BaseContract {
   getFunction(
     nameOrSignature: "modifyBeeTraits"
   ): TypedContractMethod<
-    [tokenId: BigNumberish, _beeTraits: IBuzzkillNFT.BeeTraitsStruct],
+    [
+      hiveId: BigNumberish,
+      tokenId: BigNumberish,
+      _beeTraits: IBuzzkillNFT.BeeTraitsStruct
+    ],
     [void],
     "nonpayable"
   >;

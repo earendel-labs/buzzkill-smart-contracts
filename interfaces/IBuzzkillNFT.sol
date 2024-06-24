@@ -23,8 +23,6 @@ interface IBuzzkillNFT is IVRC725 {
 
     function mintFee() external view returns (uint256);
 
-    function hiveFactory() external view returns (address);
-
     function tokenURIs(uint256 tokenId) external view returns (string memory);
 
     function tokenIdToCharacteristics(
@@ -36,6 +34,7 @@ interface IBuzzkillNFT is IVRC725 {
     ) external view returns (BeeTraits memory _beeTraits);
 
     function modifyBeeTraits(
+        uint256 hiveId,
         uint256 tokenId,
         BeeTraits calldata _beeTraits
     ) external;

@@ -17,7 +17,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     uint256 public foragePercentage; // 5% of the gathered resources are added to the hive
     uint256 public claimTimeInterval; // 1 week interval between honey claim
     uint256 public honeyYieldConstant; // Contanst to caculate honey yield
-    uint256 public nectarRequiredToClaim; // Required at least 5000 nectar to claim honey
+    uint256 public nectarRequiredToClaim; // Required at least 10_000 nectar to claim honey
     uint256 public experienceEarnedAfterForage; // 10 experience points earned after foraging
     uint256 public experienceEarnedAfterRaidFailed; // 20 experience points earned after a failed raid
     uint256 public experienceEarnedAfterRaidSuccess; // 20 experience points earned after a successful raid
@@ -26,7 +26,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     uint256 public baseEnergyDeductionAfterRaid; // 20 energy deducted after a raid
     uint256 public baseEnergyDeductionAfterUpgrade; // 20 energy deducted after an upgrade
     uint256 public raidHoneyFee; // 10 $HONEY paid for one raid
-    uint256 public raidSapFee; // 100 sap for one raid
+    uint256 public raidSapFee; // 500 sap for one raid
     uint256 public baseHoneyRaidReward; // base honey earn for one raid success is 10 $HONEY
     uint256 public incentiveEarnAfterRaid; // 200 incentive points earned after a raid
     uint256 public maxResourcesValue; // The maximum density or availability of nectar, pollen, and sap in the environment is 100
@@ -46,9 +46,9 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
     uint256 public baseNumberOfRaidQuest; // Base number of raid quest, currently 2
     uint256 public baseNumberOfRaidSuccessQuest; // Base number of raid success quest, currently 1
     uint256 public baseNumberOfUpgradeQuest; // Base number of upgrade quest, currently 1
-    uint256 public baseNectarUsePerUpgrade; // Base number of nectar use for upgrade skill, currently 100
-    uint256 public basePollenUsePerUpgrade; // Base number of pollen use for upgrade skill, currently 100
-    uint256 public baseSapUsePerUpgrade; // Base number of sap use for upgrade skill, currently 100
+    uint256 public baseNectarUsePerUpgrade; // Base number of nectar use for upgrade skill, currently 3000
+    uint256 public basePollenUsePerUpgrade; // Base number of pollen use for upgrade skill, currently 3000
+    uint256 public baseSapUsePerUpgrade; // Base number of sap use for upgrade skill, currently 3000
 
     /**
      * Cn ,Cp ,Cs are constants that adjust the scale of resources gathered to fit the game's economy and balance.
@@ -154,7 +154,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         foragePercentage = 500;
         claimTimeInterval = 1 weeks;
         honeyYieldConstant = 10_0000;
-        nectarRequiredToClaim = 1_000;
+        nectarRequiredToClaim = 10_000;
         experienceEarnedAfterForage = 10;
         experienceEarnedAfterRaidFailed = 20;
         experienceEarnedAfterRaidSuccess = 20;
@@ -163,7 +163,7 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         baseEnergyDeductionAfterRaid = 20;
         baseEnergyDeductionAfterUpgrade = 20;
         raidHoneyFee = 10 ether;
-        raidSapFee = 100;
+        raidSapFee = 500;
         baseHoneyRaidReward = 10 ether;
         incentiveEarnAfterRaid = 10;
         maxResourcesValue = 100;
@@ -183,9 +183,9 @@ contract GameConfig is IGameConfig, Initializable, OwnableUpgradeable {
         baseNumberOfRaidQuest = 2;
         baseNumberOfRaidSuccessQuest = 1;
         baseNumberOfUpgradeQuest = 1;
-        baseNectarUsePerUpgrade = 100;
-        basePollenUsePerUpgrade = 100;
-        baseSapUsePerUpgrade = 100;
+        baseNectarUsePerUpgrade = 3_000;
+        basePollenUsePerUpgrade = 3_000;
+        baseSapUsePerUpgrade = 3_000;
         Cs = 250_000;
         Cn = 250_000;
         Cp = 250_000;

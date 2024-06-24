@@ -167,19 +167,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "hiveFactory",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "address",
@@ -218,6 +205,11 @@ const _abi = [
   },
   {
     inputs: [
+      {
+        internalType: "uint256",
+        name: "hiveId",
+        type: "uint256",
+      },
       {
         internalType: "uint256",
         name: "tokenId",

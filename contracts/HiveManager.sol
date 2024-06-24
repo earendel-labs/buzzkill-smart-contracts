@@ -146,13 +146,6 @@ contract HiveManager is Initializable {
         isBeeInAction[hiveId][tokenId] = false;
     }
 
-    modifier onlyHive() {
-        if (msg.sender != address(this)) {
-            revert HiveOnly();
-        }
-        _;
-    }
-
     /* -------------------------------------------------------------------------- */
     /*  View Functions                                                            */
     /* -------------------------------------------------------------------------- */
@@ -269,6 +262,10 @@ contract HiveManager is Initializable {
             (hive.numWorkers + hive.numQueens * 2));
         uint256 _hiveTotalIncentive = hiveBaseIncentive +
             hive.hiveTotalIncentive;
+
+        if (_hiveTotalIncentive == 0) {
+            return 0;
+        }
 
         uint256 claimableHoney = (currentAvailableHoney *
             (getBeeBaseIncentive(_tokenId, lastClaimedBlock) +
@@ -468,12 +465,13 @@ contract HiveManager is Initializable {
         beeStatus[_hiveId][_tokenId] = BeeStatus({
             owner: msg.sender,
             beeId: _tokenId,
-            beeProductivity: 0,
+            beeProductivity: beeTraits.baseProductivity,
             beeWorkIncentive: 0,
             beeDefense: beeTraits.defense,
             lastClaimedBlock: block.number
         });
 
+        hive.hiveProductivity += beeTraits.baseProductivity;
         hive.hiveDefense += beeTraits.defense;
 
         buzzkillNFT.safeTransferFrom(msg.sender, address(this), _tokenId);
@@ -523,7 +521,7 @@ contract HiveManager is Initializable {
 
                 beeTraits.nectar -= gameConfig.nectarRequiredToClaim();
 
-                buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
+                buzzkillNFT.modifyBeeTraits(_hiveId, _tokenId, beeTraits);
 
                 honeyDistribution.distributeHoney(msg.sender, claimableHoney);
             }
@@ -609,16 +607,22 @@ contract HiveManager is Initializable {
 
         buzzkillNFT.updateForagingQuestCount(_hiveId, _tokenId);
 
-        // 5% of the gathered resources are added to the hive
-        startForageAndCaculateResources(_hiveId, _tokenId, _habitatId);
-
         IBuzzkillNFT.BeeTraits memory _beeTraits = buzzkillNFT.tokenIdToTraits(
             _tokenId
         );
+
+        // 5% of the gathered resources are added to the hive
+        _beeTraits = startForageAndCaculateResources(
+            _hiveId,
+            _tokenId,
+            _habitatId,
+            _beeTraits
+        );
+
         _beeTraits.energy -= energyDeduction;
         _beeTraits.experience += gameConfig.experienceEarnedAfterForage();
 
-        buzzkillNFT.modifyBeeTraits(_tokenId, _beeTraits);
+        buzzkillNFT.modifyBeeTraits(_hiveId, _tokenId, _beeTraits);
 
         uint256 incentiveGathered = IWorldMap(
             buzzkillAddressProvider.worldMapAddress()
@@ -696,7 +700,7 @@ contract HiveManager is Initializable {
                 amountHoneyRaided
             );
 
-        buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
+        buzzkillNFT.modifyBeeTraits(_hiveId, _tokenId, beeTraits);
 
         uint256 workIncentiveEarned = (gameConfig.incentiveEarnAfterRaid() *
             bee.beeProductivity) / hives[_hiveId].hiveProductivity;
@@ -711,65 +715,6 @@ contract HiveManager is Initializable {
             workIncentiveEarned,
             beeTraits.experience
         );
-    }
-
-    /**
-     * @dev Endure a raid initiated by another hive.
-     * This function handles the raid mechanics, comparing raid power and hive defense, and deducts honey if the raid is successful.
-     * Can only be called by the hive contract.
-     * @param _hiveId The hive ID being raided.
-     * @param _tokenId The Bee NFT token ID initiating the raid.
-     * @return The amount of honey raided.
-     * @notice Reverts if the bee is not outside the hive.
-     */
-    function endureRaid(
-        uint256 _hiveId,
-        uint256 _tokenId
-    ) public onlyHive returns (uint256) {
-        if (beeStatus[_hiveId][_tokenId].owner != address(0)) {
-            revert BeeMustBeOutsideHive();
-        }
-
-        _updateHive(_hiveId);
-
-        Hive storage hive = hives[_hiveId];
-
-        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
-            buzzkillAddressProvider.buzzkillNFTAddress()
-        );
-
-        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
-            _tokenId
-        );
-
-        uint256 raidBoost = randomBeeRaidBoost();
-        uint256 hiveDefenseBoost = randomHiveDefenseBoost(_hiveId);
-
-        uint256 caculatedRaidPower = beeTraits.attack * raidBoost;
-        uint256 caculatedHiveDefense = hive.hiveDefense * hiveDefenseBoost;
-
-        uint256 amountHoneyRaided;
-
-        if (caculatedRaidPower > caculatedHiveDefense) {
-            uint256 _honeyPot = getAvailableHoneyInHive(_hiveId);
-            uint256 hiveCapacity = _hiveCapacity(_hiveId);
-            // Formular: Honey = Base * Capacity * Constant1 + HivePool * Forage * Constant2
-            // Constant1 is currrently 1 and Constant2 is currently 0.01
-            IGameConfig gameConfig = IGameConfig(
-                buzzkillAddressProvider.gameConfigAddress()
-            );
-            amountHoneyRaided =
-                (gameConfig.baseHoneyRaidReward() * hiveCapacity * 10_000) /
-                BASE_DENOMINATOR +
-                (_honeyPot * beeTraits.forage * 100) /
-                (BASE_DENOMINATOR * BASE_DENOMINATOR);
-            if (amountHoneyRaided > _honeyPot) {
-                amountHoneyRaided = _honeyPot;
-            }
-            hive.availableHoneyInHive -= amountHoneyRaided;
-        }
-
-        return amountHoneyRaided;
     }
 
     /**
@@ -824,7 +769,7 @@ contract HiveManager is Initializable {
         beeTraits.experience += IGameConfig(
             buzzkillAddressProvider.gameConfigAddress()
         ).experienceEarnedAfterUpgrade();
-        buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
+        buzzkillNFT.modifyBeeTraits(_hiveId, _tokenId, beeTraits);
 
         emit UpgradeBeeSkillSucceed(_hiveId, _tokenId, _beeSkill);
     }
@@ -893,7 +838,7 @@ contract HiveManager is Initializable {
 
         beeTraits.nectar -= gameConfig.nectarRequiredToClaim();
 
-        buzzkillNFT.modifyBeeTraits(_tokenId, beeTraits);
+        buzzkillNFT.modifyBeeTraits(_hiveId, _tokenId, beeTraits);
 
         honeyDistribution.distributeHoney(msg.sender, claimableHoney);
 
@@ -903,6 +848,14 @@ contract HiveManager is Initializable {
     /* -------------------------------------------------------------------------- */
     /*  Internal Functions                                                        */
     /* -------------------------------------------------------------------------- */
+
+    /**
+     * @dev Get the base incentive for a Bee NFT.
+     * The base incentive is calculated based on the Bee NFT's type and the time passed since the last update.
+     * @param _tokenId The Bee NFT token ID.
+     * @param _lastUpdateTimestamp The timestamp of the last update.
+     * @return The base incentive for the Bee NFT.
+     */
     function getBeeBaseIncentive(
         uint256 _tokenId,
         uint256 _lastUpdateTimestamp
@@ -931,21 +884,23 @@ contract HiveManager is Initializable {
         return currentBeeBaseIncentive;
     }
 
+    /**
+     * @dev Start foraging and calculate resources.
+     * This function allows a Bee NFT to forage resources from a habitat and calculates the resources gathered.
+     * Part of the gathered resources are added to the hive.
+     * @param _hiveId The hive ID.
+     * @param _tokenId The Bee NFT token ID.
+     * @param _habitatId The habitat ID from which resources are foraged.
+     * @param _beeTraits The Bee NFT's traits.
+     * @return The updated Bee NFT's traits.
+     */
     function startForageAndCaculateResources(
         uint256 _hiveId,
         uint256 _tokenId,
-        uint256 _habitatId
-    ) internal {
+        uint256 _habitatId,
+        IBuzzkillNFT.BeeTraits memory _beeTraits
+    ) internal returns (IBuzzkillNFT.BeeTraits memory) {
         Hive storage hive = hives[_hiveId];
-        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
-            buzzkillAddressProvider.buzzkillNFTAddress()
-        );
-        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
-            _tokenId
-        );
-        IGameConfig gameConfig = IGameConfig(
-            buzzkillAddressProvider.gameConfigAddress()
-        );
 
         // Minimum amount for each resource is 20
         (
@@ -957,7 +912,10 @@ contract HiveManager is Initializable {
                 _habitatId
             );
 
-        uint256 foragePercentage = gameConfig.foragePercentage();
+        uint256 foragePercentage = IGameConfig(
+            buzzkillAddressProvider.gameConfigAddress()
+        ).foragePercentage();
+
         uint256 sharedNectar = ((nectarGathered * foragePercentage) /
             BASE_DENOMINATOR) < 1
             ? 1
@@ -975,14 +933,9 @@ contract HiveManager is Initializable {
         hive.pollen += sharedPollen;
         hive.sap += sharedSap;
 
-        beeTraits.nectar += nectarGathered - sharedNectar;
-        beeTraits.pollen += pollenGathered - sharedPollen;
-        beeTraits.sap += sapGathered - sharedSap;
-
-        beeTraits.nectar +=
-            nectarGathered -
-            (nectarGathered * foragePercentage) /
-            BASE_DENOMINATOR;
+        _beeTraits.nectar += nectarGathered - sharedNectar;
+        _beeTraits.pollen += pollenGathered - sharedPollen;
+        _beeTraits.sap += sapGathered - sharedSap;
 
         emit ResourcesCollected(
             _tokenId,
@@ -994,8 +947,16 @@ contract HiveManager is Initializable {
             sharedPollen,
             sharedSap
         );
+
+        return _beeTraits;
     }
 
+    /**
+     * @dev Perform a check on the Bee NFT's status before initiating a raid.
+     * This function checks the Bee NFT's sap, health, and energy before initiating a raid.
+     * @param _tokenId The Bee NFT token ID.
+     * @notice Reverts if the Bee NFT does not have enough sap, health, or energy.
+     */
     function checkBeeStatusBeforeRaid(uint256 _tokenId) internal view {
         IBuzzkillNFT.BeeTraits memory _beeStatsBeforeRaid = IBuzzkillNFT(
             buzzkillAddressProvider.buzzkillNFTAddress()
@@ -1021,6 +982,73 @@ contract HiveManager is Initializable {
         }
     }
 
+    /**
+     * @dev Endure a raid initiated by another hive.
+     * This function handles the raid mechanics, comparing raid power and hive defense, and deducts honey if the raid is successful.
+     * Can only be called by the hive contract.
+     * @param _hiveId The hive ID being raided.
+     * @param _tokenId The Bee NFT token ID initiating the raid.
+     * @return The amount of honey raided.
+     * @notice Reverts if the bee is not outside the hive.
+     */
+    function endureRaid(
+        uint256 _hiveId,
+        uint256 _tokenId
+    ) internal returns (uint256) {
+        if (beeStatus[_hiveId][_tokenId].owner != address(0)) {
+            revert BeeMustBeOutsideHive();
+        }
+
+        _updateHive(_hiveId);
+
+        Hive storage hive = hives[_hiveId];
+
+        IBuzzkillNFT buzzkillNFT = IBuzzkillNFT(
+            buzzkillAddressProvider.buzzkillNFTAddress()
+        );
+
+        IBuzzkillNFT.BeeTraits memory beeTraits = buzzkillNFT.tokenIdToTraits(
+            _tokenId
+        );
+
+        uint256 raidBoost = randomBeeRaidBoost();
+        uint256 hiveDefenseBoost = randomHiveDefenseBoost(_hiveId);
+
+        uint256 caculatedRaidPower = beeTraits.attack * raidBoost;
+        uint256 caculatedHiveDefense = hive.hiveDefense * hiveDefenseBoost;
+
+        uint256 amountHoneyRaided;
+
+        if (caculatedRaidPower > caculatedHiveDefense) {
+            uint256 _honeyPot = getAvailableHoneyInHive(_hiveId);
+            uint256 hiveCapacity = _hiveCapacity(_hiveId);
+            // Formular: Honey = Base * Capacity * Constant1 + HivePool * Forage * Constant2
+            // Constant1 is currrently 1 and Constant2 is currently 0.01
+            IGameConfig gameConfig = IGameConfig(
+                buzzkillAddressProvider.gameConfigAddress()
+            );
+            amountHoneyRaided =
+                (gameConfig.baseHoneyRaidReward() * hiveCapacity * 10_000) /
+                BASE_DENOMINATOR +
+                (_honeyPot * beeTraits.forage * 100) /
+                (BASE_DENOMINATOR * BASE_DENOMINATOR);
+            if (amountHoneyRaided > _honeyPot) {
+                amountHoneyRaided = _honeyPot;
+            }
+            hive.availableHoneyInHive -= amountHoneyRaided;
+        }
+
+        return amountHoneyRaided;
+    }
+
+    /**
+     * @dev Calculate the Bee NFT's stats and update the quest after a raid.
+     * This function calculates the Bee NFT's stats after a raid and updates the raid quest count.
+     * @param _hiveId The hive ID.
+     * @param _tokenId The Bee NFT token ID.
+     * @param _amountHoneyRaided The amount of honey raided.
+     * @return _beeTraits The updated Bee NFT's traits.
+     */
     function caculateBeeStatsAndUpdateQuestAfterRaid(
         uint256 _hiveId,
         uint256 _tokenId,
@@ -1074,6 +1102,14 @@ contract HiveManager is Initializable {
         _beeTraits.sap -= gameConfig.raidSapFee();
     }
 
+    /**
+     * @dev Update the Bee NFT's trait and calculate the resources after upgrading a skill.
+     * This function updates the Bee NFT's trait after upgrading a skill and calculates the resources used for the upgrade.
+     * @param _beeSkill The skill to upgrade.
+     * @param beeTraits The Bee NFT's traits.
+     * @param amount The amount of resources used for the upgrade.
+     * @return IBuzzkillNFT.BeeTraits The updated Bee NFT's traits.
+     */
     function _updateBeeTraitAndCaculateResources(
         BeeSkills _beeSkill,
         IBuzzkillNFT.BeeTraits memory beeTraits,
@@ -1171,6 +1207,12 @@ contract HiveManager is Initializable {
         return 1;
     }
 
+    /**
+     * @dev Get the amount of resources used for upgrading a skill.
+     * @param _currentPoint The current skill point.
+     * @param _nextPoint The next skill point.
+     * Return the amount of nectar, pollen, and sap used for the upgrade.
+     */
     function _getAmountResourcesUseForUpgrade(
         uint256 _currentPoint,
         uint256 _nextPoint

@@ -8,11 +8,40 @@ import "../contracts/helper/HoneyDistribution.sol";
 
 import "../contracts/Honey.sol";
 import "../contracts/BuzzkillNFT.sol";
-import "../contracts/Hive.sol";
-import "../contracts/HiveFactory.sol";
+import "../contracts/HiveManager.sol";
 import "../contracts/WorldMap.sol";
 
 contract NormalFlowTest is Test {
+    struct BeeTraits {
+        uint256 energy;
+        uint256 health;
+        uint256 attack;
+        uint256 defense;
+        uint256 forage;
+        uint256 baseProductivity;
+        uint256 maxProductivity;
+        uint256 experience;
+        uint256 level;
+        uint256 nectar;
+        uint256 pollen;
+        uint256 sap;
+    }
+
+    struct Hive {
+        uint256 habitatId;
+        uint256 numQueens;
+        uint256 numWorkers;
+        uint256 nectar;
+        uint256 pollen;
+        uint256 sap;
+        uint256 hiveProductivity;
+        uint256 hiveDefense;
+        uint256 availableHoneyInHive;
+        uint256 lastAvailableHoneyUpdateBlock;
+        uint256 hiveTotalIncentive;
+        uint256 lastBaseIncentiveUpdateBlock;
+    }
+
     uint256 public constant MINT_FEE = 1 ether;
     address owner = address(1234);
     address user = address(5678);
@@ -21,11 +50,9 @@ contract NormalFlowTest is Test {
     GameConfig gameConfig;
     Honey honey;
     BuzzkillNFT buzzkillNFT;
-    HiveFactory hiveFactory;
+    HiveManager hiveManager;
     HoneyDistribution honeyDistribution;
     WorldMap worldMap;
-
-    Hive hive;
 
     function setUp() public {
         vm.deal(owner, 100 ether);
@@ -48,13 +75,13 @@ contract NormalFlowTest is Test {
             address(buzzkillAddressProvider)
         );
 
-        // Deploy hive factory contract
-        hiveFactory = new HiveFactory(address(buzzkillAddressProvider));
+        // Deploy hive manager contract
+        hiveManager = new HiveManager();
+        hiveManager.initialize(address(buzzkillAddressProvider));
 
         // Deploy buzzkill NFT contract
         buzzkillNFT = new BuzzkillNFT(
             MINT_FEE,
-            address(hiveFactory),
             address(buzzkillAddressProvider)
         );
 
@@ -63,7 +90,7 @@ contract NormalFlowTest is Test {
 
         // Setting address
         buzzkillAddressProvider.setHoneyAddress(address(honey));
-        buzzkillAddressProvider.setHiveFactoryAddress(address(hiveFactory));
+        buzzkillAddressProvider.setHiveManagerAddress(address(hiveManager));
         buzzkillAddressProvider.setWorldMapAddress(address(worldMap));
         buzzkillAddressProvider.setBuzzkillNFTAddress(address(buzzkillNFT));
         buzzkillAddressProvider.setHoneyDistributionAddress(
@@ -77,9 +104,8 @@ contract NormalFlowTest is Test {
         // Create a habitat
         worldMap.addHabitat(50, 30, 20, 2, 100);
 
-        // Add a hive
-        address newHiveAddress = hiveFactory.createHive(0);
-        hive = Hive(newHiveAddress);
+        // Add a hive in habitat 0
+        hiveManager.createHive(0);
 
         vm.stopPrank();
         vm.startPrank(user);
@@ -90,19 +116,89 @@ contract NormalFlowTest is Test {
         vm.stopPrank();
     }
 
+    function getHiveInfo(uint256 hiveId) public view returns (Hive memory) {
+        (
+            uint256 habitatId,
+            uint256 numQueens,
+            uint256 numWorkers,
+            uint256 nectar,
+            uint256 pollen,
+            uint256 sap,
+            uint256 hiveProductivity,
+            uint256 hiveDefense,
+            uint256 availableHoneyInHive,
+            uint256 lastAvailableHoneyUpdateBlock,
+            uint256 hiveTotalIncentive,
+            uint256 lastBaseIncentiveUpdateBlock
+        ) = hiveManager.hives(hiveId);
+
+        Hive memory hive = Hive(
+            habitatId,
+            numQueens,
+            numWorkers,
+            nectar,
+            pollen,
+            sap,
+            hiveProductivity,
+            hiveDefense,
+            availableHoneyInHive,
+            lastAvailableHoneyUpdateBlock,
+            hiveTotalIncentive,
+            lastBaseIncentiveUpdateBlock
+        );
+        return hive;
+    }
+
+    function getTokenTraits(
+        uint256 tokenId
+    ) public view returns (BeeTraits memory) {
+        (
+            uint256 energy,
+            uint256 health,
+            uint256 attack,
+            uint256 defense,
+            uint256 forage,
+            uint256 baseProductivity,
+            uint256 maxProductivity,
+            uint256 experience,
+            uint256 level,
+            uint256 nectar,
+            uint256 pollen,
+            uint256 sap
+        ) = buzzkillNFT.tokenIdToTraits(tokenId);
+
+        BeeTraits memory traits = BeeTraits(
+            energy,
+            health,
+            attack,
+            defense,
+            forage,
+            baseProductivity,
+            maxProductivity,
+            experience,
+            level,
+            nectar,
+            pollen,
+            sap
+        );
+        return traits;
+    }
+
     // Stake
     function stake() public {
         vm.startPrank(user);
         // Approve hive to transfer NFT
-        buzzkillNFT.setApprovalForAll(address(hive), true);
-        hive.stakeBee(0);
-        hive.stakeBee(1);
+        buzzkillNFT.setApprovalForAll(address(hiveManager), true);
+        // Id of the first hive
+        uint256 firstHiveId = 0;
+        // Stake bees with id 0 and id 1 to first hive
+        hiveManager.stakeBee(firstHiveId, 0);
+        hiveManager.stakeBee(firstHiveId, 1);
 
-        uint256 numQueens = hive.numQueens();
-        uint256 numWorkers = hive.numWorkers();
+        Hive memory hiveInfo = getHiveInfo(firstHiveId);
 
-        assertEq(numQueens, 1);
-        assertEq(numWorkers, 1);
+        assertEq(hiveInfo.numQueens, 1);
+        assertEq(hiveInfo.numWorkers, 1);
 
         vm.stopPrank();
     }
@@ -122,22 +218,26 @@ contract NormalFlowTest is Test {
     function testForage() public {
         stake();
         vm.prank(user);
-        hive.forage(0, 0); // Send the worker bee to forage at habitat id 0
+        uint256 firstHiveId = 0;
+        uint256 forageBeeId = 0;
+        uint256 forageHabitatId = 0;
+
+        hiveManager.forage(firstHiveId, forageBeeId, forageHabitatId); // Send the worker bee with id 0 of the first hive to forage at habitat id 0
 
         // Check the bee resources gathered from the habitat after foraging
-        (, , , , , , uint256 nectar, uint256 pollen, uint256 sap) = buzzkillNFT
-            .tokenIdToTraits(0);
-        assertGe(nectar, 19);
-        assertGe(pollen, 19);
-        assertGe(sap, 19);
+        BeeTraits memory beeTraits = getTokenTraits(forageBeeId);
 
-        console.log("Bee Nectar: ", nectar);
-        console.log("Bee Pollen: ", pollen);
-        console.log("Bee Sap: ", sap);
+        assertGe(beeTraits.nectar, 19);
+        assertGe(beeTraits.pollen, 19);
+        assertGe(beeTraits.sap, 19);
+
+        console.log("Bee Nectar: ", beeTraits.nectar);
+        console.log("Bee Pollen: ", beeTraits.pollen);
+        console.log("Bee Sap: ", beeTraits.sap);
 
         // Check the hive resources after foraging
-        (uint256 hiveNectar, uint256 hivePollen, uint256 hiveSap) = hive
-            .getHiveResources();
+        (uint256 hiveNectar, uint256 hivePollen, uint256 hiveSap) = hiveManager
+            .getHiveResources(firstHiveId);
         assertGe(hiveNectar, 1);
         assertGe(hivePollen, 1);
         assertGe(hiveSap, 1);
@@ -151,18 +251,29 @@ contract NormalFlowTest is Test {
     function testRaid() public {
         vm.startPrank(owner);
         uint256 NFTIdForRaid = 1;
+        uint256 firstHiveId = 0;
+        uint256 secondHiveId = 1;
+        uint256 habitatId = 0;
         // Init data for raiding
-        address newHiveAddress = hiveFactory.createHive(0);
-        Hive hive2 = Hive(newHiveAddress);
+        hiveManager.createHive(habitatId); // Create a new hive with habitat id 0
+        // Mint NFTs for the new hive
         buzzkillNFT.mintTo{value: MINT_FEE}(owner, 0); // Mint 1 worker bee to owner address, NFT has id = 2
-        buzzkillNFT.approve(address(hive2), 2);
-        hive2.stakeBee(2);
-        hive2.forage(2, 0); // forage to increase productivity
-        uint256 numberOfBlocks = 1800; // Roll 2 epoch
+        uint256 secondHiveStakedBeeId = 2;
+
+        buzzkillNFT.approve(address(hiveManager), secondHiveStakedBeeId);
+        hiveManager.stakeBee(secondHiveId, secondHiveStakedBeeId);
+
+        hiveManager.forage(secondHiveId, secondHiveStakedBeeId, habitatId); // forage to increase productivity
+        // Roll 2 epoch
+        uint256 numberOfBlocks = 1800;
         vm.roll(block.number + numberOfBlocks);
-        uint256 currentHoneyInHive = hive2.getAvailableHoneyInHive();
-        assertGt(currentHoneyInHive, 2 ether); // amount honey in hive should be greater than 2 $HONEY, base yield is 1 $HONEY per epoch
+        // Amount honey in hive should be greater than 2 $HONEY, base yield is 1 $HONEY per epoch
+        uint256 currentHoneyInHive = hiveManager.getAvailableHoneyInHive(
+            secondHiveId
+        );
+        assertGt(currentHoneyInHive, 2 ether);
         console.log("Current honey in hive: ", currentHoneyInHive);
+        // Setup for the raid
         gameConfig.setRaidSapFee(2); // Set the required sap to raid to 1 to ensure the raid can happen
         gameConfig.setRaidHoneyFee(10); // Set the raid fee to 10 $HONEY
         honey.mintTo(user, 10 ether); // Mint 10 $HONEY to user address to use as raid fee
@@ -171,40 +282,55 @@ contract NormalFlowTest is Test {
         // Init raiding
         stake();
         vm.startPrank(user);
-        hive.forage(NFTIdForRaid, 0); // Send queen bee to forage to get enough resources to raid (sap required)
+        hiveManager.forage(firstHiveId, NFTIdForRaid, 0); // Send the bee with pre-defined id from first hive to forage to get enough resources to raid (sap required)
         uint256 beeSapBeforeRaid = buzzkillNFT.getBeeTraits(NFTIdForRaid).sap;
 
-        hive.startRaid(NFTIdForRaid, address(hive2)); // Send the queen bee to raid at other hive
+        hiveManager.startRaid(firstHiveId, NFTIdForRaid, secondHiveId); // Send the bee from first hive to raid at second hive
         vm.stopPrank();
         console.log("Bee Sap Before Raid: ", beeSapBeforeRaid);
         uint256 beeSapAfterRaid = buzzkillNFT.getBeeTraits(NFTIdForRaid).sap;
         console.log("Bee Sap After Raid: ", beeSapAfterRaid);
         assertEq(beeSapAfterRaid, beeSapBeforeRaid - 2); // Check the sap of the bee after raiding
+        // Result of the raid (add later)
     }
 
     // Collect honey
     function testCollect() public {
         stake();
         uint256 NFTIdForCollect = 0;
+        uint256 firstHiveId = 0;
         vm.prank(owner);
         gameConfig.setNectarRequiredToClaim(10); // Set the required nectar to claim to 10 to ensure the bee can claim
 
         vm.startPrank(user);
-        hive.forage(NFTIdForCollect, 0); // Send the worker bee to forage at habitat id 0
+        hiveManager.forage(firstHiveId, NFTIdForCollect, 0); // Send the worker bee to forage at habitat id 0
         uint256 numberOfBlocks = 1800; // Roll 2 epoch
         vm.roll(block.number + numberOfBlocks);
 
-        uint256 currentHoneyInHive = hive.getAvailableHoneyInHive();
-        uint256 claimAbleHoney = hive.getUserClaimableHoney(NFTIdForCollect);
-        assertEq(currentHoneyInHive, claimAbleHoney); // Since there is only 1 bee in the hive has productivity, the claimable honey of that bee should be equal to the current honey in the hive
+        uint256 currentHoneyInHive = hiveManager.getAvailableHoneyInHive(
+            firstHiveId
+        );
+        uint256 claimAbleHoneyFirstBee = hiveManager.getUserClaimableHoney(
+            firstHiveId,
+            NFTIdForCollect
+        );
+        uint256 claimAbleHoneySecondBee = hiveManager.getUserClaimableHoney(
+            firstHiveId,
+            1
+        );
+        assertLt(claimAbleHoneyFirstBee, currentHoneyInHive); // Since there is 2 bee in the hive , the claimable honey of that bee should be less than the current honey in the hive
+        assertGe(
+            currentHoneyInHive,
+            claimAbleHoneyFirstBee + claimAbleHoneySecondBee
+        ); // The sum of the claimable honey of all bees in the hive should be equal to the current honey in the hive (Using greater than or equal because rounding)
         uint256 amountNectarBeforeCollect = buzzkillNFT
             .getBeeTraits(NFTIdForCollect)
             .nectar;
 
-        hive.collectHoney(NFTIdForCollect); // Collect honey from the hive
+        hiveManager.collectHoney(firstHiveId, NFTIdForCollect); // Collect honey from the hive
 
         uint256 honeyBalance = honey.balanceOf(address(user));
-        assertEq(honeyBalance, claimAbleHoney); // Check the honey balance of the user after collecting
+        assertEq(honeyBalance, claimAbleHoneyFirstBee); // Check the honey balance of the user after collecting
         uint256 amountNectarAfterCollect = buzzkillNFT
             .getBeeTraits(NFTIdForCollect)
             .nectar;
@@ -216,15 +342,14 @@ contract NormalFlowTest is Test {
     function testUnstake() public {
         stake();
         vm.prank(user);
-        hive.unstakeBee(0);
+        hiveManager.unstakeBee(0, 0);
         vm.prank(user);
-        hive.unstakeBee(1);
+        hiveManager.unstakeBee(0, 1);
 
-        uint256 numQueens = hive.numQueens();
-        uint256 numWorkers = hive.numWorkers();
+        Hive memory hiveInfo = getHiveInfo(0);
 
-        assertEq(numQueens, 0);
-        assertEq(numWorkers, 0);
+        assertEq(hiveInfo.numQueens, 0);
+        assertEq(hiveInfo.numWorkers, 0);
     }
 
     function testUnstakeWithPendingHoney() public {
@@ -232,21 +357,21 @@ contract NormalFlowTest is Test {
         vm.prank(owner);
         gameConfig.setNectarRequiredToClaim(10); // Set the required nectar to claim to 10 to ensure the bee can claim
         vm.startPrank(user);
-        hive.unstakeBee(0); // Unstake the worker first
-        uint256 numWorkers = hive.numWorkers();
-        assertEq(numWorkers, 0);
+        hiveManager.unstakeBee(0, 0); // Unstake the worker first
+        Hive memory hiveInfo = getHiveInfo(0);
+        assertEq(hiveInfo.numWorkers, 0);
 
         // Leave the queen inside the hive
-        hive.forage(1, 0); // Send the queen bee to forage at habitat id 0
+        hiveManager.forage(0, 1, 0); // Send the queen bee to forage at habitat id 0
         uint256 numberOfBlocks = 1800; // Roll 2 epoch
         vm.roll(block.number + numberOfBlocks);
-        uint256 userClaimableHoney = hive.getUserClaimableHoney(1);
-        hive.unstakeBee(1); // Unstake the queen bee
+        uint256 userClaimableHoney = hiveManager.getUserClaimableHoney(0, 1);
+        hiveManager.unstakeBee(0, 1); // Unstake the queen bee
 
         vm.stopPrank();
 
-        uint256 numQueens = hive.numQueens();
-        assertEq(numQueens, 0);
+        hiveInfo = getHiveInfo(0);
+        assertEq(hiveInfo.numQueens, 0);
         uint256 honeyBalance = honey.balanceOf(address(user));
         assertEq(honeyBalance, userClaimableHoney); // Check the honey balance of the user after unstaking
     }
@@ -256,19 +381,98 @@ contract NormalFlowTest is Test {
         vm.prank(owner);
         gameConfig.setNectarRequiredToClaim(10_000); // Set the required nectar to claim to 10_000 to ensure the bee can not claim
         vm.startPrank(user);
-        hive.unstakeBee(0); // Unstake the worker first
+        hiveManager.unstakeBee(0, 0); // Unstake the worker first
 
         // Leave the queen inside the hive
-        hive.forage(1, 0); // Send the queen bee to forage at habitat id 0
+        hiveManager.forage(0, 1, 0); // Send the queen bee to forage at habitat id 0
         uint256 numberOfBlocks = 1800; // Roll 2 epoch
         vm.roll(block.number + numberOfBlocks);
-        uint256 userClaimableHoney = hive.getUserClaimableHoney(1);
+        uint256 userClaimableHoney = hiveManager.getUserClaimableHoney(0, 1);
         assertGt(userClaimableHoney, 0); // Check the claimable honey of the user before unstaking
-        hive.unstakeBee(1); // Unstake the queen bee
+        hiveManager.unstakeBee(0, 1); // Unstake the queen bee
 
         vm.stopPrank();
 
         uint256 honeyBalance = honey.balanceOf(address(user));
         assertEq(honeyBalance, 0); // Check the honey balance of the user after unstaking
+    }
+
+    function testUpgradeBee() public {
+        stake();
+        uint256 NFTIdForUpgrade = 0;
+        uint256 firstHiveId = 0;
+
+        vm.startPrank(owner);
+        gameConfig.setBaseNectarUsePerUpgrade(1); // Set the required nectar to 1 to ensure the upgrade can happen
+        gameConfig.setBasePollenUsePerUpgrade(1); // Set the required pollen to upgrade to 1 to ensure the upgrade can happen
+        gameConfig.setBaseSapUsePerUpgrade(1); // Set the required sap to upgrade to 1 to ensure the upgrade can happen
+        vm.stopPrank();
+
+        vm.prank(user);
+        // Forage to get enough resources to upgrade
+        hiveManager.forage(firstHiveId, NFTIdForUpgrade, 0);
+
+        BeeTraits memory beeTraitsBeforeUpgrade = getTokenTraits(
+            NFTIdForUpgrade
+        );
+
+        vm.prank(user);
+        hiveManager.updradeBeeSkills(
+            firstHiveId,
+            NFTIdForUpgrade,
+            HiveManager.BeeSkills.ATTACK,
+            1
+        ); // Upgrade the bee attack skill by 1
+
+        BeeTraits memory beeTraitsAfterUpgrade = getTokenTraits(
+            NFTIdForUpgrade
+        );
+
+        assertEq(
+            beeTraitsAfterUpgrade.attack,
+            beeTraitsBeforeUpgrade.attack + 1
+        ); // Check the attack of the bee after upgrading
+        assertLt(beeTraitsAfterUpgrade.nectar, beeTraitsBeforeUpgrade.nectar); // Check the nectar of the bee after upgrading
+        assertLt(beeTraitsAfterUpgrade.pollen, beeTraitsBeforeUpgrade.pollen); // Check the pollen of the bee after upgrading
+        assertLt(beeTraitsAfterUpgrade.sap, beeTraitsBeforeUpgrade.sap); // Check the sap of the bee after upgrading
+
+        console.log(
+            "Bee Attack Before Upgrade: ",
+            beeTraitsBeforeUpgrade.attack
+        );
+        console.log("Bee Attack After Upgrade: ", beeTraitsAfterUpgrade.attack);
+        console.log(
+            "Bee Nectar Before Upgrade: ",
+            beeTraitsBeforeUpgrade.nectar
+        );
+
+        console.log("Bee Nectar After Upgrade: ", beeTraitsAfterUpgrade.nectar);
+        console.log(
+            "Bee Pollen Before Upgrade: ",
+            beeTraitsBeforeUpgrade.pollen
+        );
+        console.log("Bee Sap After Upgrade: ", beeTraitsAfterUpgrade.sap);
+    }
+
+    function testQuestForage() public {
+        stake();
+        uint256 NFTIdForQuest = 0;
+        uint256 firstHiveId = 0;
+
+        vm.startPrank(user);
+        // Current game config, at lv1, forage 4 times will complete the quest
+        // Each time forage earn 10 XP
+        // 4 times forage will earn 40 XP + quest completion reward 4 * 10 XP
+        // Total 80 XP
+        hiveManager.forage(firstHiveId, NFTIdForQuest, 0);
+        hiveManager.forage(firstHiveId, NFTIdForQuest, 0);
+        hiveManager.forage(firstHiveId, NFTIdForQuest, 0);
+        hiveManager.forage(firstHiveId, NFTIdForQuest, 0);
+
+        BeeTraits memory beeTraitsAfterDoneQuest = getTokenTraits(
+            NFTIdForQuest
+        );
+
+        assertEq(beeTraitsAfterDoneQuest.experience, 80); // Check the experience of the bee after completing the quest
     }
 }

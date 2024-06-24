@@ -32,7 +32,6 @@ export interface HiveManagerInterface extends Interface {
       | "buzzkillAddressProvider"
       | "collectHoney"
       | "createHive"
-      | "endureRaid"
       | "forage"
       | "getAvailableHoneyInHive"
       | "getHivePoolMultiplier"
@@ -84,10 +83,6 @@ export interface HiveManagerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "createHive",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "endureRaid",
-    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "forage",
@@ -166,7 +161,6 @@ export interface HiveManagerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "createHive", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "endureRaid", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "forage", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getAvailableHoneyInHive",
@@ -467,12 +461,6 @@ export interface HiveManager extends BaseContract {
     "nonpayable"
   >;
 
-  endureRaid: TypedContractMethod<
-    [_hiveId: BigNumberish, _tokenId: BigNumberish],
-    [bigint],
-    "nonpayable"
-  >;
-
   forage: TypedContractMethod<
     [_hiveId: BigNumberish, _tokenId: BigNumberish, _habitatId: BigNumberish],
     [void],
@@ -641,13 +629,6 @@ export interface HiveManager extends BaseContract {
   getFunction(
     nameOrSignature: "createHive"
   ): TypedContractMethod<[habitatId: BigNumberish], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "endureRaid"
-  ): TypedContractMethod<
-    [_hiveId: BigNumberish, _tokenId: BigNumberish],
-    [bigint],
-    "nonpayable"
-  >;
   getFunction(
     nameOrSignature: "forage"
   ): TypedContractMethod<

@@ -427,7 +427,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Worker"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                10, // energy
+                100, // energy
                 10, // health
                 1, // attack
                 1, // defense
@@ -446,7 +446,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
                 "Queen"
             );
             tokenIdToTraits[newTokenId] = BeeTraits(
-                20, // energy
+                200, // energy
                 20, // health
                 2, // attack
                 2, // defense
@@ -669,7 +669,7 @@ contract BuzzkillNFT is VRC725, VRC725Enumerable, ReentrancyGuard, Pausable {
         );
 
         beeQuestTracking[tokenId][currentBeeLevel].upgradeCount++;
-        
+
         if (
             accomplishedUpgradeQuestsBefore < amountQuestsRequired &&
             beeQuestTracking[tokenId][currentBeeLevel].upgradeCount >=

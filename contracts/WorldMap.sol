@@ -185,7 +185,7 @@ contract WorldMap is Ownable {
      * @return nectarGathered The amount of nectar gathered.
      * pollenGathered The amount of pollen gathered.
      * sapGathered The amount of sap gathered.
-     * The constant value ensure that the resources gathered are minimum at 20 quantity.
+     * The constant value ensure that the resources gathered are minimum at 20 quantity and maximum at 3000 quantity.
      */
     function forage(
         uint256 _beeId,
