@@ -44,6 +44,7 @@ const config: ExtendedHardhatUserConfig = {
       url: `https://rpc-testnet.viction.xyz`,
       accounts: [privateKey],
       chainId: 89,
+      gasPrice: 2000000000,
     },
     viction: {
       url: `https://rpc.viction.xyz`,

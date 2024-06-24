@@ -8,7 +8,10 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   let nonce = await deployer.getNonce();
 
-  console.log("Deploying contract with the account:", deployer.getAddress());
+  console.log(
+    "Deploying contract with the account:",
+    await deployer.getAddress()
+  );
 
   const network = hre.network.name;
 
