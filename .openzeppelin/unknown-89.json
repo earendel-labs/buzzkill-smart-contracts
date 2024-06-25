@@ -1,0 +1,843 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0xeDa4D59FAe77b0082d2225DAe6926c94b39612fb",
+      "txHash": "0x91dc5c0b75a5b58aacef981afd8a51f05f44e4dcebb64bd22245a1bc49d905c3",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x211F9617d0B2d1b9ea05c3bD416E024458965C9E",
+      "txHash": "0xe3f6cf95385837f53771967a404c1a83e414881c37de48557e8bb27d653df07d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x9d7D1362173D1d6a1843FC363Bd1594731216984",
+      "txHash": "0xec648f4d5732c24117d4bb7f5e57f2f278fc921a5114674d0716439674baaa16",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xE6cEe62548B011d6D32cA4d20bc39264322e4b80",
+      "txHash": "0x0f6bbc59c3d527e1bb9f617c9a726f2791a1819f5ffda267b2b34eb4e2474f17",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xbBae55b2948A963b6BEABc6d5f91205f12D9Ee71",
+      "txHash": "0x0643626238b67a9bb19f628da96b01905c656bda7845b1cd0348fcb027e2c6ad",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "457417979ea884b2022f48a56ad97a933caf36c68ca71c9bf9cad2d61a1ca989": {
+      "address": "0x8359622BA847cDB38D38C7d0ed112918c2F3C02C",
+      "txHash": "0x748f9047a5a670645ad7fe450895f3fb1a3a0f39b2c757d889440493b00ae56a",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "buzzkillNFTAddress",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:11"
+          },
+          {
+            "label": "honeyAddress",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:12"
+          },
+          {
+            "label": "worldMapAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:13"
+          },
+          {
+            "label": "honeyDistributionAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:14"
+          },
+          {
+            "label": "gameConfigAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:15"
+          },
+          {
+            "label": "hiveManagerAddress",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_address",
+            "contract": "BuzzkillAddressProvider",
+            "src": "contracts\\helper\\BuzzkillAddressProvider.sol:16"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)65_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "d789a0718c14a7995ef000be10e3290e5837b945a3ae610dc059140f36851d32": {
+      "address": "0xB08448e834397FC9748491b2539693826dDDEA25",
+      "txHash": "0x2dc782f746338cc316cd0fbef50d4aec976bc7d96386649d2ec0a4abb210e988",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "beeEnergyRefreshInterval",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:11"
+          },
+          {
+            "label": "beeHealthRefreshInterval",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:12"
+          },
+          {
+            "label": "amountToLevelUp",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:13"
+          },
+          {
+            "label": "maxQueen",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:14"
+          },
+          {
+            "label": "maxWorker",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:15"
+          },
+          {
+            "label": "foragePercentage",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:16"
+          },
+          {
+            "label": "claimTimeInterval",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:17"
+          },
+          {
+            "label": "honeyYieldConstant",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:18"
+          },
+          {
+            "label": "nectarRequiredToClaim",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:19"
+          },
+          {
+            "label": "experienceEarnedAfterForage",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:20"
+          },
+          {
+            "label": "experienceEarnedAfterRaidFailed",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:21"
+          },
+          {
+            "label": "experienceEarnedAfterRaidSuccess",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:22"
+          },
+          {
+            "label": "experienceEarnedAfterUpgrade",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:23"
+          },
+          {
+            "label": "baseHealthDeductionAfterRaid",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:24"
+          },
+          {
+            "label": "baseEnergyDeductionAfterRaid",
+            "offset": 0,
+            "slot": "14",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:25"
+          },
+          {
+            "label": "baseEnergyDeductionAfterUpgrade",
+            "offset": 0,
+            "slot": "15",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:26"
+          },
+          {
+            "label": "raidHoneyFee",
+            "offset": 0,
+            "slot": "16",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:27"
+          },
+          {
+            "label": "raidSapFee",
+            "offset": 0,
+            "slot": "17",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:28"
+          },
+          {
+            "label": "baseHoneyRaidReward",
+            "offset": 0,
+            "slot": "18",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:29"
+          },
+          {
+            "label": "incentiveEarnAfterRaid",
+            "offset": 0,
+            "slot": "19",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:30"
+          },
+          {
+            "label": "maxResourcesValue",
+            "offset": 0,
+            "slot": "20",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:31"
+          },
+          {
+            "label": "minResourcesValue",
+            "offset": 0,
+            "slot": "21",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:32"
+          },
+          {
+            "label": "resourcesRefreshInterval",
+            "offset": 0,
+            "slot": "22",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:33"
+          },
+          {
+            "label": "baseHoneyYield",
+            "offset": 0,
+            "slot": "23",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:34"
+          },
+          {
+            "label": "baseIncentivePerEpoch",
+            "offset": 0,
+            "slot": "24",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:35"
+          },
+          {
+            "label": "differenceBetweenLevels",
+            "offset": 0,
+            "slot": "25",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:36"
+          },
+          {
+            "label": "amountAttackIncreaseOnLevelUp",
+            "offset": 0,
+            "slot": "26",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:37"
+          },
+          {
+            "label": "amountDefenseIncreaseOnLevelUp",
+            "offset": 0,
+            "slot": "27",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:38"
+          },
+          {
+            "label": "amountForageIncreaseOnLevelUp",
+            "offset": 0,
+            "slot": "28",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:39"
+          },
+          {
+            "label": "amountEnergyIncreaseOnLevelUp",
+            "offset": 0,
+            "slot": "29",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:40"
+          },
+          {
+            "label": "amountHealthIncreaseOnLevelUp",
+            "offset": 0,
+            "slot": "30",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:41"
+          },
+          {
+            "label": "amountBaseProductivityIncreaseOnLevelUp",
+            "offset": 0,
+            "slot": "31",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:42"
+          },
+          {
+            "label": "amountMaxProductivityIncreaseOnLevelUp",
+            "offset": 0,
+            "slot": "32",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:43"
+          },
+          {
+            "label": "baseNumberOfForagingQuest",
+            "offset": 0,
+            "slot": "33",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:44"
+          },
+          {
+            "label": "baseNumberOfRaidQuest",
+            "offset": 0,
+            "slot": "34",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:45"
+          },
+          {
+            "label": "baseNumberOfRaidSuccessQuest",
+            "offset": 0,
+            "slot": "35",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:46"
+          },
+          {
+            "label": "baseNumberOfUpgradeQuest",
+            "offset": 0,
+            "slot": "36",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:47"
+          },
+          {
+            "label": "baseNectarUsePerUpgrade",
+            "offset": 0,
+            "slot": "37",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:48"
+          },
+          {
+            "label": "basePollenUsePerUpgrade",
+            "offset": 0,
+            "slot": "38",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:49"
+          },
+          {
+            "label": "baseSapUsePerUpgrade",
+            "offset": 0,
+            "slot": "39",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:50"
+          },
+          {
+            "label": "Cs",
+            "offset": 0,
+            "slot": "40",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:57"
+          },
+          {
+            "label": "Cn",
+            "offset": 0,
+            "slot": "41",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:58"
+          },
+          {
+            "label": "Cp",
+            "offset": 0,
+            "slot": "42",
+            "type": "t_uint256",
+            "contract": "GameConfig",
+            "src": "contracts\\helper\\GameConfig.sol:59"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)65_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)14_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "c99c0405cd73b2ef7feacef457f5fdb8b251530a3a905ccab357f50b1139050d": {
+      "address": "0x97f1bFA534e57ef9AA01056f1026f5d468D4bC4c",
+      "txHash": "0x555383221ec12668d2b24a340947a953400e455aae5630d74a39ce912116c04f",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "totalHives",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256",
+            "contract": "HiveManager",
+            "src": "contracts\\HiveManager.sol:123"
+          },
+          {
+            "label": "hives",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_uint256,t_struct(Hive)8716_storage)",
+            "contract": "HiveManager",
+            "src": "contracts\\HiveManager.sol:124"
+          },
+          {
+            "label": "isBeeInAction",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_bool))",
+            "contract": "HiveManager",
+            "src": "contracts\\HiveManager.sol:125"
+          },
+          {
+            "label": "beeStatus",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(BeeStatus)8691_storage))",
+            "contract": "HiveManager",
+            "src": "contracts\\HiveManager.sol:126"
+          },
+          {
+            "label": "buzzkillAddressProvider",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_contract(IBuzzkillAddressProvider)14008",
+            "contract": "HiveManager",
+            "src": "contracts\\HiveManager.sol:128"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)65_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IBuzzkillAddressProvider)14008": {
+            "label": "contract IBuzzkillAddressProvider",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_bool))": {
+            "label": "mapping(uint256 => mapping(uint256 => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(BeeStatus)8691_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct HiveManager.BeeStatus))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(BeeStatus)8691_storage)": {
+            "label": "mapping(uint256 => struct HiveManager.BeeStatus)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Hive)8716_storage)": {
+            "label": "mapping(uint256 => struct HiveManager.Hive)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(BeeStatus)8691_storage": {
+            "label": "struct HiveManager.BeeStatus",
+            "members": [
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "beeId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "beeProductivity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "beeWorkIncentive",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "beeDefense",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "lastClaimedBlock",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(Hive)8716_storage": {
+            "label": "struct HiveManager.Hive",
+            "members": [
+              {
+                "label": "habitatId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "numQueens",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "numWorkers",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "nectar",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "pollen",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "sap",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "hiveProductivity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "hiveDefense",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "availableHoneyInHive",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "lastAvailableHoneyUpdateBlock",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "hiveTotalIncentive",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "10"
+              },
+              {
+                "label": "lastBaseIncentiveUpdateBlock",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "11"
+              }
+            ],
+            "numberOfBytes": "384"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

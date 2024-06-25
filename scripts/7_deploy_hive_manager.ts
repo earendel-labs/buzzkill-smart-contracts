@@ -7,7 +7,10 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   let nonce = await deployer.getNonce();
 
-  console.log("Deploying contract with the account:", deployer.address);
+  console.log(
+    "Deploying contract with the account:",
+    await deployer.getAddress()
+  );
 
   const network = hre.network.name;
   const contracts = getContracts(network)[network];
@@ -15,12 +18,33 @@ async function main() {
   const HiveManager = await ethers.getContractFactory("HiveManager");
   // Deploy contract, for the second script, the ProxyAdmin has already been deployed
   // Then only TransparentUpgradeableProxy and GameConfig implementation contract will be deployed
-  // So it is important to set nonce to +2 in order to avoid nonce too low error
+  // So it is important to set nonce properly in order to avoid nonce too low error
+  const hiveManagerImplementationContract = await upgrades.deployImplementation(
+    HiveManager,
+    {
+      txOverrides: {
+        gasLimit: "0x989680",
+        nonce: nonce++,
+      },
+    }
+  );
+
+  console.log(
+    "Hive Manager implementation contract deployed to:",
+    hiveManagerImplementationContract
+  );
+
+  await hre.run("verify:verify", {
+    address: hiveManagerImplementationContract,
+    constructorArguments: [],
+  });
+
+  // Deploy proxy
   const hiveManager = await upgrades.deployProxy(
     HiveManager,
     [contracts.buzzkillAddressProvider],
     {
-      txOverrides: { gasLimit: "0x5000000", nonce: nonce + 2 },
+      txOverrides: { gasLimit: "0x989680", nonce: nonce++ },
     }
   );
 
@@ -36,17 +60,6 @@ async function main() {
   saveContract(network, "hiveManager", hiveManagerContract);
 
   console.log("Completed!");
-
-  // Get the implementation contract address from the proxy
-  const implementationAddress = await upgrades.erc1967.getImplementationAddress(
-    hiveManagerContract
-  );
-  console.log("Implementation contract address:", implementationAddress);
-
-  await hre.run("verify:verify", {
-    address: implementationAddress,
-    constructorArguments: [],
-  });
 }
 
 main()

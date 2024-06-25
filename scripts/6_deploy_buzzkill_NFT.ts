@@ -16,10 +16,9 @@ async function main() {
   const BuzzkillNFT = await ethers.getContractFactory("BuzzkillNFT");
   const buzzkillNFT = await BuzzkillNFT.deploy(
     MINT_FEE,
-    contracts.hiveFactory,
     contracts.buzzkillAddressProvider,
     {
-      gasLimit: "0x5000000",
+      gasLimit: "0x989680",
       nonce: nonce++,
     }
   );
@@ -37,11 +36,7 @@ async function main() {
 
   await hre.run("verify:verify", {
     address: buzzkillNFTContract,
-    constructorArguments: [
-      MINT_FEE,
-      contracts.hiveFactory,
-      contracts.buzzkillAddressProvider,
-    ],
+    constructorArguments: [MINT_FEE, contracts.buzzkillAddressProvider],
   });
 
   console.log("Completed!");

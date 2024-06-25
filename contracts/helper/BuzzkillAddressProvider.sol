@@ -4,22 +4,16 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import "../../interfaces/IBuzzkillAddressProvider.sol";
-
-contract BuzzkillAddressProvider is
-    Initializable,
-    OwnableUpgradeable,
-    IBuzzkillAddressProvider
-{
+contract BuzzkillAddressProvider is Initializable, OwnableUpgradeable {
     /* -------------------------------------------------------------------------- */
     /*  State Variables                                                           */
     /* -------------------------------------------------------------------------- */
     address public buzzkillNFTAddress;
     address public honeyAddress;
-    address public hiveManagerAddress;
     address public worldMapAddress;
     address public honeyDistributionAddress;
     address public gameConfigAddress;
+    address public hiveManagerAddress;
 
     /* -------------------------------------------------------------------------- */
     /*  Initilize                                                               */

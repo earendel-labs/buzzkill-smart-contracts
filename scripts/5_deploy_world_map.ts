@@ -14,7 +14,7 @@ async function main() {
 
   const WorldMap = await ethers.getContractFactory("WorldMap");
   const worldMap = await WorldMap.deploy(contracts.buzzkillAddressProvider, {
-    gasLimit: "0x5000000",
+    gasLimit: "0x989680",
     nonce: nonce++,
   });
 

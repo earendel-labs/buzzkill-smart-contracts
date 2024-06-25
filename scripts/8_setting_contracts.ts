@@ -26,11 +26,11 @@ async function main() {
     nonce: nonce++,
   });
   console.log("Setting honey address success!");
-  await buzzkillAddressProvider.setHiveFactoryAddress(contracts.hiveFactory, {
+  await buzzkillAddressProvider.setHiveManagerAddress(contracts.hiveManager, {
     gasLimit: "0x5000000",
     nonce: nonce++,
   });
-  console.log("Setting hive factory address success!");
+  console.log("Setting hive manager address success!");
   await buzzkillAddressProvider.setWorldMapAddress(contracts.worldMap, {
     gasLimit: "0x5000000",
     nonce: nonce++,

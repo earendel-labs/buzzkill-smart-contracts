@@ -21,12 +21,33 @@ async function main() {
 
   // Deploy contract, for the first time deployment
   // Upgradeable contract will deploy: ProxyAdmin, TransparentUpgradeableProxy, and BuzzkillAddressProvider implementation contract
-  // So it is important to set nonce to +3 in order to avoid nonce too low error
+  // So it is important to set nonce properly in order to avoid nonce too low error, if error encountered, try to increase the nonce
+  const buzzkillImplementationContract = await upgrades.deployImplementation(
+    BuzzkillAddressProvider,
+    {
+      txOverrides: {
+        gasLimit: "0x989680",
+        nonce: nonce++,
+      },
+    }
+  );
+  
+  console.log("Buzzkill Address Provider implementation contract deployed to:", buzzkillImplementationContract);
+
+  await hre.run("verify:verify", {
+    address: buzzkillImplementationContract,
+    constructorArguments: [],
+  });
+  
+  // Deploy proxy
   const buzzkillAddressProvider = await upgrades.deployProxy(
     BuzzkillAddressProvider,
     [],
     {
-      txOverrides: { gasLimit: "0x5000000", nonce: nonce + 3 },
+      txOverrides: {
+        gasLimit: "0x989680",
+        nonce: nonce++,
+      },
     }
   );
   await buzzkillAddressProvider.waitForDeployment();
@@ -46,17 +67,6 @@ async function main() {
   );
 
   console.log("Completed!");
-
-  // Get the implementation contract address from the proxy
-  const implementationAddress = await upgrades.erc1967.getImplementationAddress(
-    buzzkillAddressProviderContract
-  );
-  console.log("Implementation contract address:", implementationAddress);
-
-  await hre.run("verify:verify", {
-    address: implementationAddress,
-    constructorArguments: [],
-  });
 }
 
 main()

@@ -19,9 +19,30 @@ async function main() {
 
   // Deploy contract, for the second script, the ProxyAdmin has already been deployed
   // Then only TransparentUpgradeableProxy and GameConfig implementation contract will be deployed
-  // So it is important to set nonce to +2 in order to avoid nonce too low error
+  // So it is important to set nonce properly in order to avoid nonce too low error, if error encountered, try to increase the nonce
+  const gameConfigImplementationContract = await upgrades.deployImplementation(
+    GameConfig,
+    {
+      txOverrides: {
+        gasLimit: "0x989680",
+        nonce: nonce++,
+      },
+    }
+  );
+
+  console.log(
+    "Game Config implementation contract deployed to:",
+    gameConfigImplementationContract
+  );
+
+  await hre.run("verify:verify", {
+    address: gameConfigImplementationContract,
+    constructorArguments: [],
+  });
+
+  // Deploy proxy
   const gameConfig = await upgrades.deployProxy(GameConfig, [], {
-    txOverrides: { gasLimit: "0x5000000", nonce: nonce + 2 },
+    txOverrides: { gasLimit: "0x989680", nonce: nonce++ },
   });
 
   await gameConfig.waitForDeployment();
@@ -32,17 +53,6 @@ async function main() {
   console.log("Game Config contract deployed to:", gameConfigContract);
 
   console.log("Completed!");
-
-  // Get the implementation contract address from the proxy
-  const implementationAddress = await upgrades.erc1967.getImplementationAddress(
-    gameConfigContract
-  );
-  console.log("Implementation contract address:", implementationAddress);
-
-  await hre.run("verify:verify", {
-    address: implementationAddress,
-    constructorArguments: [],
-  });
 }
 
 main()

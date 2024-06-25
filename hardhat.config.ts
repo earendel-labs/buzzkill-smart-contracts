@@ -7,6 +7,7 @@ import "hardhat-contract-sizer";
 require("dotenv").config();
 
 const privateKey = process.env.PRIVATE_KEY || "";
+const apiKey = process.env.ETHEREUM_API_KEY || "";
 
 interface ExtendedHardhatUserConfig extends HardhatUserConfig {
   etherscan?: {
@@ -44,7 +45,6 @@ const config: ExtendedHardhatUserConfig = {
       url: `https://rpc-testnet.viction.xyz`,
       accounts: [privateKey],
       chainId: 89,
-      gasPrice: 2000000000,
     },
     viction: {
       url: `https://rpc.viction.xyz`,
@@ -59,7 +59,7 @@ const config: ExtendedHardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      sepolia: "",
+      sepolia: apiKey,
       Viction: "tomoscan2023",
       victiontestnet: "tomoscan2023",
     },

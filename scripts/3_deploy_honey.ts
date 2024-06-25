@@ -12,7 +12,7 @@ async function main() {
   const network = hre.network.name;
 
   const Honey = await ethers.getContractFactory("Honey");
-  const honey = await Honey.deploy({ gasLimit: "0x5000000", nonce: nonce++ });
+  const honey = await Honey.deploy({ gasLimit: "0x989680", nonce: nonce++ });
 
   await honey.waitForDeployment();
 

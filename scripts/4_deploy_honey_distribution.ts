@@ -17,7 +17,7 @@ async function main() {
   );
   const honeyDistribution = await HoneyDistribution.deploy(
     contracts.buzzkillAddressProvider,
-    { gasLimit: "0x5000000", nonce: nonce++ }
+    { gasLimit: "0x989680", nonce: nonce++ }
   );
 
   await honeyDistribution.waitForDeployment();
